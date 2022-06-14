@@ -16,9 +16,9 @@ jobs:
       - run:
           name: Run tests
           command: coverage run -m pytest tests || coverage xml
-      - upload coverage:
+      - upload-coverage:
           name: Upload codecoverage
-          command: codecov/upload
+          command: coverage upload
 
 workflows:
   on_commit:
