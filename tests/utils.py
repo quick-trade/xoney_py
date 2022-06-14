@@ -19,9 +19,9 @@ import random
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades import Trade
 from xoney.generic.trades.levels import (LevelStack,
-                                            BaseEntry,
-                                            BaseBreakout,
-                                            Level)
+                                         BaseEntry,
+                                         BaseBreakout,
+                                         Level)
 from xoney.generic.enums import TradeSide
 
 
