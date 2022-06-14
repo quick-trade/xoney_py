@@ -1,2 +1,5 @@
 ignore:
   - tests/**
+
+codecov:
+  branch: dev
