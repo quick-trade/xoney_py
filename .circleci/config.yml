@@ -6,8 +6,7 @@ orbs:
 
 jobs:
   unit-tests:
-    docker:
-      - image: cimg/python:3.10.1
+    executor: python/default
     steps:
       - checkout
       - requirements:
