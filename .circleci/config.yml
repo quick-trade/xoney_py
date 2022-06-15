@@ -14,7 +14,10 @@ jobs:
           command: pip install -r requirements_dev.txt
       - run:
           name: Run tests
-          command: coverage run -m pytest tests || coverage xml
+          command: coverage run -m pytest tests
+      - run:
+          name: Make .xml file
+          command: coverage xml
       - codecov/upload
 
 workflows:
