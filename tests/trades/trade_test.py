@@ -151,7 +151,7 @@ class TestVolume:
                           123,
                           {"DICT": "DICT"}])
 def test_unexpected_trade_side(side):
-    with pytest.fixture(UnexpectedTradeSideError):
+    with pytest.raises(UnexpectedTradeSideError):
         trade = Trade(side=side,
                       potential_volume=10,
                       entries=LevelStack(),
