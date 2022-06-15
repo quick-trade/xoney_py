@@ -19,6 +19,7 @@ from xoney.generic.trades.levels.defaults.breakouts import *
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades import Trade
 from xoney.generic.enums import TradeSide
+from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import (
     LevelStack,
     SimpleEntry,
@@ -143,3 +144,15 @@ class TestVolume:
 
         trade.update(candle_below_stop_loss)
         assert trade.realized_volume == realized_after_sl
+
+
+@pytest.mark.parametrize("side",
+                         ["long",  # string
+                          123,
+                          {"DICT": "DICT"}])
+def test_unexpected_trade_side(side):
+    with pytest.fixture(UnexpectedTradeSideError):
+        trade = Trade(side=side,
+                      potential_volume=10,
+                      entries=LevelStack(),
+                      breakouts=LevelStack())
