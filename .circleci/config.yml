@@ -11,7 +11,7 @@ jobs:
       - checkout
       - run:
           name: Install requirements
-          command: pip install -r dev_requirements.txt
+          command: pip install -r requirements_dev.txt
       - run:
           name: Run tests
           command: coverage run -m pytest tests || coverage xml
