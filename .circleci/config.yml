@@ -5,7 +5,7 @@ orbs:
   codecov: codecov/codecov@3.1.1
 
 jobs:
-  unit-tests:
+  unit_tests:
     executor: python/default
     steps:
       - checkout
@@ -18,6 +18,6 @@ jobs:
       - codecov/upload
 
 workflows:
-  on_commit:
+  main:
     jobs:
-      - unit-tests
+      - unit_tests
