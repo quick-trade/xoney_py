@@ -9,7 +9,7 @@ jobs:
     executor: python/default
     steps:
       - checkout
-      - requirements:
+      - run:
           name: Install requirements
           command: pip install -r dev_requirements.txt
       - run:
