@@ -12,10 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+
+from xoney.generic.trades import Trade
 
 
 class Event(ABC):
     @abstractmethod
-    def handle_trades(self, trades) -> None:
+    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
         ...
+
+
+class OpenTrade(Event):
+    _trade: Trade
+
+    def __init__(self, trade: Trade):
+        self._trade = trade
+
+    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
+        return [*trades, self._trade]
+
+
+class CloseTrade(Event):
+    _trade: Trade
+
+    def __init__(self, trade: Trade):
+        self._trade = trade
+
+    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
+        trades_copy: list[Trade] = trades
+        trades_copy.remove(self._trade)
+
+        return trades_copy
+
+
+class CloseAllTrades(Event):
+    _trade: Trade
+
+    def __init__(self):
+        pass
+
+    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
+        return []
