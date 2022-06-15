@@ -52,7 +52,7 @@ class Level(ABC):
         return self.__cross_flag
 
     @abstractproperty
-    def _trade_volume(self) -> float:
+    def _trade_volume(self) -> float:  # pragma: no cover
         ...
 
     def __init__(self,
@@ -67,7 +67,7 @@ class Level(ABC):
         if not self.crossed:
             self.__trigger_price = price
 
-    def check_breaking(self, candle: Candle) -> bool:
+    def check_breaking(self, candle: Candle) -> bool:  # pragma: no cover
         return self.__trigger_price in candle
 
     def update(self, candle: Candle) -> None:

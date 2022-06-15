@@ -14,7 +14,7 @@
 # =============================================================================
 import pytest
 
-from xoney.generic.trades.levels import TakeProfit
+from xoney.generic.trades.levels import TakeProfit, Level
 from xoney.generic.enums import TradeSide
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades.levels import LevelStack
@@ -23,6 +23,11 @@ from xoney.generic.trades import Trade
 
 @pytest.fixture
 def level():
+    return Level(30_000,
+                 0.99)
+
+@pytest.fixture
+def take_profit():
     tp = TakeProfit(price=30_000.0,
                    trade_part=0.1)
     _trade = Trade(TradeSide.LONG,
@@ -46,47 +51,47 @@ def candle_at_intersection():
     return Candle(30_000, 31_000, 29_000, 30_000)
 
 
-class TestLevel:
-    def test_quantity(self, level):
-        assert level.trade_part == 0.1
+class TestTakeProfit:
+    def test_quantity(self, take_profit):
+        assert take_profit.trade_part == 0.1
 
-    def test_side(self, level):
-        assert level.side == TradeSide.LONG
+    def test_side(self, take_profit):
+        assert take_profit.side == TradeSide.LONG
 
-    def test_update(self, level, candle_at_intersection):
-        level._trade.update(candle_at_intersection)
-        assert level.crossed
+    def test_update(self, take_profit, candle_at_intersection):
+        take_profit._trade.update(candle_at_intersection)
+        assert take_profit.crossed
 
-    def test_update_above(self, level, candle_above):
-        level._trade.update(candle_above)
-        assert level.crossed
+    def test_update_above(self, take_profit, candle_above):
+        take_profit._trade.update(candle_above)
+        assert take_profit.crossed
 
-    def test_update_below(self, level, candle_below):
-        level.update(candle_below)
-        assert not level.crossed
+    def test_update_below(self, take_profit, candle_below):
+        take_profit.update(candle_below)
+        assert not take_profit.crossed
 
-    def test_flag(self, level, candle_at_intersection, candle_below):
-        level._trade.update(candle_at_intersection)
-        assert level.crossed
-        level._trade.update(candle_below)
-        assert level.crossed
+    def test_flag(self, take_profit, candle_at_intersection, candle_below):
+        take_profit._trade.update(candle_at_intersection)
+        assert take_profit.crossed
+        take_profit._trade.update(candle_below)
+        assert take_profit.crossed
 
 class TestEditing:
     @pytest.mark.parametrize("value", [
         42
     ])
-    def test_trigger_price(self, level, value):
-        level.edit_trigger_price(value)
-        assert level.trigger_price == value
+    def test_trigger_price(self, take_profit, value):
+        take_profit.edit_trigger_price(value)
+        assert take_profit.trigger_price == value
 
 @pytest.mark.parametrize("varname, value", [
     ("trade_part", 0.1),
     ("trigger_price", 30_000),
 ])
-def test_immutable(level, varname, value):
+def test_immutable(take_profit, varname, value):
     with pytest.raises(AttributeError):
-        setattr(level, varname, value*2)
-    assert getattr(level, varname) == value
+        setattr(take_profit, varname, value * 2)
+    assert getattr(take_profit, varname) == value
 
 
 @pytest.fixture
@@ -94,18 +99,18 @@ def callback_var():
     return 5
 
 class TestCallbacks:
-    def test_on_update(self, level, candle_below, callback_var):
+    def test_on_update(self, take_profit, candle_below, callback_var):
 
         def callback():
             nonlocal callback_var
             callback_var += 10
 
-        level._on_update_callback = callback
-        level._trade.update(candle_below)
+        take_profit._on_update_callback = callback
+        take_profit._trade.update(candle_below)
         assert callback_var == 5 + 10
 
     def test_on_breakout(self,
-                         level,
+                         take_profit,
                          candle_above,
                          callback_var):
 
@@ -113,8 +118,8 @@ class TestCallbacks:
             nonlocal callback_var
             callback_var += 3
 
-        level._on_breakout_callback = callback_break
+        take_profit._on_breakout_callback = callback_break
 
-        level._trade.update(candle_above)
+        take_profit._trade.update(candle_above)
 
         assert callback_var == 5 + 3
