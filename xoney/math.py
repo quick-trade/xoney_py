@@ -12,15 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from enum import Enum
+from xoney.config import ASSUME_ZERO
 
-
-class TradeSide(Enum):
-    LONG = "long"
-    SHORT = "short"
-
-
-class TradeStatus(Enum):
-    PENDING = "pending"
-    ACTIVE = "active"
-    CLOSED = "closed"
+def is_zero(number):
+    return abs(number) <= ASSUME_ZERO

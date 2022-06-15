@@ -18,13 +18,15 @@ import pytest
 from xoney.generic.trades.levels.defaults.breakouts import *
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades import Trade
-from xoney.generic.enums import TradeSide
+from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import (
     LevelStack,
     SimpleEntry,
     AveragingEntry
 )
+
+from xoney.math import is_zero
 
 
 @pytest.fixture
@@ -52,7 +54,7 @@ def take_profit():
 @pytest.fixture
 def take_profit2():
     return TakeProfit(45_000,
-                     0.3)
+                     1.0)
 
 
 @pytest.fixture
@@ -80,14 +82,21 @@ def candle_below_stop_loss(candle_below_averaging_entry):
 def candle_above_take_profit(candle_below_entry):
     return candle_below_entry + 5_500
 
+@pytest.fixture
+def candle_above_take_profit_2(candle_above_take_profit):
+    return candle_above_take_profit + 5_000
 
-class TestVolume:
+
+class TestLogic:
     def test_entry_only(self, trade, candle_below_entry, entry):
         expected_realized_after = trade.potential_volume * entry.trade_part
 
         assert trade.realized_volume == 0
+        assert trade.status == TradeStatus.PENDING
 
         trade.update(candle_below_entry)
+
+        assert trade.status == TradeStatus.ACTIVE
         assert (trade.realized_volume == expected_realized_after)
 
     def test_averaging_entry(self,
@@ -98,8 +107,11 @@ class TestVolume:
 
         after_avg_entry = after_entry + avg_entry_only
 
+        assert trade.status == TradeStatus.PENDING
+
         trade.update(candle_below_averaging_entry)
 
+        assert trade.status == TradeStatus.ACTIVE
         assert (trade.realized_volume == after_avg_entry)
 
     def test_stop_loss(self, trade, candle_below_stop_loss):
@@ -107,8 +119,11 @@ class TestVolume:
         realized_after_breakout = realized_before_breakout * (1 - 0.1)
         # realized_volume -= realized_volume * stop_loss.trade_part
 
+        assert trade.status == TradeStatus.PENDING
+
         trade.update(candle_below_stop_loss)
 
+        assert trade.status == TradeStatus.ACTIVE  # stop-loss have not 100% trade_part
         assert trade.realized_volume == realized_after_breakout
 
     def test_entry_take_profit(self,
@@ -122,7 +137,7 @@ class TestVolume:
         trade.update(candle_below_entry)
         trade.update(candle_above_take_profit)
 
-        assert abs(trade.realized_volume - realized_after_breakout) < 1/100
+        assert is_zero(trade.realized_volume - realized_after_breakout)
 
     def test_entry_take_profit_averaging_entry_stop_loss(
             self,
@@ -144,6 +159,24 @@ class TestVolume:
 
         trade.update(candle_below_stop_loss)
         assert trade.realized_volume == realized_after_sl
+
+    def test_entry_tp2(self,
+                       trade,
+                       candle_above_take_profit_2,
+                       candle_below_entry):
+        assert trade.status == TradeStatus.PENDING
+        trade.update(candle_below_entry)
+
+        assert trade.status == TradeStatus.ACTIVE
+        trade.update(candle_above_take_profit_2)
+
+        assert trade.realized_volume == 0
+        assert trade.status == TradeStatus.CLOSED
+
+        trade.update(candle_above_take_profit_2)
+
+        assert trade.realized_volume == 0
+        assert trade.status == TradeStatus.CLOSED
 
 
 @pytest.mark.parametrize("side",

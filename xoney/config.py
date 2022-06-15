@@ -12,15 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from enum import Enum
-
-
-class TradeSide(Enum):
-    LONG = "long"
-    SHORT = "short"
-
-
-class TradeStatus(Enum):
-    PENDING = "pending"
-    ACTIVE = "active"
-    CLOSED = "closed"
+ASSUME_ZERO = 1 / 10**10

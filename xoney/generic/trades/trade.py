@@ -17,6 +17,8 @@ from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import LevelStack
 
+from xoney.math import is_zero
+
 
 class Trade:
     __entries: LevelStack
@@ -24,6 +26,7 @@ class Trade:
     __side: TradeSide
     __status: TradeStatus
     __potential_volume: float
+    __opened: bool
 
     @property
     def status(self) -> TradeStatus:
@@ -40,15 +43,17 @@ class Trade:
                  breakouts: LevelStack):
         self.__entries = entries
         self.__breakouts = breakouts
-        self.__status = TradeStatus.ACTIVE
+        self.__status = TradeStatus.PENDING
         self.__potential_volume = potential_volume
+
+        self.__opened = False
 
         _validate_trade_side(side=side)
         self.__side = side
 
         self._bind_levels()
 
-    def _bind_levels(self):
+    def _bind_levels(self) -> None:
         for level in (*self.__entries, *self.__breakouts):
             level._bind_trade(self)
 
@@ -67,13 +72,17 @@ class Trade:
         return self.__potential_volume
 
     def _update_status(self) -> None:
-        ...
+        if not self.__opened and self.realized_volume:
+            self.__opened = True
+            self.__status = TradeStatus.ACTIVE
+        elif is_zero(self.realized_volume):
+            self.__status = TradeStatus.CLOSED
 
     def update(self, candle: Candle) -> None:
         self._update_levels(candle=candle)
         self._update_status()
 
 
-def _validate_trade_side(side):
+def _validate_trade_side(side) -> None:
     if not isinstance(side, TradeSide):
         raise UnexpectedTradeSideError(side=side)
