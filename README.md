@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/quick-trade/xoney/blob/dev/img/logo_with_slogan.PNG?raw=true" width="340" height="340">
+  <img src="https://github.com/quick-trade/xoney/blob/dev/img/logo.png?raw=true" width="340" height="340">
 
 # Xoney
 </div>
