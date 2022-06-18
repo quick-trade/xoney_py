@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from __future__ import annotations
+
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
@@ -38,9 +40,9 @@ class Trade:
 
     def __init__(self,
                  side: TradeSide,
-                 potential_volume: float,
                  entries: LevelStack,
-                 breakouts: LevelStack):
+                 breakouts: LevelStack,
+                 potential_volume: float | None = None):
         self.__entries = entries
         self.__breakouts = breakouts
         self.__status = TradeStatus.PENDING
@@ -52,6 +54,10 @@ class Trade:
         self.__side = side
 
         self._bind_levels()
+
+    def set_potential_volume(self, potential_volume: float) -> None:
+        if self.__potential_volume is not None:
+            self.__potential_volume = potential_volume
 
     def _bind_levels(self) -> None:
         for level in (*self.__entries, *self.__breakouts):
