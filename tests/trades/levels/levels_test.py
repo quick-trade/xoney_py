@@ -30,8 +30,8 @@ def level():
 def take_profit():
     tp = TakeProfit(price=30_000.0,
                    trade_part=0.1)
-    _trade = Trade(TradeSide.LONG,
-                   1,
+    _trade = Trade(side=TradeSide.LONG,
+                   potential_volume=1,
                    entries=LevelStack(),
                    breakouts=LevelStack([tp]))
     return tp

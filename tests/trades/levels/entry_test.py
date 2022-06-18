@@ -37,8 +37,8 @@ def default_quantity():
 def averaging_entry(default_trigger_price, default_quantity):
     entry = AveragingEntry(default_trigger_price,
                            default_quantity)
-    _trade = Trade(TradeSide.LONG,
-                   1,
+    _trade = Trade(side=TradeSide.LONG,
+                   potential_volume=1,
                    entries=LevelStack([entry]),
                    breakouts=LevelStack())
     return entry
@@ -72,8 +72,8 @@ class TestSimpleEntry:
                                default_quantity):
         entry = SimpleEntry(price=default_trigger_price,
                             trade_part=default_quantity)
-        _trade = Trade(TradeSide.LONG,
-                       1,
+        _trade = Trade(side=TradeSide.LONG,
+                       potential_volume=1,
                        entries=LevelStack([entry]),
                        breakouts=LevelStack())
         assert entry.check_breaking(random_candle)
