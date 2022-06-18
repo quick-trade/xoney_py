@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from setuptools import find_packages
 from distutils.core import setup
 
@@ -50,11 +49,6 @@ setup(
     license='Apache 2.0',
     classifiers=[
         "Intended Audience :: Financial and Insurance Industry",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3",
     ],
     python_requires='>=3.6',

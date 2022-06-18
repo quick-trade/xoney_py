@@ -16,8 +16,24 @@
 from __future__ import annotations
 
 from .template import TimeFrame
-from .time_converter import ToSeconds
 
+
+class ToSeconds:
+    @classmethod
+    def from_minutes(cls, minutes: int | float) -> int | float:
+        return minutes * 60
+
+    @classmethod
+    def from_hours(cls, hours: int | float) -> int | float:
+        return cls.from_minutes(minutes=hours * 60)
+
+    @classmethod
+    def from_days(cls, days: int | float) -> int | float:
+        return cls.from_hours(hours=days * 24)
+
+    @classmethod
+    def from_weeks(cls, weeks: int | float) -> int | float:
+        return cls.from_days(days=weeks * 7)
 
 class TimeFrameFactory:
     @classmethod
