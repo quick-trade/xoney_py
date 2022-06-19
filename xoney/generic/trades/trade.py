@@ -88,6 +88,21 @@ class Trade:
         self._update_levels(candle=candle)
         self._update_status()
 
+    def _cleanup(self):
+        self.__entries = self.__entries.__class__()
+        self.__breakouts = self.__breakouts.__class__()
+        # To zero the realized volume, the level
+        # stacks are set empty, but of the same type.
+
+        self._update_status()
+        # This method closes all opened positions
+        # and updates the status of the trade.
+
+    def cleanup(self) -> None:
+        self._cleanup()
+        # For use in real-time trading, the method
+        # has been moved to another method.
+
 
 def _validate_trade_side(side) -> None:
     if not isinstance(side, TradeSide):

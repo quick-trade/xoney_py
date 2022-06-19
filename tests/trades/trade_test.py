@@ -123,7 +123,8 @@ class TestLogic:
 
         trade.update(candle_below_stop_loss)
 
-        assert trade.status == TradeStatus.ACTIVE  # stop-loss have not 100% trade_part
+        assert trade.status == TradeStatus.ACTIVE
+        # stop-loss have not 100% trade_part
         assert trade.realized_volume == realized_after_breakout
 
     def test_entry_take_profit(self,
@@ -175,6 +176,15 @@ class TestLogic:
 
         trade.update(candle_above_take_profit_2)
 
+        assert trade.realized_volume == 0
+        assert trade.status == TradeStatus.CLOSED
+
+    def test_entry_cleanup(self,
+                           trade,
+                           entry,
+                           candle_below_entry):
+        trade.update(candle_below_entry)
+        trade.cleanup()
         assert trade.realized_volume == 0
         assert trade.status == TradeStatus.CLOSED
 
