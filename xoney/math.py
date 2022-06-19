@@ -14,5 +14,5 @@
 # =============================================================================
 from xoney.config import ASSUME_ZERO
 
-def is_zero(number):
+def is_zero(number) -> bool:
     return abs(number) <= ASSUME_ZERO
