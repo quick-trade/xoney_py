@@ -4,6 +4,7 @@
 # Xoney
 </div>
 
+[![CircleCI](https://circleci.com/gh/quick-trade/xoney.svg?style=svg)](https://circleci.com/gh/quick-trade/xoney)
 [![codecov](https://codecov.io/gh/quick-trade/xoney/branch/dev/graph/badge.svg)](https://codecov.io/gh/quick-trade/xoney)
 
 The powerful python trading framework
