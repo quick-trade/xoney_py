@@ -188,6 +188,24 @@ class TestLogic:
         assert trade.realized_volume == 0
         assert trade.status == TradeStatus.CLOSED
 
+    def test_set_potential_volume(self):
+        trade = Trade(TradeSide.LONG,
+                      LevelStack(),
+                      LevelStack(),
+                      potential_volume=None)
+        trade.set_potential_volume(5.5)
+
+        assert trade.potential_volume == 5.5
+
+    def test_set_potential_volume_doesnt_edit(self):
+        trade = Trade(TradeSide.LONG,
+                      LevelStack(),
+                      LevelStack(),
+                      potential_volume=1)
+        trade.set_potential_volume(5.5)
+
+        assert trade.potential_volume == 1
+
 
 @pytest.mark.parametrize("side",
                          ["long",  # string

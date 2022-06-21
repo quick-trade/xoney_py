@@ -56,7 +56,7 @@ class Trade:
         self._bind_levels()
 
     def set_potential_volume(self, potential_volume: float) -> None:
-        if self.__potential_volume is not None:
+        if self.__potential_volume is None:
             self.__potential_volume = potential_volume
 
     def _bind_levels(self) -> None:
