@@ -112,3 +112,9 @@ class LevelHeap:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({str(self.__levels)})"
+
+    def __eq__(self, other):
+        if not isinstance(other, LevelHeap):
+            raise TypeError("To compare object with <LevelHeap>, "
+                            "this object must be of type <LevelHeap>")
+        return self.__levels == other.__levels
