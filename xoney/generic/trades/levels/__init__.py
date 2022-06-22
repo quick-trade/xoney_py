@@ -13,5 +13,6 @@
 # limitations under the License.
 # =============================================================================
 
-from .basics import Level, LevelHeap
+from .level import Level
+from .heap import LevelHeap
 from .defaults import *

@@ -15,7 +15,7 @@
 from abc import ABC
 
 from xoney.generic.candlestick import Candle
-from xoney.generic.trades.levels.basics import Level
+from xoney.generic.trades.levels import Level
 from xoney.generic.trades.levels.utils import CheckLevelBreakout
 
 
