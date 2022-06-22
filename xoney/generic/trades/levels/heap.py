@@ -15,36 +15,13 @@
 from __future__ import annotations
 
 import copy
-from typing import Iterable
 
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades.levels import Level
+from xoney.generic.heap import Heap
 
 
-class LevelHeap:
-    __levels: list[Level]
-
-    def __init__(self, levels: Iterable[Level] | None = None):
-        if levels is None:
-            levels = []
-        self.__levels = list(levels)
-
-    def __iter__(self):
-        level: Level
-        for level in self.__levels:
-            yield level
-
-    def add(self, level: Level) -> None:
-        self.__levels.append(level)
-
-    def remove(self, level: Level) -> None:
-        member: Level
-
-        for member in self.__levels:
-            if member == level:
-                self.__levels.remove(member)
-                break
-
+class LevelHeap(Heap):
     def update(self, candle: Candle) -> None:
         """
         Update the state of all levels in the heap.
@@ -53,7 +30,7 @@ class LevelHeap:
         """
 
         level: Level
-        for level in self.__levels:
+        for level in self._members:
             level.update(candle=candle)
 
     @property
@@ -65,7 +42,7 @@ class LevelHeap:
         crossed: LevelHeap = LevelHeap()
 
         level: Level
-        for level in self.__levels:
+        for level in self._members:
             if level.crossed:
                 crossed.add(level)
 
@@ -80,7 +57,7 @@ class LevelHeap:
         pending: LevelHeap = LevelHeap()
 
         level: Level
-        for level in self.__levels:
+        for level in self._members:
             if not level.crossed:
                 pending.add(level)
 
@@ -90,7 +67,7 @@ class LevelHeap:
         """
         :return: Copies of all levels in the heap.
         """
-        return copy.deepcopy(self.__levels)
+        return copy.deepcopy(self._members)
 
     @property
     def quote_volume(self) -> float:
@@ -98,23 +75,5 @@ class LevelHeap:
 
         return sum(
             level.quote_volume
-            for level in self.__levels
+            for level in self._members
         )
-
-    def __len__(self) -> int:
-        return len(self.__levels)
-
-    def __contains__(self, item) -> bool:
-        for level in self.__levels:
-            if level == item:
-                return True
-        return False
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({str(self.__levels)})"
-
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, LevelHeap):
-            raise TypeError("To compare object with <LevelHeap>, "
-                            "this object must be of type <LevelHeap>")
-        return self.__levels == other.__levels
