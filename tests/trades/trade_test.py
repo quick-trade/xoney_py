@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+import copy
 
 import pytest
 
@@ -205,6 +206,17 @@ class TestLogic:
         trade.set_potential_volume(5.5)
 
         assert trade.potential_volume == 1
+
+
+class TestOperations:
+    def test_eq_true(self, trade):
+        trade_copy = copy.deepcopy(trade)
+        assert trade == trade_copy
+
+    def test_eq_false(self, trade):
+        trade_copy = copy.deepcopy(trade)
+        trade_copy.update(Candle(1, 1, 1, 1))  # Different status.
+        assert trade != trade_copy
 
 
 @pytest.mark.parametrize("side",

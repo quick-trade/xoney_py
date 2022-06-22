@@ -55,6 +55,20 @@ class Trade:
 
         self._bind_levels()
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Trade):
+            raise TypeError("To compare object with <Trade>, "
+                            "this object must be of type <Trade>")
+        same_side: bool = self.__side == other.__side
+        same_status: bool = self.__status == other.__status
+        same_volume: bool = self.__potential_volume == other.__potential_volume
+        same_breakouts: bool = self.__breakouts == other.__breakouts
+        same_entries: bool = self.__entries == other.__entries
+
+        same_levels: bool = same_entries and same_breakouts
+
+        return same_volume and same_levels and same_side and same_status
+
     def set_potential_volume(self, potential_volume: float) -> None:
         if self.__potential_volume is None:
             self.__potential_volume = potential_volume
@@ -88,7 +102,7 @@ class Trade:
         self._update_levels(candle=candle)
         self._update_status()
 
-    def _cleanup(self):
+    def _cleanup(self) -> None:
         self.__entries = self.__entries.__class__()
         self.__breakouts = self.__breakouts.__class__()
         # To zero the realized volume, the level
