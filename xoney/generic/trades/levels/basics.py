@@ -104,7 +104,7 @@ class Level(ABC):
                f"{self.__trigger_price}. Part of trade: {self.trade_part}>"
 
 
-class LevelStack:
+class LevelHeap:
     __levels: list[Level]
 
     def __init__(self, levels: Iterable[Level] | None = None):
@@ -130,7 +130,7 @@ class LevelStack:
 
     def update(self, candle: Candle) -> None:
         """
-        Update the state of all levels in the Stack.
+        Update the state of all levels in the heap.
         :param candle: Candle by which the crossing of each
         of the levels will be checked.
         """
@@ -140,12 +140,12 @@ class LevelStack:
             level.update(candle=candle)
 
     @property
-    def crossed(self) -> LevelStack:
+    def crossed(self) -> LevelHeap:
         """
         :return: Already crossed levels.
         """
 
-        crossed: LevelStack = LevelStack()
+        crossed: LevelHeap = LevelHeap()
 
         level: Level
         for level in self.__levels:
@@ -155,12 +155,12 @@ class LevelStack:
         return crossed
 
     @property
-    def pending(self) -> LevelStack:
+    def pending(self) -> LevelHeap:
         """
         :return: Levels waiting to be crossed.
         """
 
-        pending: LevelStack = LevelStack()
+        pending: LevelHeap = LevelHeap()
 
         level: Level
         for level in self.__levels:
@@ -171,7 +171,7 @@ class LevelStack:
 
     def get_levels(self) -> list[Level]:
         """
-        :return: Copies of all levels in the stack.
+        :return: Copies of all levels in the heap.
         """
         return copy.deepcopy(self.__levels)
 

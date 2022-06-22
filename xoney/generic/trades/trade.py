@@ -17,14 +17,14 @@ from __future__ import annotations
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
-from xoney.generic.trades.levels import LevelStack
+from xoney.generic.trades.levels import LevelHeap
 
 from xoney.math import is_zero
 
 
 class Trade:
-    __entries: LevelStack
-    __breakouts: LevelStack
+    __entries: LevelHeap
+    __breakouts: LevelHeap
     __side: TradeSide
     __status: TradeStatus
     __potential_volume: float
@@ -40,8 +40,8 @@ class Trade:
 
     def __init__(self,
                  side: TradeSide,
-                 entries: LevelStack,
-                 breakouts: LevelStack,
+                 entries: LevelHeap,
+                 breakouts: LevelHeap,
                  potential_volume: float | None = None):
         self.__entries = entries
         self.__breakouts = breakouts
@@ -92,7 +92,7 @@ class Trade:
         self.__entries = self.__entries.__class__()
         self.__breakouts = self.__breakouts.__class__()
         # To zero the realized volume, the level
-        # stacks are set empty, but of the same type.
+        # heaps are set empty, but of the same type.
 
         self._update_status()
         # This method closes all opened positions

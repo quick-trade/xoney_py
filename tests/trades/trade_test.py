@@ -21,7 +21,7 @@ from xoney.generic.trades import Trade
 from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import (
-    LevelStack,
+    LevelHeap,
     SimpleEntry,
     AveragingEntry
 )
@@ -60,8 +60,8 @@ def take_profit2():
 @pytest.fixture
 def trade(stop_loss, entry, averaging_entry, take_profit, take_profit2):
     return Trade(side=TradeSide.LONG,
-                 entries=LevelStack([averaging_entry, entry]),
-                 breakouts=LevelStack([stop_loss, take_profit, take_profit2]),
+                 entries=LevelHeap([averaging_entry, entry]),
+                 breakouts=LevelHeap([stop_loss, take_profit, take_profit2]),
                  potential_volume=50.0)
 
 
@@ -190,8 +190,8 @@ class TestLogic:
 
     def test_set_potential_volume(self):
         trade = Trade(TradeSide.LONG,
-                      LevelStack(),
-                      LevelStack(),
+                      LevelHeap(),
+                      LevelHeap(),
                       potential_volume=None)
         trade.set_potential_volume(5.5)
 
@@ -199,8 +199,8 @@ class TestLogic:
 
     def test_set_potential_volume_doesnt_edit(self):
         trade = Trade(TradeSide.LONG,
-                      LevelStack(),
-                      LevelStack(),
+                      LevelHeap(),
+                      LevelHeap(),
                       potential_volume=1)
         trade.set_potential_volume(5.5)
 
@@ -215,5 +215,5 @@ def test_unexpected_trade_side(side):
     with pytest.raises(UnexpectedTradeSideError):
         trade = Trade(side=side,
                       potential_volume=10,
-                      entries=LevelStack(),
-                      breakouts=LevelStack())
+                      entries=LevelHeap(),
+                      breakouts=LevelHeap())

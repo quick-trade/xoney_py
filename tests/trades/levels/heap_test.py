@@ -14,7 +14,7 @@
 # =============================================================================
 import pytest
 
-from xoney.generic.trades.levels import LevelStack, StopLoss, TakeProfit
+from xoney.generic.trades.levels import LevelHeap, StopLoss, TakeProfit
 from xoney.generic.enums import TradeSide
 from xoney.generic.candlestick import Candle
 
@@ -22,8 +22,8 @@ from tests import utils
 
 
 @pytest.fixture
-def empty_stack():
-    return LevelStack()
+def empty_heap():
+    return LevelHeap()
 
 @pytest.fixture
 def stop_loss():
@@ -84,15 +84,15 @@ candle_below_stop_loss_short = Candle(41_000, 42_500, 40_500, 41_500) - 3_000
 
 @pytest.fixture
 def breakouts(stop_loss, take_profit):
-    return LevelStack((stop_loss, take_profit))
+    return LevelHeap((stop_loss, take_profit))
 
 @pytest.fixture
 def breakouts_short(stop_loss_short, take_profit_short):
-    return LevelStack((stop_loss_short, take_profit_short))
+    return LevelHeap((stop_loss_short, take_profit_short))
 
 class TestMagic:
-    def test_empty(self, empty_stack):
-        assert not len(empty_stack)
+    def test_empty(self, empty_heap):
+        assert not len(empty_heap)
 
     def test_remove(self, breakouts, stop_loss, take_profit):
         breakouts.remove(stop_loss)
@@ -104,7 +104,7 @@ class TestMagic:
             assert level in breakouts
 
     def test_str(self, breakouts):
-        assert str(breakouts) == "LevelStack([<long StopLoss on 30000.0. " \
+        assert str(breakouts) == "LevelHeap([<long StopLoss on 30000.0. " \
                                  "Part of trade: 0.1>, <long TakeProfit on " \
                                  "40000.0. Part of trade: 0.1>])"
 
@@ -113,9 +113,9 @@ class TestMagic:
 
 
 class TestLevelOperations:
-    def test_add(self, empty_stack, stop_loss, breakouts):
-        empty_stack.add(stop_loss)
-        assert stop_loss in empty_stack
+    def test_add(self, empty_heap, stop_loss, breakouts):
+        empty_heap.add(stop_loss)
+        assert stop_loss in empty_heap
         assert stop_loss not in breakouts.crossed
         assert stop_loss in breakouts.pending
 

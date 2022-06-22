@@ -17,7 +17,7 @@ import pytest
 from xoney.generic.trades.levels import TakeProfit, Level
 from xoney.generic.enums import TradeSide
 from xoney.generic.candlestick import Candle
-from xoney.generic.trades.levels import LevelStack
+from xoney.generic.trades.levels import LevelHeap
 from xoney.generic.trades import Trade
 
 
@@ -32,8 +32,8 @@ def take_profit():
                    trade_part=0.1)
     _trade = Trade(side=TradeSide.LONG,
                    potential_volume=1,
-                   entries=LevelStack(),
-                   breakouts=LevelStack([tp]))
+                   entries=LevelHeap(),
+                   breakouts=LevelHeap([tp]))
     return tp
 
 @pytest.fixture

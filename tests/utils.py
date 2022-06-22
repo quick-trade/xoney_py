@@ -18,7 +18,7 @@ import pandas as pd
 import random
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades import Trade
-from xoney.generic.trades.levels import (LevelStack,
+from xoney.generic.trades.levels import (LevelHeap,
                                          BaseEntry,
                                          BaseBreakout,
                                          Level)
@@ -56,5 +56,5 @@ def connect_trade(level: Level, side: TradeSide, volume: float) -> None:
 
     _trade = Trade(side=side,
                    potential_volume=volume,
-                   entries=LevelStack([level] if is_entry else None),
-                   breakouts=LevelStack([level] if is_breakout else None))
+                   entries=LevelHeap([level] if is_entry else None),
+                   breakouts=LevelHeap([level] if is_breakout else None))

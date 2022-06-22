@@ -15,7 +15,7 @@
 import pytest
 
 from xoney.generic.trades import Trade
-from xoney.generic.trades.levels import LevelStack
+from xoney.generic.trades.levels import LevelHeap
 from xoney.generic.enums import TradeSide
 from xoney.generic.trades.levels.defaults.entries import *
 from tests import utils
@@ -39,8 +39,8 @@ def averaging_entry(default_trigger_price, default_quantity):
                            default_quantity)
     _trade = Trade(side=TradeSide.LONG,
                    potential_volume=1,
-                   entries=LevelStack([entry]),
-                   breakouts=LevelStack())
+                   entries=LevelHeap([entry]),
+                   breakouts=LevelHeap())
     return entry
 
 @pytest.fixture
@@ -74,8 +74,8 @@ class TestSimpleEntry:
                             trade_part=default_quantity)
         _trade = Trade(side=TradeSide.LONG,
                        potential_volume=1,
-                       entries=LevelStack([entry]),
-                       breakouts=LevelStack())
+                       entries=LevelHeap([entry]),
+                       breakouts=LevelHeap())
         assert entry.check_breaking(random_candle)
 
 class TestAveragingEntry:
