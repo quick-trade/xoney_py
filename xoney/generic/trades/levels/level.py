@@ -87,7 +87,7 @@ class Level(ABC):
     def quote_volume(self) -> float:
         return self.__quote_volume
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, Level):
             raise TypeError("To compare object with <Level>, "
                             "this object must be of type <Level>")
@@ -97,6 +97,6 @@ class Level(ABC):
         same_status: bool = other.crossed == self.crossed
         return same_status and same_side and same_quantity and same_price
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__side.value} {self.__class__.__name__} on " \
                f"{self.__trigger_price}. Part of trade: {self.trade_part}>"
