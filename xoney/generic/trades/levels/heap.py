@@ -101,19 +101,19 @@ class LevelHeap:
             for level in self.__levels
         )
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.__levels)
 
-    def __contains__(self, item):
+    def __contains__(self, item) -> bool:
         for level in self.__levels:
             if level == item:
                 return True
         return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.__class__.__name__}({str(self.__levels)})"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if not isinstance(other, LevelHeap):
             raise TypeError("To compare object with <LevelHeap>, "
                             "this object must be of type <LevelHeap>")
