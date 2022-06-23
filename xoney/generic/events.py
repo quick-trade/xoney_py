@@ -16,23 +16,42 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from xoney.generic.trades import Trade
+from xoney.generic.trades import Trade, TradeHeap
+from xoney.generic.volume_distribution import (VolumeDistributor,
+                                               DefaultDistributor)
+from xoney.generic.workers import Worker
 
 
 class Event(ABC):
+    _worker: Worker
+
     @abstractmethod
-    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
+    def handle_trades(self, trades: TradeHeap) -> None:
         ...
+
+    def set_worker(self, worker: Worker) -> None:
+        self._worker = worker
 
 
 class OpenTrade(Event):
     _trade: Trade
+    _volume_distributor: VolumeDistributor
 
-    def __init__(self, trade: Trade):
+    def __init__(self,
+                 trade: Trade,
+                 volume_distributor: VolumeDistributor | None = None):
         self._trade = trade
+        if volume_distributor is None:
+            volume_distributor = DefaultDistributor()
+            volume_distributor.set_worker(self._worker)
+        self._volume_distributor = volume_distributor
+        self._volume_distributor.set_worker(self._worker)
 
-    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
-        return [*trades, self._trade]
+    def handle_trades(self, trades: TradeHeap) -> None:
+        trade_volume: float = self._volume_distributor.trade_volume()
+        self._trade.set_potential_volume(trade_volume)
+
+        trades.add(self._trade)
 
 
 class CloseTrade(Event):
@@ -41,18 +60,17 @@ class CloseTrade(Event):
     def __init__(self, trade: Trade):
         self._trade = trade
 
-    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
-        trades_copy: list[Trade] = trades
-        trades_copy.remove(self._trade)
-
-        return trades_copy
+    def handle_trades(self, trades: TradeHeap) -> None:
+        trades.remove(self._trade)
+        self._trade.cleanup()
 
 
 class CloseAllTrades(Event):
-    _trade: Trade
-
     def __init__(self):
         pass
 
-    def handle_trades(self, trades: list[Trade]) -> list[Trade]:
-        return []
+    def handle_trades(self, trades: TradeHeap) -> None:
+        trade: Trade
+
+        for trade in trades:
+            trade.cleanup()

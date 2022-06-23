@@ -12,6 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from abc import ABC, abstractmethod
+from xoney.generic.workers import Worker
 
-from .trade import Trade
-from .heap import TradeHeap
+
+class VolumeDistributor(ABC):
+    _worker: Worker
+
+    def set_worker(self, worker: Worker) -> None:
+        self._worker = worker
+
+    @abstractmethod
+    def trade_volume(self) -> float:
+        ...
+
+
+class DefaultDistributor(VolumeDistributor):
+    def trade_volume(self) -> float:
+        free_balance: float = self._worker.free_balance
+        opened_trades: float = self._worker.opened_trades
+        max_trades: float = self._worker.max_trades
+
+        pending_trades: float = max_trades - opened_trades
+
+        return free_balance / pending_trades
