@@ -33,7 +33,7 @@ class TradeHeap(Heap):
     def filled_volume(self) -> float:
         trade: Trade
 
-        return sum(trade.realized_volume
+        return sum(trade.filled_volume
                    for trade in self._members)
 
     @property

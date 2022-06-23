@@ -82,7 +82,7 @@ class Trade:
         self.__breakouts.update(candle=candle)
 
     @property
-    def realized_volume(self) -> float:
+    def filled_volume(self) -> float:
         entries_vol: float = self.__entries.crossed.quote_volume
         breakouts_vol: float = self.__breakouts.crossed.quote_volume
         return entries_vol - breakouts_vol
@@ -92,10 +92,10 @@ class Trade:
         return self.__potential_volume
 
     def _update_status(self) -> None:
-        if not self.__opened and self.realized_volume:
+        if not self.__opened and self.filled_volume:
             self.__opened = True
             self.__status = TradeStatus.ACTIVE
-        elif is_zero(self.realized_volume):
+        elif is_zero(self.filled_volume):
             self.__status = TradeStatus.CLOSED
 
     def update(self, candle: Candle) -> None:
@@ -115,7 +115,7 @@ class Trade:
 
         self.__entries = self.__entries.__class__()
         self.__breakouts = self.__breakouts.__class__()
-        # To zero the realized volume, the level
+        # To zero the filled volume, the level
         # heaps are set empty, but of the same type.
 
         self._update_status()

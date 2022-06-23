@@ -90,15 +90,15 @@ def candle_above_take_profit_2(candle_above_take_profit):
 
 class TestLogic:
     def test_entry_only(self, trade, candle_below_entry, entry):
-        expected_realized_after = trade.potential_volume * entry.trade_part
+        expected_filled_after = trade.potential_volume * entry.trade_part
 
-        assert trade.realized_volume == 0
+        assert trade.filled_volume == 0
         assert trade.status == TradeStatus.PENDING
 
         trade.update(candle_below_entry)
 
         assert trade.status == TradeStatus.ACTIVE
-        assert (trade.realized_volume == expected_realized_after)
+        assert (trade.filled_volume == expected_filled_after)
 
     def test_averaging_entry(self,
                              trade,
@@ -113,12 +113,12 @@ class TestLogic:
         trade.update(candle_below_averaging_entry)
 
         assert trade.status == TradeStatus.ACTIVE
-        assert (trade.realized_volume == after_avg_entry)
+        assert (trade.filled_volume == after_avg_entry)
 
     def test_stop_loss(self, trade, candle_below_stop_loss):
-        realized_before_breakout = 50
-        realized_after_breakout = realized_before_breakout * (1 - 0.1)
-        # realized_volume -= realized_volume * stop_loss.trade_part
+        filled_before_breakout = 50
+        filled_after_breakout = filled_before_breakout * (1 - 0.1)
+        # filled_volume -= filled_volume * stop_loss.trade_part
 
         assert trade.status == TradeStatus.PENDING
 
@@ -126,20 +126,20 @@ class TestLogic:
 
         assert trade.status == TradeStatus.ACTIVE
         # stop-loss have not 100% trade_part
-        assert trade.realized_volume == realized_after_breakout
+        assert trade.filled_volume == filled_after_breakout
 
     def test_entry_take_profit(self,
                               trade,
                               candle_below_entry,
                               candle_above_take_profit):
-        realized_after_entry = 50 * 0.6
-        realized_after_breakout = realized_after_entry * (1 - 0.7)
-        # realized_volume -= realized_volume * take_profit.trade_part
+        filled_after_entry = 50 * 0.6
+        filled_after_breakout = filled_after_entry * (1 - 0.7)
+        # filled_volume -= filled_volume * take_profit.trade_part
 
         trade.update(candle_below_entry)
         trade.update(candle_above_take_profit)
 
-        assert is_zero(trade.realized_volume - realized_after_breakout)
+        assert is_zero(trade.filled_volume - filled_after_breakout)
 
     def test_entry_take_profit_averaging_entry_stop_loss(
             self,
@@ -149,18 +149,18 @@ class TestLogic:
             candle_below_entry,
             candle_below_averaging_entry
     ):
-        realized_after_entry = 50 * 0.6
-        realized_after_tp = realized_after_entry * (1 - 0.7)
-        realized_after_avg = realized_after_tp + 50 * 0.4
-        realized_after_sl = realized_after_avg * (1 - 0.1)
+        filled_after_entry = 50 * 0.6
+        filled_after_tp = filled_after_entry * (1 - 0.7)
+        filled_after_avg = filled_after_tp + 50 * 0.4
+        filled_after_sl = filled_after_avg * (1 - 0.1)
 
         trade.update(candle_below_entry)
         trade.update(candle_above_take_profit)
         trade.update(candle_below_averaging_entry)
-        assert trade.realized_volume == realized_after_avg
+        assert trade.filled_volume == filled_after_avg
 
         trade.update(candle_below_stop_loss)
-        assert trade.realized_volume == realized_after_sl
+        assert trade.filled_volume == filled_after_sl
 
     def test_entry_tp2(self,
                        trade,
@@ -172,12 +172,12 @@ class TestLogic:
         assert trade.status == TradeStatus.ACTIVE
         trade.update(candle_above_take_profit_2)
 
-        assert trade.realized_volume == 0
+        assert trade.filled_volume == 0
         assert trade.status == TradeStatus.CLOSED
 
         trade.update(candle_above_take_profit_2)
 
-        assert trade.realized_volume == 0
+        assert trade.filled_volume == 0
         assert trade.status == TradeStatus.CLOSED
 
     def test_entry_cleanup(self,
@@ -186,7 +186,7 @@ class TestLogic:
                            candle_below_entry):
         trade.update(candle_below_entry)
         trade.cleanup()
-        assert trade.realized_volume == 0
+        assert trade.filled_volume == 0
         assert trade.status == TradeStatus.CLOSED
 
     def test_set_potential_volume(self):
