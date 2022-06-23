@@ -232,7 +232,7 @@ class TestTraceBacks:
 
 
 def test_immutable_levels(breakouts, stop_loss):
-    breakouts.get_levels().remove(stop_loss)
+    breakouts.get_members().remove(stop_loss)
     assert stop_loss in breakouts
 
 

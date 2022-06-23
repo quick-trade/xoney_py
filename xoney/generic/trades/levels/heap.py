@@ -14,8 +14,6 @@
 # =============================================================================
 from __future__ import annotations
 
-import copy
-
 from xoney.generic.candlestick import Candle
 from xoney.generic.trades.levels import Level
 from xoney.generic.heap import Heap
@@ -62,12 +60,6 @@ class LevelHeap(Heap):
                 pending.add(level)
 
         return pending
-
-    def get_levels(self) -> list[Level]:
-        """
-        :return: Copies of all levels in the heap.
-        """
-        return copy.deepcopy(self._members)
 
     @property
     def quote_volume(self) -> float:
