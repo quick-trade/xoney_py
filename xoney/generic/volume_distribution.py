@@ -12,8 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from __future__ import annotations
+
 from abc import ABC, abstractmethod
+
 from xoney.generic.workers import Worker
+from xoney.generic.trades import Trade
 
 
 class VolumeDistributor(ABC):
@@ -23,16 +27,18 @@ class VolumeDistributor(ABC):
         self._worker = worker
 
     @abstractmethod
-    def trade_volume(self) -> float:  # pragma: no cover
+    def set_trade_volume(self, trade: Trade) -> None:  # pragma: no cover
         ...
 
 
 class DefaultDistributor(VolumeDistributor):
-    def trade_volume(self) -> float:
+    def set_trade_volume(self, trade: Trade) -> None:
         free_balance: float = self._worker.free_balance
         opened_trades: float = self._worker.opened_trades
         max_trades: float = self._worker.max_trades
 
         pending_trades: float = max_trades - opened_trades
 
-        return free_balance / pending_trades
+        trade_volume: float = free_balance / pending_trades
+
+        trade.set_potential_volume(trade_volume)

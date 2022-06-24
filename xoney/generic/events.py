@@ -41,15 +41,16 @@ class OpenTrade(Event):
     def __init__(self,
                  trade: Trade,
                  volume_distributor: VolumeDistributor | None = None):
-        self._trade = trade
         if volume_distributor is None:
             volume_distributor = DefaultDistributor()
+
         self._volume_distributor = volume_distributor
+        self._trade = trade
+
         self._volume_distributor.set_worker(self._worker)
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        trade_volume: float = self._volume_distributor.trade_volume()
-        self._trade.set_potential_volume(trade_volume)
+        self._volume_distributor.set_trade_volume(self._trade)
 
         trades.add(self._trade)
 
