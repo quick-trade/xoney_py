@@ -23,7 +23,7 @@ class VolumeDistributor(ABC):
         self._worker = worker
 
     @abstractmethod
-    def trade_volume(self) -> float:
+    def trade_volume(self) -> float:  # pragma: no cover
         ...
 
 

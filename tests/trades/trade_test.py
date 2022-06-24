@@ -27,7 +27,7 @@ from xoney.generic.trades.levels import (
     AveragingEntry
 )
 
-from xoney.math import is_zero
+from xoney.math import is_equal
 
 
 @pytest.fixture
@@ -139,7 +139,7 @@ class TestLogic:
         trade.update(candle_below_entry)
         trade.update(candle_above_take_profit)
 
-        assert is_zero(trade.filled_volume - filled_after_breakout)
+        assert is_equal(trade.filled_volume, filled_after_breakout)
 
     def test_entry_take_profit_averaging_entry_stop_loss(
             self,

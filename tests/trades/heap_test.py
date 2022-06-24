@@ -12,30 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from abc import abstractproperty, ABC
+import pytest
 
 from xoney.generic.trades import TradeHeap
 
-
-class Worker(ABC):
-    _trades: TradeHeap
-
-    max_trades: int
-
-    @property
-    def opened_trades(self) -> int:
-        return len(self._trades)
-
-    @abstractproperty
-    def total_balance(self) -> float:  # pragma: no cover
-        ...
-
-    def used_balance(self) -> float:
-        return self._trades.potential_volume
-
-    @abstractproperty
-    def free_balance(self) -> float:  # pragma: no cover
-        ...
-
-    def filled_balance(self) -> float:
-        return self._trades.filled_volume
+@pytest.fixture
+def trade_heap():
+    return TradeHeap()

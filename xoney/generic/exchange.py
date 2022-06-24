@@ -29,11 +29,11 @@ class Exchange(ABC):
                   side: str,
                   type: str,
                   amount: float,
-                  price: float) -> Order:
+                  price: float) -> Order:  # pragma: no cover
         ...
 
     @abstractmethod
-    def cancel_order(self, order: Order) -> None:
+    def cancel_order(self, order: Order) -> None:  # pragma: no cover
         ...
 
     def edit_order(self,
@@ -48,17 +48,22 @@ class Exchange(ABC):
                               price=price)
 
     @abstractmethod
-    def fetch_balance(self, currency: str, marker: str) -> float:
+    def fetch_balance(self,
+                      currency: str,
+                      marker: str) -> float:  # pragma: no cover
         ...
 
     def fetch_free_balance(self, currency: str) -> float:
-        return self.fetch_balance(currency=currency, marker="free")
+        return self.fetch_balance(currency=currency,
+                                  marker="free")
 
     def fetch_used_balance(self, currency: str) -> float:
-        return self.fetch_balance(currency=currency, marker="used")
+        return self.fetch_balance(currency=currency,
+                                  marker="used")
 
     def fetch_total_balance(self, currency: str) -> float:
-        return self.fetch_balance(currency=currency, marker="total")
+        return self.fetch_balance(currency=currency,
+                                  marker="total")
 
 
 class Order:

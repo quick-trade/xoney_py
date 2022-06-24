@@ -26,7 +26,8 @@ class Event(ABC):
     _worker: Worker
 
     @abstractmethod
-    def handle_trades(self, trades: TradeHeap) -> None:
+    def handle_trades(self,
+                      trades: TradeHeap) -> None:  # pragma: no cover
         ...
 
     def set_worker(self, worker: Worker) -> None:

@@ -16,3 +16,6 @@ from xoney.config import ASSUME_ZERO
 
 def is_zero(number) -> bool:
     return abs(number) <= ASSUME_ZERO
+
+def is_equal(num_1, num_2) -> bool:
+    return is_zero(num_1 - num_2)
