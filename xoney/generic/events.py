@@ -44,7 +44,6 @@ class OpenTrade(Event):
         self._trade = trade
         if volume_distributor is None:
             volume_distributor = DefaultDistributor()
-            volume_distributor.set_worker(self._worker)
         self._volume_distributor = volume_distributor
         self._volume_distributor.set_worker(self._worker)
 
