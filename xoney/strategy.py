@@ -24,7 +24,6 @@ from xoney.generic.events import Event
 class Strategy(ABC):
     _settings: dict[str, object]
 
-    @abstractmethod
     def edit_settings(self, settings: dict[str, object]) -> None:
         self._settings = settings
 
