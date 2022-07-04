@@ -92,7 +92,7 @@ class Trade:
         return self.__potential_volume
 
     def _update_status(self) -> None:
-        if not self.__opened and self.filled_volume:
+        if not self.__opened and not is_zero(self.filled_volume):
             self.__opened = True
             self.__status = TradeStatus.ACTIVE
         elif is_zero(self.filled_volume):
