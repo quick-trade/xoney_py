@@ -42,3 +42,10 @@ class TradeHeap(Heap):
 
         return sum(trade.potential_volume
                    for trade in self._members)
+
+    @property
+    def profit(self) -> float:
+        trade: Trade
+
+        return sum(trade.profit
+                   for trade in self._members)

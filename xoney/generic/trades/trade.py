@@ -29,6 +29,7 @@ class Trade:
     __status: TradeStatus
     __potential_volume: float
     __opened: bool
+    __update_price: float
 
     @property
     def status(self) -> TradeStatus:
@@ -88,6 +89,18 @@ class Trade:
         return entries_vol - breakouts_vol
 
     @property
+    def filled_volume_base(self) -> float:
+        entries_vol: float = self.__entries.crossed.base_volume
+        breakouts_vol: float = self.__breakouts.crossed.base_volume
+        return entries_vol - breakouts_vol
+
+    @property
+    def profit(self) -> float:
+        active_volume: float = self.filled_volume_base / self.__update_price
+
+        return active_volume - self.filled_volume
+
+    @property
     def potential_volume(self) -> float:
         return self.__potential_volume
 
@@ -99,6 +112,7 @@ class Trade:
             self.__status = TradeStatus.CLOSED
 
     def update(self, candle: Candle) -> None:
+        self.__update_price = candle.close
         self._update_levels(candle=candle)
         self._update_status()
 

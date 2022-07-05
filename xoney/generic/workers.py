@@ -26,10 +26,13 @@ class Worker(ABC):
     def opened_trades(self) -> int:
         return len(self._trades)
 
-    @abstractproperty
-    def total_balance(self) -> float:  # pragma: no cover
-        ...
+    @property
+    def total_balance(self) -> float:
+        PnL: float = self._trades.profit
 
+        return self.free_balance + self.used_balance + PnL
+
+    @property
     def used_balance(self) -> float:
         return self._trades.potential_volume
 
@@ -37,5 +40,6 @@ class Worker(ABC):
     def free_balance(self) -> float:  # pragma: no cover
         ...
 
+    @property
     def filled_balance(self) -> float:
         return self._trades.filled_volume

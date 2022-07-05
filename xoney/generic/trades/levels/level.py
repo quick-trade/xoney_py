@@ -87,6 +87,10 @@ class Level(ABC):
     def quote_volume(self) -> float:
         return self.__quote_volume
 
+    @property
+    def base_volume(self) -> float:
+        return self.__quote_volume / self.__trigger_price
+
     def __eq__(self, other) -> bool:
         if not isinstance(other, Level):
             raise TypeError("To compare object with <Level>, "

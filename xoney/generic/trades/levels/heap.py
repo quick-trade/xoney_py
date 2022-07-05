@@ -69,3 +69,12 @@ class LevelHeap(Heap):
             level.quote_volume
             for level in self._members
         )
+
+    @property
+    def base_volume(self) -> float:
+        level: Level
+
+        return sum(
+            level.base_volume
+            for level in self._members
+        )
