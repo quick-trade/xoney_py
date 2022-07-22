@@ -14,19 +14,26 @@
 # =============================================================================
 from __future__ import annotations
 
+import typing
 from abc import ABC, abstractmethod
+from typing import Iterable
+
+from xoney.generic.candlestick import Chart
+from xoney.generic.events import Event
+
 
 
 class Strategy(ABC):
-    _settings = dict()
+    _settings: dict[str, typing.Any]
 
-    def edit_settings(self, settings):
-        self._settings = settings
-
-    @abstractmethod
-    def run(self, chart):
+    def edit_settings(self,
+                      settings: dict[str, object]) -> None:
         ...
 
     @abstractmethod
-    def fetch_events(self):
+    def run(self, chart: Chart) -> None:
+        ...
+
+    @abstractmethod
+    def fetch_events(self) -> Iterable[Event]:
         ...
