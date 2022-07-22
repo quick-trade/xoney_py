@@ -15,6 +15,7 @@
 
 from __future__ import annotations
 
+import operator
 import datetime as dt
 from typing import Collection
 
@@ -22,6 +23,7 @@ import numpy as np
 
 from xoney.generic.candlestick import _validation
 from xoney.generic.candlestick import utils
+from xoney.generic.candlestick import Candle
 
 
 class Chart:
@@ -109,4 +111,4 @@ class Chart:
                                    close=other._close,
                                    volume=other._volume,
                                    timestamp=other._timestamp)
-        return self.__operation(other=other, func=lambda x, y: x / y)
+        return self.__operation(other=other, func=operator.truediv)
