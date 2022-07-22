@@ -16,35 +16,41 @@ from __future__ import annotations
 
 from abc import abstractproperty, abstractmethod, ABC
 
+from xoney.generic.trades import TradeHeap
+from xoney.strategy import Strategy
+
+
 class Worker(ABC):
+    _trades: TradeHeap
+    _strategies: list[Strategy]
+    max_trades: int
+
     @abstractmethod
     def run(self,
             *args,
-            **kwargs) -> None:  # pragma: no cover
+            **kwargs) -> None:
         ...
 
     @abstractproperty
-    def equity(self):
+    def equity(self) -> list[float | int]:
         ...
 
     @property
-    def opened_trades(self):
-        return len(self._trades)
+    def opened_trades(self) -> int:
+        ...
 
     @property
-    def total_balance(self):
-        PnL: float = self._trades.profit
-
-        return self.free_balance + self.used_balance + PnL
+    def total_balance(self) -> float:
+        ...
 
     @property
-    def used_balance(self):
-        return self._trades.potential_volume
+    def used_balance(self) -> float:
+        ...
 
     @abstractproperty
-    def free_balance(self):  # pragma: no cover
+    def free_balance(self) -> float:
         ...
 
     @property
-    def filled_balance(self):
-        return self._trades.filled_volume
+    def filled_balance(self) -> float:
+        ...
