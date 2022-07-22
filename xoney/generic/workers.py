@@ -29,7 +29,7 @@ class Worker(ABC):
 
     @property
     def opened_trades(self):
-        return len(self._trades)
+        return len(self._trades.active)
 
     @property
     def total_balance(self):
