@@ -22,12 +22,25 @@ from xoney.generic.enums import TradeStatus
 
 
 class TradeHeap(Heap):
-    def update(self, candle: Candle) -> None:
+    def update_trades(self, candle: Candle) -> None:
         trade: Trade
         for trade in self._members:
             trade.update(candle=candle)
+
+    def cleanup_closed(self) -> None:
+        trade: Trade
+        for trade in self._members:
             if trade.status == TradeStatus.CLOSED:
                 self.remove(member=trade)
+
+    @property
+    def closed(self) -> TradeHeap:
+        trade: Trade
+        return self.__class__(
+            trade
+            for trade in self
+            if trade.status == TradeStatus.CLOSED
+        )
 
     @property
     def filled_volume(self) -> float:
