@@ -96,7 +96,7 @@ class Trade:
 
     @property
     def profit(self) -> float:
-        active_volume: float = self.filled_volume_base / self.__update_price
+        active_volume: float = self.filled_volume_base * self.__update_price
 
         return active_volume - self.filled_volume
 
