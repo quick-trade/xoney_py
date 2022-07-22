@@ -47,7 +47,9 @@ class OpenTrade(Event):
         self._volume_distributor = volume_distributor
         self._trade = trade
 
-        self._volume_distributor.set_worker(self._worker)
+    def set_worker(self, worker: Worker) -> None:
+        super().set_worker(worker=worker)
+        self._volume_distributor.set_worker(worker)
 
     def handle_trades(self, trades: TradeHeap) -> None:
         self._volume_distributor.set_trade_volume(self._trade)
