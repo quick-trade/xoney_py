@@ -33,14 +33,21 @@ class TradeHeap(Heap):
             if trade.status == TradeStatus.CLOSED:
                 self.remove(member=trade)
 
-    @property
-    def closed(self) -> TradeHeap:
+    def _filter_by_status(self, status: TradeStatus) -> TradeHeap:
         trade: Trade
         return self.__class__(
             trade
             for trade in self
-            if trade.status == TradeStatus.CLOSED
+            if trade.status == status
         )
+
+    @property
+    def closed(self) -> TradeHeap:
+        return self._filter_by_status(TradeStatus.CLOSED)
+
+    @property
+    def active(self) -> TradeHeap:
+        return self._filter_by_status(TradeStatus.ACTIVE)
 
     @property
     def filled_volume(self) -> float:
