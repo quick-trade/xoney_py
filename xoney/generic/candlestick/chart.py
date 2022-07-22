@@ -112,3 +112,29 @@ class Chart:
                                    volume=other._volume,
                                    timestamp=other._timestamp)
         return self.__operation(other=other, func=operator.truediv)
+
+    def __getitem__(self, item):
+        dict_init_params: dict = dict(
+            open=self._open[item],
+            high=self._high[item],
+            low=self._low[item],
+            close=self._close[item],
+            timestamp=self._timestamp[item],
+            volume=self._volume[item])
+        if isinstance(item, slice):
+            return Chart(**dict_init_params)
+        return Candle(**dict_init_params)
+
+    def __iter__(self):
+        for o, h, l, c, v, t in zip(self._open,
+                                    self._high,
+                                    self._low,
+                                    self._close,
+                                    self._volume,
+                                    self._timestamp):
+            yield Candle(open=o,
+                         high=h,
+                         low=l,
+                         close=c,
+                         timestamp=t,
+                         volume=v)
