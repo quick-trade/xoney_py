@@ -21,7 +21,6 @@ from xoney.generic.workers import Worker
 
 from xoney.generic.trades import Trade, TradeHeap
 from xoney.generic.enums import TradeSide, TradeStatus
-from xoney.generic.trades import Trade
 from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 
 from xoney.math import is_equal
