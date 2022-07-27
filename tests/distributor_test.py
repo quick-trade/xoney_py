@@ -82,7 +82,7 @@ class TestDefault:
         default_distributor._worker.set_opened_trades(2)
         default_distributor._worker.set_max_trades(3)
 
-        assert is_equal(default_distributor._trade_volume(), 10)
+        assert is_equal(default_distributor._get_trade_volume(), 10)
 
     def test_volume_10_2_4(self, default_distributor):
 
@@ -91,7 +91,7 @@ class TestDefault:
         default_distributor._worker.set_opened_trades(2)
         default_distributor._worker.set_max_trades(4)
 
-        assert is_equal(default_distributor._trade_volume(), 5)
+        assert is_equal(default_distributor._get_trade_volume(), 5)
 
     def test_volume_30_3_10(self, default_distributor):
 
@@ -100,4 +100,4 @@ class TestDefault:
         default_distributor._worker.set_opened_trades(3)
         default_distributor._worker.set_max_trades(10)
 
-        assert is_equal(default_distributor._trade_volume(), 10)
+        assert is_equal(default_distributor._get_trade_volume(), 10)
