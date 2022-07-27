@@ -36,6 +36,9 @@ class Heap:
         for member in self._members:
             yield member
 
+    def __getitem__(self, item):
+        return self._members[item]
+
     def add(self, new: T) -> None:
         self._members.append(new)
 
