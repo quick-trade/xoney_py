@@ -61,7 +61,7 @@ def take_profit2():
 @pytest.fixture
 def trade(stop_loss, entry, averaging_entry, take_profit, take_profit2):
     return Trade(side=TradeSide.LONG,
-                 entries=LevelHeap([averaging_entry, entry]),
+                 entries=LevelHeap([entry, averaging_entry]),
                  breakouts=LevelHeap([stop_loss, take_profit, take_profit2]),
                  potential_volume=50.0)
 
@@ -98,7 +98,7 @@ class TestLogic:
         trade.update(candle_below_entry)
 
         assert trade.status == TradeStatus.ACTIVE
-        assert (trade.filled_volume == expected_filled_after)
+        assert trade.filled_volume == expected_filled_after
 
     def test_averaging_entry(self,
                              trade,
@@ -113,7 +113,7 @@ class TestLogic:
         trade.update(candle_below_averaging_entry)
 
         assert trade.status == TradeStatus.ACTIVE
-        assert (trade.filled_volume == after_avg_entry)
+        assert trade.filled_volume == after_avg_entry
 
     def test_stop_loss(self, trade, candle_below_stop_loss):
         filled_before_breakout = 50
@@ -217,6 +217,15 @@ class TestOperations:
         trade_copy = copy.deepcopy(trade)
         trade_copy.update(Candle(1, 1, 1, 1))  # Different status.
         assert trade != trade_copy
+
+    @pytest.mark.parametrize("not_a_trade",
+                             [12345,
+                              "string",
+                              {"dict": 0},
+                              ["list"]])
+    def test_eq_typeerror(self, trade, not_a_trade):
+        with pytest.raises(TypeError):
+            trade == not_a_trade
 
 
 @pytest.mark.parametrize("side",
