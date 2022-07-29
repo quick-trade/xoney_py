@@ -24,9 +24,9 @@ class Strategy(ABC):
         self._settings = settings
 
     @abstractmethod
-    def run(self, chart):
+    def run(self, chart):  # pragma: no cover
         ...
 
     @abstractmethod
-    def fetch_events(self):
+    def fetch_events(self):  # pragma: no cover
         ...
