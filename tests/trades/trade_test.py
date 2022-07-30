@@ -208,6 +208,76 @@ class TestLogic:
         assert trade.potential_volume == 1
 
 
+class TestProfit:
+    def test_entry_only(self, trade, candle_below_entry, entry):
+        price = candle_below_entry.close
+
+        trade.update(candle_below_entry)
+
+        active_volume = entry.quote_volume * (price / entry.trigger_price)
+        expected_profit = active_volume - entry.quote_volume
+
+        assert is_equal(trade.profit, expected_profit)
+
+    def test_stop_loss(self, trade, candle_below_stop_loss, stop_loss):
+        price = candle_below_stop_loss.close
+
+        trade.update(candle_below_stop_loss)
+
+        expected_profit = (1-(1-32.5/35)*0.6) * (1-(1-30/32.5)*(0.6+0.4)) * (1-(1-price/30000)*0.1*(0.6+0.4)) * trade.potential_volume - trade.potential_volume
+
+        assert is_equal(trade.profit, expected_profit)
+
+    def test_entry_take_profit(self,
+                              trade,
+                              candle_below_entry,
+                              candle_above_take_profit):
+        price = candle_above_take_profit.close
+
+        trade.update(candle_below_entry)
+        trade.update(candle_above_take_profit)
+
+        expected_profit = (1 - (1 - 40 / 35) * 0.6) * (1-(1-price/40000)*(0.6-0.6*0.7)) * trade.potential_volume - trade.potential_volume
+
+        assert is_equal(trade.profit, expected_profit)
+
+    def test_entry_take_profit_averaging_entry_stop_loss(
+            self,
+            trade,
+            candle_below_stop_loss,
+            candle_above_take_profit,
+            candle_below_entry,
+            candle_below_averaging_entry
+    ):
+        price = candle_above_take_profit.close
+
+        trade.update(candle_below_entry)
+        trade.update(candle_above_take_profit)
+        trade.update(candle_below_averaging_entry)
+        trade.update(candle_below_stop_loss)
+
+        expected_profit = (1 - (1 - 40 / 35) * 0.6) * (1-(1-32.5/40)*(0.6-0.6*0.7)) * (1-(1-30/32.5)*(0.6*(1-0.7)+0.4)) * (1-(1-price/30000)*(0.6*(1-0.7)+0.4)*(1-0.1)) * trade.potential_volume - trade.potential_volume
+
+        assert is_equal(trade.profit, expected_profit)
+
+    def test_entry_take_profit_averaging_entry_tp2(
+            self,
+            trade,
+            candle_above_take_profit_2,
+            candle_above_take_profit,
+            candle_below_entry,
+            candle_below_averaging_entry
+    ):
+        trade.update(candle_below_entry)
+        trade.update(candle_above_take_profit)
+        trade.update(candle_below_averaging_entry)
+        trade.update(candle_above_take_profit_2)
+
+        expected_profit = (1 - (1 - 40 / 35) * 0.6) * (1-(1-32.5/40)*(0.6*(1-0.7))) * (1-(1-45/32.5)*(0.6*(1-0.7)+0.4)) * trade.potential_volume - trade.potential_volume
+
+        assert is_equal(trade.profit, expected_profit)
+
+
 class TestOperations:
     def test_eq_true(self, trade):
         trade_copy = copy.deepcopy(trade)
