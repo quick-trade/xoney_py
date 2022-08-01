@@ -15,8 +15,9 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 import copy
-import datetime
 from numbers import Number
 
 import numpy as np
@@ -31,7 +32,7 @@ class Candle:
     close: int | float
 
     volume: float | None
-    timestamp: datetime.datetime | None
+    timestamp: Any
 
     @property
     def _array(self):
@@ -45,7 +46,7 @@ class Candle:
                  high: int | float,
                  low: int | float,
                  close: int | float,
-                 timestamp: datetime.datetime | None = None,
+                 timestamp: Any = None,
                  volume: float | None = None):
         validate_ohlc(open=open,
                       high=high,

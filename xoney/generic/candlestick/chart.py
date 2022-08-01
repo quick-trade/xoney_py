@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import operator
 import datetime as dt
-from typing import Collection
+from typing import Collection, Any
 
 import numpy as np
 
@@ -32,7 +32,7 @@ class Chart:
     _low: np.ndarray
     _close: np.ndarray
     _volume: np.ndarray
-    _timestamp: list[None | dt.datetime]
+    _timestamp: list[Any]
 
     @property
     def open(self) -> np.ndarray:
@@ -51,7 +51,7 @@ class Chart:
         return self._close
 
     @property
-    def timestamp(self) -> list[dt.datetime | None]:
+    def timestamp(self) -> list[Any]:
         return self._timestamp
 
     @property
@@ -64,7 +64,7 @@ class Chart:
                  low: Collection[float] | None = None,
                  close: Collection[float] | None = None,
                  volume: Collection[float] | None = None,
-                 timestamp: Collection[dt.datetime | None] | None = None):
+                 timestamp: Collection[Any] | None = None):
         if open is None:
             open = []
         if high is None:
