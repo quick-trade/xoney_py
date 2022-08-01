@@ -96,9 +96,14 @@ class Trade:
 
     @property
     def profit(self) -> float:
+        # TODO: debug
         active_volume: float = self.filled_volume_base * self.__update_price
 
-        return active_volume - self.filled_volume
+        abs_profit: float = active_volume - self.filled_volume
+
+        if self.side == TradeSide.SHORT:
+            return -abs_profit
+        return abs_profit
 
     @property
     def potential_volume(self) -> float:
