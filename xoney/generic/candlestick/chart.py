@@ -51,7 +51,7 @@ class Chart:
         return self._close
 
     @property
-    def timestamp(self) -> Collection[dt.datetime | None]:
+    def timestamp(self) -> list[dt.datetime | None]:
         return self._timestamp
 
     @property
@@ -90,7 +90,7 @@ class Chart:
         self._low = np.array(low)
         self._close = np.array(close)
         self._volume = np.array(volume)
-        self._timestamp = timestamp
+        self._timestamp = list(timestamp)
 
     def __operation(self, other, func):
         if isinstance(other, Chart):
