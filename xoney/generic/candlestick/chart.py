@@ -50,6 +50,14 @@ class Chart:
     def close(self) -> np.ndarray:
         return self._close
 
+    @property
+    def timestamp(self) -> Collection[dt.datetime | None]:
+        return self._timestamp
+
+    @property
+    def volume(self) -> np.ndarray[float]:
+        return self._volume
+
     def __init__(self,
                  open: Collection[float] | None = None,
                  high: Collection[float] | None = None,
@@ -138,3 +146,6 @@ class Chart:
                          close=c,
                          timestamp=t,
                          volume=v)
+
+    def __len__(self) -> int:
+        return len(self._close)
