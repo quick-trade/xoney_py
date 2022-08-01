@@ -33,18 +33,16 @@ class Worker(ABC):
 
     @property
     def total_balance(self):
-        PnL: float = self._trades.profit
-
-        return self.free_balance + self.used_balance + PnL
+        return self.free_balance + self.used_balance
 
     @property
     def used_balance(self):
-        return self._trades.potential_volume
+        return self._trades.potential_volume + self._trades.profit
 
     @abstractproperty
-    def free_balance(self):  # pragma: no cover
-        ...
+    def free_balance(self):
+        return self._free_balance
 
     @property
     def filled_balance(self):
-        return self._trades.filled_volume
+        return self._trades.filled_volume + self._trades.profit

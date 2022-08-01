@@ -24,6 +24,7 @@ class Worker(ABC):
     _trades: TradeHeap
     _strategies: list[Strategy]
     max_trades: int
+    _free_balance: float
 
     @abstractmethod
     def run(self,
