@@ -5,7 +5,7 @@ from distutils.core import setup
 with open('README.md') as file:
     long_desc = file.read()
 
-__version__ = "0.0.1dev"
+__version__ = "0.0.3dev"
 
 packages = find_packages()
 for package in packages:
