@@ -90,6 +90,12 @@ def breakouts(stop_loss, take_profit):
 def breakouts_short(stop_loss_short, take_profit_short):
     return LevelHeap((stop_loss_short, take_profit_short))
 
+
+def set_trade_prices(heap, candle):
+    for level in heap:
+        level._trade._Trade__update_price = candle.close
+
+
 class TestMagic:
     def test_empty(self, empty_heap):
         assert not len(empty_heap)
@@ -131,6 +137,8 @@ class TestLevelOperations:
                                        candle_below_stop_loss,
                                        take_profit,
                                        stop_loss):
+        set_trade_prices(breakouts, candle_below_stop_loss)
+
         breakouts.update(candle_below_stop_loss)
         assert stop_loss in breakouts.crossed
         assert take_profit not in breakouts.crossed
@@ -142,6 +150,8 @@ class TestLevelOperations:
                                         candle_above_take_profit,
                                         take_profit,
                                         stop_loss):
+        set_trade_prices(breakouts, candle_above_take_profit)
+
         breakouts.update(candle_above_take_profit)
         assert take_profit in breakouts.crossed
         assert stop_loss not in breakouts.crossed
@@ -154,6 +164,8 @@ class TestLevelOperations:
             candle_above_stop_loss_short,
             take_profit_short,
             stop_loss_short):
+        set_trade_prices(breakouts_short, candle_above_stop_loss_short)
+
         breakouts_short.update(candle_above_stop_loss_short)
         assert stop_loss_short in breakouts_short.crossed
         assert take_profit_short not in breakouts_short.crossed
@@ -166,6 +178,8 @@ class TestLevelOperations:
             candle_below_take_profit_short,
             take_profit_short,
             stop_loss_short):
+        set_trade_prices(breakouts_short, candle_below_take_profit_short)
+
         breakouts_short.update(candle_below_take_profit_short)
         assert take_profit_short in breakouts_short.crossed
         assert stop_loss_short not in breakouts_short.crossed
@@ -182,6 +196,8 @@ class TestLevelOperations:
             candle,
             take_profit_short,
             stop_loss_short):
+        set_trade_prices(breakouts_short, candle)
+
         breakouts_short.update(candle)
         assert take_profit_short not in breakouts_short.crossed
         assert stop_loss_short not in breakouts_short.crossed
@@ -193,6 +209,8 @@ class TestLevelOperations:
                                      candle_above_stop_loss,
                                      take_profit,
                                      stop_loss):
+        set_trade_prices(breakouts, candle_above_stop_loss)
+
         breakouts.update(candle_above_stop_loss)
         assert not len(breakouts.crossed)
         assert stop_loss in breakouts.pending
@@ -205,6 +223,8 @@ class TestLevelOperations:
                                       candle_below_take_profit,
                                       take_profit,
                                       stop_loss):
+        set_trade_prices(breakouts, candle_below_take_profit)
+
         breakouts.update(candle_below_take_profit)
         assert not len(breakouts.crossed)
         assert stop_loss in breakouts.pending

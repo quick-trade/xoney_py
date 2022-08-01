@@ -67,7 +67,7 @@ class TestTakeProfit:
         assert take_profit.crossed
 
     def test_update_below(self, take_profit, candle_below):
-        take_profit.update(candle_below)
+        take_profit._trade.update(candle_below)
         assert not take_profit.crossed
 
     def test_flag(self, take_profit, candle_at_intersection, candle_below):
