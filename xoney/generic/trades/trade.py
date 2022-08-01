@@ -46,7 +46,7 @@ class Trade:
                  potential_volume: float | None = None):
         self.__entries = entries
         self.__breakouts = breakouts
-        self.__status = TradeStatus.PENDING
+        self.__status = TradeStatus.ACTIVE
         self.__potential_volume = potential_volume
 
         self.__opened = False
@@ -107,7 +107,6 @@ class Trade:
     def _update_status(self) -> None:
         if not self.__opened and not is_zero(self.filled_volume):
             self.__opened = True
-            self.__status = TradeStatus.ACTIVE
         elif is_zero(self.filled_volume):
             self.__status = TradeStatus.CLOSED
 

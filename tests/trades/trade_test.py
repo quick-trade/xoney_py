@@ -93,7 +93,7 @@ class TestLogic:
         expected_filled_after = trade.potential_volume * entry.trade_part
 
         assert trade.filled_volume == 0
-        assert trade.status == TradeStatus.PENDING
+        assert trade.status == TradeStatus.ACTIVE
 
         trade.update(candle_below_entry)
 
@@ -108,7 +108,7 @@ class TestLogic:
 
         after_avg_entry = after_entry + avg_entry_only
 
-        assert trade.status == TradeStatus.PENDING
+        assert trade.status == TradeStatus.ACTIVE
 
         trade.update(candle_below_averaging_entry)
 
@@ -120,7 +120,7 @@ class TestLogic:
         filled_after_breakout = filled_before_breakout * (1 - 0.1)
         # filled_volume -= filled_volume * stop_loss.trade_part
 
-        assert trade.status == TradeStatus.PENDING
+        assert trade.status == TradeStatus.ACTIVE
 
         trade.update(candle_below_stop_loss)
 
@@ -166,7 +166,7 @@ class TestLogic:
                        trade,
                        candle_above_take_profit_2,
                        candle_below_entry):
-        assert trade.status == TradeStatus.PENDING
+        assert trade.status == TradeStatus.ACTIVE
         trade.update(candle_below_entry)
 
         assert trade.status == TradeStatus.ACTIVE
