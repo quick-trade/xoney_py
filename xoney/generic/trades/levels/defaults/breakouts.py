@@ -22,7 +22,7 @@ from xoney.generic.trades.levels.utils import CheckLevelBreakout
 class BaseBreakout(Level, ABC):
     @property
     def _trade_volume(self) -> float:
-        return self._trade.filled_volume
+        return self._trade.filled_volume + self._trade.profit
 
 
 class StopLoss(BaseBreakout):
