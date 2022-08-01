@@ -58,10 +58,10 @@ class Level(ABC):
         if not self.crossed:
             self.__trigger_price = price
 
-    def check_breaking(self, candle: Candle):  # pragma: no cover
+    def check_breaking(self, candle):  # pragma: no cover
         return self.__trigger_price in candle
 
-    def update(self, candle: Candle):
+    def update(self, candle):
         self._update_volume()
         self._on_update_callback()
         if not self.crossed and self.check_breaking(candle):
