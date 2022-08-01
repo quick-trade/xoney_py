@@ -21,6 +21,5 @@ class TradeSide(Enum):
 
 
 class TradeStatus(Enum):
-    PENDING = "pending"
     ACTIVE = "active"
     CLOSED = "closed"
