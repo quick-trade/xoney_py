@@ -52,9 +52,11 @@ class OpenTrade(Event):
         self._volume_distributor.set_worker(worker)
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        self._volume_distributor.set_trade_volume(self._trade)
+        if self._worker.max_trades != self._worker.opened_trades:
+            self._volume_distributor.set_trade_volume(self._trade)
 
-        trades.add(self._trade)
+            trades.add(self._trade)
+            self._worker._free_balance -= self._trade.potential_volume
 
 
 class CloseTrade(Event):
@@ -67,6 +69,9 @@ class CloseTrade(Event):
         trades.remove(self._trade)
         self._trade.cleanup()
 
+        trade_value: float = self._trade.potential_volume + self._trade.profit
+        self._worker._free_balance += trade_value
+
 
 class CloseAllTrades(Event):
     def __init__(self):
@@ -74,6 +79,9 @@ class CloseAllTrades(Event):
 
     def handle_trades(self, trades: TradeHeap) -> None:
         trade: Trade
+        close_trade: CloseTrade
 
         for trade in trades:
-            trade.cleanup()
+            close_trade = CloseTrade(trade=trade)
+            close_trade.set_worker(self._worker)
+            close_trade.handle_trades(trades=trades)
