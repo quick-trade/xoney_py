@@ -17,16 +17,9 @@ from __future__ import annotations
 from abc import ABC, abstractproperty
 
 from xoney.generic.candlestick import Candle
-from xoney.generic.enums import TradeSide
 
 
 class Level(ABC):
-    __trigger_price: float
-    __side: TradeSide
-    __trade_part: float
-    __cross_flag: bool
-    __quote_volume: float
-
     def _on_update_callback(self):
         pass
 
@@ -34,73 +27,73 @@ class Level(ABC):
         pass
 
     @property
-    def trade_part(self) -> float:
+    def trade_part(self):
         return self.__trade_part
 
     @property
-    def trigger_price(self) -> float:
+    def trigger_price(self):
         return self.__trigger_price
 
     @property
-    def side(self) -> TradeSide:
+    def side(self):
         return self.__side
 
     @property
-    def crossed(self) -> bool:
+    def crossed(self):
         return self.__cross_flag
 
     @abstractproperty
-    def _trade_volume(self) -> float:  # pragma: no cover
+    def _trade_volume(self):  # pragma: no cover
         ...
 
     def __init__(self,
-                 price: float,
-                 trade_part: float):
+                 price,
+                 trade_part):
         self.__trigger_price = price
         self.__trade_part = trade_part
         self.__cross_flag = False
         self.__quote_volume = 0.0
 
-    def edit_trigger_price(self, price: float) -> None:
+    def edit_trigger_price(self, price: float):
         if not self.crossed:
             self.__trigger_price = price
 
-    def check_breaking(self, candle: Candle) -> bool:  # pragma: no cover
+    def check_breaking(self, candle: Candle):  # pragma: no cover
         return self.__trigger_price in candle
 
-    def update(self, candle: Candle) -> None:
+    def update(self, candle: Candle):
         self._update_volume()
         self._on_update_callback()
         if not self.crossed and self.check_breaking(candle):
             self.__cross_flag = True
             self._on_breakout_callback()
 
-    def _update_volume(self) -> None:
+    def _update_volume(self):
         if not self.crossed:
             self.__quote_volume = self._trade_volume * self.trade_part
 
-    def _bind_trade(self, trade) -> None:
+    def _bind_trade(self, trade):
         self._trade = trade
         self.__side = trade.side
 
     @property
-    def quote_volume(self) -> float:
+    def quote_volume(self):
         return self.__quote_volume
 
     @property
-    def base_volume(self) -> float:
+    def base_volume(self):
         return self.__quote_volume / self.__trigger_price
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other):
         if not isinstance(other, Level):
             raise TypeError("To compare object with <Level>, "
                             "this object must be of type <Level>")
-        same_side: bool = other.__side == self.__side
-        same_price: bool = other.__trigger_price == self.__trigger_price
-        same_quantity: bool = other.__trade_part == self.__trade_part
-        same_status: bool = other.crossed == self.crossed
+        same_side = other.__side == self.__side
+        same_price = other.__trigger_price == self.__trigger_price
+        same_quantity = other.__trade_part == self.__trade_part
+        same_status = other.crossed == self.crossed
         return same_status and same_side and same_quantity and same_price
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         return f"<{self.__side.value} {self.__class__.__name__} on " \
                f"{self.__trigger_price}. Part of trade: {self.trade_part}>"
