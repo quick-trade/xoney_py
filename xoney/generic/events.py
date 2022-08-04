@@ -66,7 +66,6 @@ class CloseTrade(Event):
         self._trade = trade
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        trades.remove(self._trade)
         self._trade.cleanup()
 
         trade_value: float = self._trade.potential_volume + self._trade.profit
