@@ -20,9 +20,9 @@ from xoney.generic.trades.levels.utils import CheckLevelBreakout
 
 
 class BaseEntry(Level, ABC):
-    @property
-    def _trade_volume(self) -> float:
-        return self._trade.potential_volume
+    def _update_trade_volume(self) -> None:
+        if not self.crossed:
+            self._trade_volume = self._trade.potential_volume
 
 
 class SimpleEntry(BaseEntry):

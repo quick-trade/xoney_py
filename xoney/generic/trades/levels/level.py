@@ -16,8 +16,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractproperty
 
-from xoney.generic.candlestick import Candle
-
 
 class Level(ABC):
     def _on_update_callback(self):
@@ -43,7 +41,7 @@ class Level(ABC):
         return self.__cross_flag
 
     @abstractproperty
-    def _trade_volume(self):  # pragma: no cover
+    def _update_trade_volume(self):  # pragma: no cover
         ...
 
     def __init__(self,
@@ -62,6 +60,7 @@ class Level(ABC):
         return self.__trigger_price in candle
 
     def update(self, candle):
+        self._update_trade_volume()
         self._update_volume()
         self._on_update_callback()
         if not self.crossed and self.check_breaking(candle):

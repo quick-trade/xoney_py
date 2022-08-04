@@ -28,6 +28,7 @@ class Level(ABC):
     __cross_flag: bool
     __quote_volume: float
     _trade: Trade
+    _trade_volume: float
 
     @property
     def trade_part(self) -> float:
@@ -45,8 +46,7 @@ class Level(ABC):
     def crossed(self) -> bool:
         ...
 
-    @abstractproperty
-    def _trade_volume(self) -> float:
+    def _update_trade_volume(self) -> None:
         ...
 
     def __init__(self,
