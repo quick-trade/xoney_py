@@ -121,6 +121,7 @@ class Chart:
         return self.__operation(other=other, func=operator.truediv)
 
     def __getitem__(self, item):
+        item = utils.to_int_index(item=item, timestamp=self._timestamp)
         dict_init_params: dict = dict(
             open=self._open[item],
             high=self._high[item],

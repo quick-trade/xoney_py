@@ -50,3 +50,21 @@ def default_volume(length: int) -> list[float]:
 
     _: int
     return [1.0 for _ in range(length)]
+
+def _index_from_timestamp_index(index, timestamp: list) -> int:
+    if not isinstance(index, int):
+        index = timestamp.index(index)
+    return index
+
+def _slice_from_timestamp_slice(slice_: slice, timestamp: list) -> slice:
+    result_slice_args: list = []
+    for index in (slice_.start, slice_.stop, slice_.step):
+        index = _index_from_timestamp_index(index=index,
+                                            timestamp=timestamp)
+        result_slice_args.append(index)
+    return slice(*result_slice_args)
+
+def to_int_index(item, timestamp: list) -> int | slice:
+    if isinstance(item, slice):
+        return _slice_from_timestamp_slice(slice_=item, timestamp=timestamp)
+    return _index_from_timestamp_index(index=item, timestamp=timestamp)
