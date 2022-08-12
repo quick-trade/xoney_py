@@ -100,12 +100,11 @@ def callback_var():
 
 class TestCallbacks:
     def test_on_update(self, take_profit, candle_below, callback_var):
-
-        def callback():
+        @take_profit.add_on_update_callback
+        def callback(level):
             nonlocal callback_var
             callback_var += 10
 
-        take_profit._on_update_callback = callback
         take_profit._trade.update(candle_below)
         assert callback_var == 5 + 10
 
@@ -113,13 +112,26 @@ class TestCallbacks:
                          take_profit,
                          candle_above,
                          callback_var):
-
-        def callback_break():
+        @take_profit.add_on_breakout_callback
+        def callback_break(level):
             nonlocal callback_var
-            callback_var += 3
-
-        take_profit._on_breakout_callback = callback_break
+            callback_var += level.trigger_price
 
         take_profit._trade.update(candle_above)
 
-        assert callback_var == 5 + 3
+        assert callback_var == 5 + take_profit.trigger_price
+
+    def test_callback_chain(self, take_profit, candle_above, callback_var):
+        @take_profit.add_on_breakout_callback
+        def callback_break(level):
+            nonlocal callback_var
+            callback_var += 3
+
+        @take_profit.add_on_breakout_callback
+        def callback_break_2(level):
+            nonlocal callback_var
+            callback_var += 7
+
+        take_profit._trade.update(candle_above)
+
+        assert callback_var == 5 + 3 + 7

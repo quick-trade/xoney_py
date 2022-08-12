@@ -14,6 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
+from functools import wraps
+
 from abc import ABC, abstractproperty
 
 
@@ -23,6 +25,22 @@ class Level(ABC):
 
     def _on_breakout_callback(self):
         pass
+
+    def __set_callback(self, callback_name, fn):
+        prev_callback = getattr(self, callback_name)
+
+        @wraps(prev_callback)
+        def new_callback():
+            prev_callback()
+            fn(self)
+
+        setattr(self, callback_name, new_callback)
+
+    def add_on_breakout_callback(self, fn):
+        self.__set_callback("_on_breakout_callback", fn=fn)
+
+    def add_on_update_callback(self, fn):
+        self.__set_callback("_on_update_callback", fn=fn)
 
     @property
     def trade_part(self):

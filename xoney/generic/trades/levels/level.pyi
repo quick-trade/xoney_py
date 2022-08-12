@@ -14,7 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
-from abc import ABC, abstractproperty
+from abc import ABC
+from typing import Callable
 
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide
@@ -87,8 +88,21 @@ class Level(ABC):
     def __repr__(self) -> str:
         ...
 
-    def _on_update_callback(self):
+    def _on_update_callback(self) -> None:
         ...
 
-    def _on_breakout_callback(self):
+    def _on_breakout_callback(self) -> None:
+        ...
+
+    def __set_callback(self,
+                       callback_name: str,
+                       fn: Callable[[Level], None]) -> None:
+        prev_callback: Callable[[], None]
+        new_callback: Callable[[], None]
+        ...
+
+    def add_on_breakout_callback(self, fn: Callable[[Level], None]) -> None:
+        ...
+
+    def add_on_update_callback(self, fn: Callable[[Level], None]) -> None:
         ...
