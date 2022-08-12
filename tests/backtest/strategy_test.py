@@ -43,6 +43,8 @@ class BollingerTrendStrategy(Strategy):
         signal_sell = bollinger.bollinger_lband().values[-1] > chart[-1].close
 
         signal = "long" if signal_buy else ("short" if signal_sell else None)
+        if signal is None:
+            signal = self._signal_prev_real
 
         if self._signal_prev_real != signal:
             self._signal = signal
