@@ -58,11 +58,12 @@ def _index_from_timestamp_index(index, timestamp: list) -> int:
 
 def _slice_from_timestamp_slice(slice_: slice, timestamp: list) -> slice:
     result_slice_args: list = []
-    for index in (slice_.start, slice_.stop, slice_.step):
-        index = _index_from_timestamp_index(index=index,
-                                            timestamp=timestamp)
+    for index in (slice_.start, slice_.stop):
+        if index is not None:
+            index = _index_from_timestamp_index(index=index,
+                                                timestamp=timestamp)
         result_slice_args.append(index)
-    return slice(*result_slice_args)
+    return slice(*result_slice_args, slice_.step)
 
 def to_int_index(item, timestamp: list) -> int | slice:
     if isinstance(item, slice):
