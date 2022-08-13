@@ -19,15 +19,16 @@ from xoney.generic.workers import Worker
 from xoney.generic.trades import TradeHeap
 from xoney.generic.events import Event
 from xoney.strategy import Strategy
+from xoney.generic.equity import Equity
 
 from typing import Iterable
 
 
 class Backtester(Worker):  # TODO
-    _equity: list[float | int]
+    _equity: Equity
 
     @property
-    def equity(self) -> list[float | int]:
+    def equity(self) -> Equity:
         return self._equity
 
     @property
@@ -48,8 +49,10 @@ class Backtester(Worker):  # TODO
             commission: float) -> None:
         self._free_balance = initial_depo
         self._trades = TradeHeap()
-        self._equity = []
         self.commission = commission
+
+        self._equity = Equity([])
+        self._equity._set_timestamp(chart.timestamp)
 
         event: Event
         candle: Candle

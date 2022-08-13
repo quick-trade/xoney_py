@@ -23,3 +23,7 @@ class TradeSide(Enum):
 class TradeStatus(Enum):
     ACTIVE = "active"
     CLOSED = "closed"
+
+class CurrencyType(Enum):
+    BASE = "base"
+    QUOTE = "quote"

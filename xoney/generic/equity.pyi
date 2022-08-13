@@ -12,48 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from __future__ import annotations
+from typing import Iterable, Callable
 
-from abc import abstractproperty, abstractmethod, ABC
+import numpy as np
 
-from xoney.generic.trades import TradeHeap
-from xoney.strategy import Strategy
-from xoney.generic.equity import Equity
+class Equity:
+    _list: list[float]
+    _timestamp: list
 
-
-class Worker(ABC):
-    _trades: TradeHeap
-    _strategies: list[Strategy]
-    max_trades: int
-    commission: float
-    _free_balance: float
-
-    @abstractmethod
-    def run(self,
-            *args,
-            **kwargs) -> None:
+    def as_array(self):
         ...
 
-    @abstractproperty
-    def equity(self) -> Equity:
+    def __init__(self, iterable: Iterable[float]):
         ...
 
-    @property
-    def opened_trades(self) -> int:
+    def append(self, balance: float) -> None:
         ...
 
-    @property
-    def total_balance(self) -> float:
+    def update(self, balance: float) -> None:
         ...
 
-    @property
-    def used_balance(self) -> float:
+    def _set_timestamp(self, timestamp: list) -> None:
         ...
 
-    @abstractproperty
-    def free_balance(self) -> float:
+    def __getitem__(self, item):
+        item: int | slice
         ...
 
-    @property
-    def filled_balance(self) -> float:
+    def __op(self, fn: Callable, other) -> Equity:
+        ...
+
+    def __add__(self, other) -> Equity:
+        ...
+
+    def __sub__(self, other) -> Equity:
+        ...
+
+    def __mul__(self, other) -> Equity:
+        ...
+
+    def __truediv__(self, other) -> Equity:
+        ...
+
+    def __iter__(self):
+        deposit: float
+        ...
+
+    def __len__(self) -> int:
         ...
