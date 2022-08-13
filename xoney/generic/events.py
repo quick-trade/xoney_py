@@ -17,6 +17,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 
 from xoney.generic.trades import Trade, TradeHeap
+from xoney.generic.trades.levels import Level
 from xoney.generic.volume_distribution import (VolumeDistributor,
                                                DefaultDistributor)
 from xoney.generic.workers import Worker
@@ -50,6 +51,16 @@ class OpenTrade(Event):
     def set_worker(self, worker: Worker) -> None:
         super().set_worker(worker=worker)
         self._volume_distributor.set_worker(worker)
+        self.__set_trade_commission()
+
+    def __set_trade_commission(self):
+        trade_level: Level
+        for trade_level in self._trade._levels:
+            @trade_level.add_on_breakout_callback
+            def decrease_filled_volume(level):
+                commission: float = self._worker.commission
+                commission_size: float = level.quote_volume * commission
+                self._worker._free_balance -= commission_size
 
     def handle_trades(self, trades: TradeHeap) -> None:
         if self._worker.max_trades != self._worker.opened_trades:

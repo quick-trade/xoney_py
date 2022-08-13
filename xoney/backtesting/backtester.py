@@ -49,6 +49,7 @@ class Backtester(Worker):  # TODO
         self._free_balance = initial_depo
         self._trades = TradeHeap()
         self._equity = []
+        self.commission = commission
 
         event: Event
         candle: Candle

@@ -24,6 +24,7 @@ class Worker(ABC):
     _trades: TradeHeap
     _strategies: list[Strategy]
     max_trades: int
+    commission: float
     _free_balance: float
 
     @abstractmethod

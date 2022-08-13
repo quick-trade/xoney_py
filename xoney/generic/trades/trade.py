@@ -39,6 +39,10 @@ class Trade:
     def side(self) -> TradeSide:
         return self.__side
 
+    @property
+    def _levels(self) -> LevelHeap:
+        return LevelHeap((*self.__entries, *self.__breakouts))
+
     def __init__(self,
                  side: TradeSide,
                  entries: LevelHeap,
@@ -98,12 +102,13 @@ class Trade:
     def profit(self) -> float:
         # TODO: debug
         active_volume: float = self.filled_volume_base * self.__update_price
-
-        abs_profit: float = active_volume - self.filled_volume
+        volume_multiplier: float = active_volume / self.filled_volume
 
         if self.side == TradeSide.SHORT:
-            return -abs_profit
-        return abs_profit
+            volume_multiplier = 1 - (volume_multiplier - 1)
+
+        result_volume: float = volume_multiplier * self.filled_volume
+        return result_volume - self.filled_volume
 
     @property
     def potential_volume(self) -> float:
