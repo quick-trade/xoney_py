@@ -53,15 +53,18 @@ class Backtester(Worker):  # TODO
 
         event: Event
         candle: Candle
+        events: Iterable[Event] = []
         for e, candle in enumerate(chart, start=1):
             for strategy in self._strategies:
                 strategy.run(chart[:e])
 
-                for event in strategy.fetch_events():
+                for event in events:
                     event.set_worker(self)
                     event.handle_trades(self._trades)
 
                 self._trades.update_trades(candle=candle)
                 self.__handle_closed_trades()
+
+                events = strategy.fetch_events()
 
             self._equity.append(self.total_balance)
