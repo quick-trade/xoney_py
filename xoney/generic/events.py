@@ -63,7 +63,7 @@ class OpenTrade(Event):
                 self._worker._free_balance -= commission_size
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        if self._worker.max_trades != self._worker.opened_trades:
+        if self._worker.max_trades > self._worker.opened_trades:
             self._volume_distributor.set_trade_volume(self._trade)
 
             trades.add(self._trade)
