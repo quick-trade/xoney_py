@@ -23,7 +23,10 @@ class Equity:
     def as_array(self):
         return np.array(self._list)
 
-    def __init__(self, iterable):
+    def __init__(self, iterable, timestamp=None):
+        if timestamp is None:
+            timestamp = []
+        self._timestamp = timestamp
         self._list = list(iterable)
 
     def append(self, balance):
@@ -46,7 +49,8 @@ class Equity:
     def __op(self, fn, other):
         if isinstance(other, Equity):
             other = other.as_array()
-        return Equity(fn(self.as_array(), other))
+        return Equity(fn(self.as_array(), other),
+                      timestamp=self._timestamp)
 
     def __add__(self, other):
         return self.__op(operator.add, other)

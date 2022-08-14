@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from __future__ import annotations
+
 from typing import Iterable, Callable
 
 import numpy as np
@@ -23,7 +25,9 @@ class Equity:
     def as_array(self):
         ...
 
-    def __init__(self, iterable: Iterable[float]):
+    def __init__(self,
+                 iterable: Iterable[float],
+                 timestamp: list | None = None):
         ...
 
     def append(self, balance: float) -> None:
