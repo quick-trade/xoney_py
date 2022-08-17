@@ -15,6 +15,7 @@
 import operator
 
 from xoney.generic.candlestick import utils
+from xoney.generic.timeframes import DAY_1
 
 import numpy as np
 
@@ -23,9 +24,13 @@ class Equity:
     def as_array(self):
         return np.array(self._list)
 
-    def __init__(self, iterable, timestamp=None):
+    def __init__(self,
+                 iterable,
+                 timestamp=None,
+                 timeframe=DAY_1):
         if timestamp is None:
             timestamp = []
+        self.timeframe = timeframe
         self._timestamp = timestamp
         self._list = list(iterable)
 
@@ -43,14 +48,18 @@ class Equity:
         self._timestamp = timestamp
 
     def __getitem__(self, item):
-        item = utils.to_int_index(item=item, timestamp=self._timestamp)
+        item = utils.to_int_index(item=item,
+                                  timestamp=self._timestamp)
         return self._list[item]
 
     def __op(self, fn, other):
         if isinstance(other, Equity):
             other = other.as_array()
-        return Equity(fn(self.as_array(), other),
-                      timestamp=self._timestamp)
+        return Equity(
+            iterable=fn(self.as_array(), other),
+            timestamp=self._timestamp,
+            timeframe=self.timeframe
+        )
 
     def __add__(self, other):
         return self.__op(operator.add, other)

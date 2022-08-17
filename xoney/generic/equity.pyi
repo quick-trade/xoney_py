@@ -16,18 +16,23 @@ from __future__ import annotations
 
 from typing import Iterable, Callable
 
+from xoney.generic.timeframes import TimeFrame, DAY_1
+
 import numpy as np
+
 
 class Equity:
     _list: list[float]
     _timestamp: list
+    timeframe: TimeFrame
 
-    def as_array(self):
+    def as_array(self) -> np.ndarray:
         ...
 
     def __init__(self,
                  iterable: Iterable[float],
-                 timestamp: list | None = None):
+                 timestamp: list | None = None,
+                 timeframe: TimeFrame = DAY_1):
         ...
 
     def append(self, balance: float) -> None:
