@@ -37,40 +37,6 @@ def freeze_time(monkeypatch):
     monkeypatch.setattr(dt, "datetime", FrozenTime)
 
 
-class TestStartFromEnd:
-    def test_1h_12(self, end_time):
-        delta = dt.timedelta(hours=1)
-        expected_start = dt.datetime(1991, 8, 23, 12)
-        result = utils.start_from_end(end=end_time,
-                                      period=12,
-                                      delta=delta)
-        assert result == expected_start
-
-    def test_1d_7(self, end_time):
-        delta = dt.timedelta(days=1)
-        expected_start = dt.datetime(1991, 8, 17)
-        result = utils.start_from_end(end=end_time,
-                                      period=7,
-                                      delta=delta)
-        assert result == expected_start
-
-
-class TestDateRange:
-    def test_start_is_none_hour1(self, freeze_time):
-        expected_values = [
-            dt.datetime.now() - (HOUR_1 * 5).timedelta,
-            dt.datetime.now() - (HOUR_1 * 4).timedelta,
-            dt.datetime.now() - (HOUR_1 * 3).timedelta,
-            dt.datetime.now() - (HOUR_1 * 2).timedelta,
-            dt.datetime.now() - HOUR_1.timedelta,
-        ]
-        result = utils.date_range(timeframe=HOUR_1,
-                                  length=5,
-                                  start=None)
-        for real, expected in zip(result, expected_values):
-            assert real == expected
-
-
 class TestDefaultVolume:
     @pytest.mark.parametrize("value", [
         {"KEY": 123},
