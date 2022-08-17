@@ -20,6 +20,7 @@ from xoney.generic.trades import TradeHeap
 from xoney.generic.events import Event
 from xoney.strategy import Strategy
 from xoney.generic.equity import Equity
+from xoney.generic.timeframes import TimeFrame, DAY_1
 
 from typing import Iterable
 
@@ -46,12 +47,13 @@ class Backtester(Worker):  # TODO
     def run(self,
             chart: Chart,
             initial_depo: float | int,
-            commission: float) -> None:
+            commission: float,
+            timeframe: TimeFrame = DAY_1) -> None:
         self._free_balance = initial_depo
         self._trades = TradeHeap()
         self.commission = commission
 
-        self._equity = Equity([])
+        self._equity = Equity([], timeframe=timeframe)
         self._equity._set_timestamp(chart.timestamp)
 
         event: Event
