@@ -31,7 +31,7 @@ class RegressionModel(ABC):
 
 class LinearRegression(RegressionModel):
     def fit(self, array: np.ndarray) -> None:
-        x = np.arange(0, len(array) + 1)
+        x = np.arange(0, len(array))
         slope, intercept = np.polyfit(x, array, 1)
         linear: np.ndarray = x * slope + intercept
 
