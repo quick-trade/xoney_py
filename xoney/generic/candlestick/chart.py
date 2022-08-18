@@ -23,6 +23,7 @@ import numpy as np
 from xoney.generic.candlestick import _validation
 from xoney.generic.candlestick import utils
 from xoney.generic.candlestick import Candle
+from xoney.generic.timeframes import TimeFrame, DAY_1
 
 
 class Chart:
@@ -32,6 +33,7 @@ class Chart:
     _close: np.ndarray
     _volume: np.ndarray
     _timestamp: list[Any]
+    timeframe: TimeFrame
 
     @property
     def open(self) -> np.ndarray:
@@ -63,7 +65,8 @@ class Chart:
                  low: Collection[float] | None = None,
                  close: Collection[float] | None = None,
                  volume: Collection[float] | None = None,
-                 timestamp: Collection[Any] | None = None):
+                 timestamp: Collection[Any] | None = None,
+                 timeframe: TimeFrame = DAY_1):
         if open is None:
             open = []
         if high is None:
@@ -76,6 +79,7 @@ class Chart:
             volume = utils.default_volume(length=len(close))
         if timestamp is None:
             timestamp = [None for _ in close]
+        self.timeframe = timeframe
 
         _validation.validate_chart_length(open,
                                           high,
@@ -102,7 +106,8 @@ class Chart:
         return self.__class__(open=func(self._open, open),
                               high=func(self._high, high),
                               low=func(self._low, low),
-                              close=func(self._close, close))
+                              close=func(self._close, close),
+                              timeframe=self.timeframe)
 
     def __truediv__(self, other):
         # Rearranging low and high to account for
@@ -117,7 +122,8 @@ class Chart:
                                    low=other._high,
                                    close=other._close,
                                    volume=other._volume,
-                                   timestamp=other._timestamp)
+                                   timestamp=other._timestamp,
+                                   timeframe=other.timeframe)
         return self.__operation(other=other, func=operator.truediv)
 
     def __getitem__(self, item):
