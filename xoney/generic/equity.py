@@ -44,9 +44,6 @@ class Equity:
         """
         self._list[-1] = balance
 
-    def _set_timestamp(self, timestamp):
-        self._timestamp = timestamp
-
     def __getitem__(self, item):
         item = utils.to_int_index(item=item,
                                   timestamp=self._timestamp)

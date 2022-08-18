@@ -41,9 +41,6 @@ class Equity:
     def update(self, balance: float) -> None:
         ...
 
-    def _set_timestamp(self, timestamp: list) -> None:
-        ...
-
     def __getitem__(self, item):
         item: int | slice
         ...
