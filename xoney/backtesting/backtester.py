@@ -47,14 +47,14 @@ class Backtester(Worker):  # TODO
     def run(self,
             chart: Chart,
             initial_depo: float | int,
-            commission: float,
-            timeframe: TimeFrame = DAY_1) -> None:
+            commission: float) -> None:
         self._free_balance = initial_depo
         self._trades = TradeHeap()
         self.commission = commission
 
-        self._equity = Equity([], timeframe=timeframe)
-        self._equity._set_timestamp(chart.timestamp)
+        self._equity = Equity([],
+                              timeframe=chart.timeframe,
+                              timestamp=chart.timestamp)
 
         event: Event
         candle: Candle
