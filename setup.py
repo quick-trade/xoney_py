@@ -36,7 +36,7 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "numpy==1.23.1"
+        "numpy==1.23.3"
     ],
     extras_requirements=extras_requirements,
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
