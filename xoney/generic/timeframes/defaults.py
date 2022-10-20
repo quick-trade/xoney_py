@@ -15,6 +15,7 @@
 
 from .factory import TimeFrameFactory
 
+
 MINUTE_1 = TimeFrameFactory.from_minutes(1)
 MINUTE_3 = TimeFrameFactory.from_minutes(3)
 MINUTE_5 = TimeFrameFactory.from_minutes(5)
