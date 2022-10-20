@@ -24,6 +24,11 @@ from xoney.analysis.regression import ExponentialRegression
 
 class Metric(ABC):
     _value: float
+    _positive: bool
+
+    @property
+    def positive(self) -> bool:
+        return self._positive
 
     @property
     def value(self) -> float:
@@ -36,6 +41,7 @@ class Metric(ABC):
 
 class YearProfit(Metric):
     __model: ExponentialRegression
+    _positive = True
 
     def __init__(self):
         self.__model = ExponentialRegression()
@@ -54,6 +60,8 @@ class YearProfit(Metric):
 
 
 class MaxDrawDown(Metric):
+    _positive = False
+
     def calculate(self, equity: Equity) -> None:
         array: np.ndarray = equity.as_array()
         accumulation: np.ndarray = np.maximum.accumulate(array)
@@ -63,6 +71,8 @@ class MaxDrawDown(Metric):
 
 
 class CalmarRatio(Metric):
+    _positive = True
+
     def calculate(self, equity: Equity) -> None:
         profit: float = evaluate_metric(YearProfit, equity)
         drawdown: float = evaluate_metric(MaxDrawDown, equity)
@@ -72,6 +82,7 @@ class CalmarRatio(Metric):
 
 class SharpeRatio(Metric):
     __risk_free: float
+    _positive = True
 
     def __init__(self, risk_free: float = 0):
         self.__risk_free = risk_free
@@ -87,6 +98,7 @@ class SharpeRatio(Metric):
 
 
 class SortinoRatio(Metric):
+    _positive = True
     __risk_free: float
 
     def __init__(self, risk_free: float = 0):
