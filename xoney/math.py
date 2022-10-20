@@ -21,13 +21,22 @@ from xoney.config import ASSUME_ZERO
 
 T: TypeVar = TypeVar("T")
 
+
 def is_zero(number) -> bool:
     return abs(number) <= ASSUME_ZERO
 
+
 def is_equal(num_1, num_2) -> bool:
     return is_zero(num_1 - num_2)
+
 
 def multiply_diff(abs_change: T, multiplier: float | T = 1.0) -> T:
     difference: T = abs_change - 1
     multiplied_difference: T = difference * multiplier
     return 1 + multiplied_difference
+
+
+def divide(num_1, num_2) -> float:
+    if num_2 == num_1 == 0:
+        return 1.0
+    return num_1 / num_2
