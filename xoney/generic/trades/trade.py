@@ -19,7 +19,7 @@ from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import LevelHeap
 
-from xoney.math import is_zero
+from xoney.math import is_zero, multiply_diff
 
 
 class Trade:
@@ -105,7 +105,7 @@ class Trade:
         volume_multiplier: float = active_volume / self.filled_volume
 
         if self.side == TradeSide.SHORT:
-            volume_multiplier = 1 - (volume_multiplier - 1)
+            volume_multiplier = multiply_diff(volume_multiplier, -1)
 
         result_volume: float = volume_multiplier * self.filled_volume
         return result_volume - self.filled_volume

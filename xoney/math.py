@@ -12,10 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from __future__ import annotations
+
+from typing import TypeVar
+
 from xoney.config import ASSUME_ZERO
+
+
+T: TypeVar = TypeVar("T")
 
 def is_zero(number) -> bool:
     return abs(number) <= ASSUME_ZERO
 
 def is_equal(num_1, num_2) -> bool:
     return is_zero(num_1 - num_2)
+
+def multiply_diff(abs_change: T, multiplier: float | T = 1.0) -> T:
+    difference: T = abs_change - 1
+    multiplied_difference: T = difference * multiplier
+    return 1 + multiplied_difference
