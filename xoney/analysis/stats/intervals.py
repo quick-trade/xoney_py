@@ -17,7 +17,7 @@ from scipy import stats
 
 
 def max_variance(x: np.ndarray,
-                 alpha: float = 0.05):
+                 alpha: float = 0.05) -> float:
     df: int = len(x) - 1
     sample_var = stats.variation(x)
     chi2: float = stats.chi2.ppf(1-alpha, df=df)
@@ -26,5 +26,23 @@ def max_variance(x: np.ndarray,
 
 
 def max_std(x: np.ndarray,
-            alpha: float = 0.05):
+            alpha: float = 0.05) -> float:
     return np.sqrt(max_variance(x=x, alpha=alpha))
+
+
+class PopulationMean:
+    @classmethod
+    def min(cls,
+            x: np.ndarray,
+            alpha: float = 0.05) -> float:
+        n: int = len(x)
+        mean = x.mean()
+        se: float = stats.sem(x)
+        t = stats.t.ppf(alpha, df=n-1)
+        return mean+t*se
+
+    @classmethod
+    def max(cls,
+            x: np.ndarray,
+            alpha: float = 0.05) -> float:
+        return -cls.min(x=-x, alpha=alpha)
