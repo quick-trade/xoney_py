@@ -30,7 +30,7 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "numpy==1.23.1",
+        "numpy==1.23.4",
         "optuna==2.10.0",
         "scipy==1.9.3"
     ],
