@@ -14,12 +14,6 @@ for package in packages:
 
 repository_url = "https://github.com/quick-trade/xoney"
 
-extras_requirements = {
-    "optimization": [
-        "optuna==2.10.0"
-    ]
-}
-
 setup(
     name="xoney",
     author="Vlad Kochetov",
@@ -36,9 +30,10 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "numpy==1.23.1"
+        "numpy==1.23.1",
+        "optuna==2.10.0",
+        "scipy==1.9.3"
     ],
-    extras_requirements=extras_requirements,
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
     keywords=[
         "python3",
