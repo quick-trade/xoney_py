@@ -35,7 +35,7 @@ class Metric(ABC):
         return self._value
 
     @abstractmethod
-    def calculate(self, equity: Equity) -> None:
+    def calculate(self, equity: Equity) -> None:  # pragma: no cover
         ...
 
 
