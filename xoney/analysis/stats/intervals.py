@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from typing import Callable
+
 import numpy as np
 from scipy import stats
 
@@ -31,6 +33,19 @@ def max_std(x: np.ndarray,
 
 
 class PopulationMean:
+    @classmethod
+    def evaluate(cls, x: np.ndarray,
+                 alternative: str = "greater",
+                 alpha: float = 0.05):
+        method: Callable
+        if alternative == "greater":
+            method = cls.min
+        elif alternative == "less":
+            method = cls.max
+        else:
+            raise ValueError("alternative must be \"less\" or \"greater\"")
+        return method(x=x, alpha=alpha)
+
     @classmethod
     def min(cls,
             x: np.ndarray,
