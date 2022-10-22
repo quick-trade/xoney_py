@@ -14,6 +14,9 @@
 # =============================================================================
 import pandas as pd
 from typing import Iterable
+import random
+
+import pytest
 
 from xoney.strategy import Strategy
 from xoney.generic.candlestick import Chart
@@ -92,3 +95,28 @@ class BollingerTrendStrategy(Strategy):
                 )
             ]
         return []
+
+
+@pytest.mark.parametrize("length, dev",
+                         [(10, 1),
+                          (52, 2),
+                          (5, 1)])
+def test_correct_initialization(length, dev):
+    strategy = BollingerTrendStrategy(length=length, dev=dev)
+
+    assert strategy._settings["length"] == length
+    assert strategy._settings["dev"] == dev
+
+
+@pytest.mark.parametrize("length, dev",
+                         [(103, 3),
+                          (45, 5),
+                          (200, 2)])
+def test_correct_initialization(length, dev):
+    strategy = BollingerTrendStrategy(length=random.randint(1, 300),
+                                      dev=random.randint(1, 5))
+
+    strategy.edit_settings(settings=dict(length=length, dev=dev))
+
+    assert strategy._settings["length"] == length
+    assert strategy._settings["dev"] == dev
