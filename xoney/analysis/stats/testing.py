@@ -22,7 +22,7 @@ def critical_level_t_p(mean: float,
                        critical: float = 0.0,
                        alternative: str = "greater") -> float:
     """
-    :param critical: Critical value for which the p-value is calculated.
+    :param critical: Critical value for which the p-value will be calculated.
     :param alternative: Type of alternative hypothesis.
         {"greater", "less"} (than critical)
 
