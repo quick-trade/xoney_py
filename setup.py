@@ -36,10 +36,11 @@ setup(
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
     keywords=[
-        "python3",
         "trading-bot",
         "trading",
-        "portfolio-management"
+        "portfolio-management",
+        "algorithmic-trading",
+        "risk-management"
     ],
     license='Apache 2.0',
     classifiers=[
