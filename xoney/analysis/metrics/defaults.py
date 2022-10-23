@@ -52,7 +52,7 @@ class YearProfit(Metric):
 
         regression = self.__model.curve
 
-        profit_per_candle: float = math.divide(regression[1], regression[0])
+        profit_per_candle: float = regression[1] / regression[0]
         candles_per_year: float = equity.timeframe.candles_in_year
 
         profit_per_year: float = profit_per_candle ** candles_per_year
@@ -66,7 +66,7 @@ class MaxDrawDown(Metric):
     def calculate(self, equity: Equity) -> None:
         array: np.ndarray = equity.as_array()
         accumulation: np.ndarray = np.maximum.accumulate(array)
-        max_dd: float = -np.min(math.divide(array, accumulation - 1))
+        max_dd: float = -np.min(array / accumulation - 1)
 
         self._value = max_dd
 
@@ -81,47 +81,50 @@ class CalmarRatio(Metric):
         self._value = math.divide(profit, drawdown)
 
 
-class SharpeRatio(Metric):
-    __risk_free: float
+class __ProfitStdMetric(Metric, ABC):
     _positive = True
+    _risk_free: float
+    _equity: Equity
+    _candles_per_year: float | int
 
     def __init__(self, risk_free: float = 0):
-        self.__risk_free = risk_free
+        self._risk_free = risk_free
+
+    def _calculate_profit(self) -> float:
+        self._candles_per_year: float = self._equity.timeframe.candles_in_year
+        equity_array: np.ndarray = self._equity.as_array()
+
+        absolute_profit: np.ndarray = np.diff(equity_array)
+        self._returns: np.ndarray = absolute_profit / equity_array[:-1]
+        profit: float = self._returns.mean() * self._candles_per_year
+
+        return profit
+
+    @abstractmethod
+    def _calculate_standard_deviation(self) -> float:  # pragma: no cover
+        ...
 
     def calculate(self, equity: Equity) -> None:
-        candles_per_year: float = equity.timeframe.candles_in_year
-        array: np.ndarray = equity.as_array()
-        returns: np.ndarray = np.diff(array) / array[:-1]
-        standard_deviation: float = returns.std() * np.sqrt(candles_per_year)
-        mean: float = returns.mean() * candles_per_year
+        self._equity = equity
+        profit: float = self._calculate_profit()
+        variance: float = self._calculate_standard_deviation()
 
-        self._value = math.divide(
-            mean - self.__risk_free,
-            standard_deviation
-        )
+        self._value = math.divide(profit, variance)
 
 
-class SortinoRatio(Metric):
-    _positive = True
-    __risk_free: float
+class SharpeRatio(__ProfitStdMetric):
+    def _calculate_standard_deviation(self) -> float:
+        neg_ret: np.ndarray = self._returns
 
-    def __init__(self, risk_free: float = 0):
-        self.__risk_free = risk_free
+        sd: float = neg_ret.std() * np.sqrt(self._candles_per_year)
+        return sd
 
-    def calculate(self, equity: Equity) -> None:
-        candles_per_year: float = equity.timeframe.candles_in_year
-        array: np.ndarray = equity.as_array()
-        returns: np.ndarray = np.diff(array) / array[:-1]
+class SortinoRatio(__ProfitStdMetric):
+    def _calculate_standard_deviation(self) -> float:
+        neg_ret: np.ndarray = self._returns[self._returns < 0]
 
-        neg_ret: np.ndarray = returns[returns < 0]
-
-        standard_deviation: float = neg_ret.std() * np.sqrt(candles_per_year)
-        mean: float = returns.mean() * candles_per_year
-
-        self._value = math.divide(
-            mean - self.__risk_free,
-            standard_deviation
-        )
+        sd: float = neg_ret.std() * np.sqrt(self._candles_per_year)
+        return sd
 
 def evaluate_metric(metric: type | Metric, equity: Equity) -> float:
     if isinstance(metric, type):
