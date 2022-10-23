@@ -18,6 +18,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
+from xoney import math
 from xoney.generic.equity import Equity
 from xoney.analysis.regression import ExponentialRegression
 
@@ -51,7 +52,7 @@ class YearProfit(Metric):
 
         regression = self.__model.curve
 
-        profit_per_candle: float = regression[1] / regression[0]
+        profit_per_candle: float = math.divide(regression[1], regression[0])
         candles_per_year: float = equity.timeframe.candles_in_year
 
         profit_per_year: float = profit_per_candle ** candles_per_year
@@ -65,7 +66,7 @@ class MaxDrawDown(Metric):
     def calculate(self, equity: Equity) -> None:
         array: np.ndarray = equity.as_array()
         accumulation: np.ndarray = np.maximum.accumulate(array)
-        max_dd: float = -np.min(array / accumulation - 1)
+        max_dd: float = -np.min(math.divide(array, accumulation - 1))
 
         self._value = max_dd
 
@@ -77,7 +78,7 @@ class CalmarRatio(Metric):
         profit: float = evaluate_metric(YearProfit, equity)
         drawdown: float = evaluate_metric(MaxDrawDown, equity)
 
-        self._value = profit / drawdown
+        self._value = math.divide(profit, drawdown)
 
 
 class SharpeRatio(Metric):
@@ -94,7 +95,10 @@ class SharpeRatio(Metric):
         standard_deviation: float = returns.std() * np.sqrt(candles_per_year)
         mean: float = returns.mean() * candles_per_year
 
-        self._value = (mean - self.__risk_free) / standard_deviation
+        self._value = math.divide(
+            mean - self.__risk_free,
+            standard_deviation
+        )
 
 
 class SortinoRatio(Metric):
@@ -114,8 +118,10 @@ class SortinoRatio(Metric):
         standard_deviation: float = neg_ret.std() * np.sqrt(candles_per_year)
         mean: float = returns.mean() * candles_per_year
 
-        self._value = (mean - self.__risk_free) / standard_deviation
-
+        self._value = math.divide(
+            mean - self.__risk_free,
+            standard_deviation
+        )
 
 def evaluate_metric(metric: type | Metric, equity: Equity) -> float:
     if isinstance(metric, type):
