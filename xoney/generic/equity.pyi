@@ -41,9 +41,19 @@ class Equity:
     def update(self, balance: float) -> None:
         ...
 
-    def diff(self) -> np.ndarray:
+    def change(self) -> Equity:
         array: np.ndarray
         diff: np.ndarray
+        change: np.ndarray
+        ...
+
+    def log(self) -> Equity:
+        ...
+
+    def mean(self) -> float:
+        ...
+
+    def std(self) -> float:
         ...
 
     def __getitem__(self, item):

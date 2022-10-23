@@ -44,11 +44,24 @@ class Equity:
         """
         self._list[-1] = balance
 
-    def diff(self):
+    def change(self):
         array = self.as_array()
-        diff = np.diff(array)
-        diff[0] = 0.0
-        return diff
+        diff = np.diff(array, prepend=0.0)
+        change = diff / array
+        return self.__class__(iterable=change,
+                              timeframe=self.timeframe,
+                              timestamp=self._timestamp)
+
+    def log(self):
+        return self.__class__(iterable=np.log(self._list),
+                              timeframe=self.timeframe,
+                              timestamp=self._timestamp)
+
+    def mean(self):
+        return self.as_array().mean()
+
+    def std(self):
+        return self.as_array().std()
 
     def __getitem__(self, item):
         item = utils.to_int_index(item=item,
