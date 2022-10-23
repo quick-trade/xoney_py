@@ -114,9 +114,7 @@ class __ProfitStdMetric(Metric, ABC):
 
 class SharpeRatio(__ProfitStdMetric):
     def _calculate_standard_deviation(self) -> float:
-        neg_ret: np.ndarray = self._returns
-
-        sd: float = neg_ret.std() * np.sqrt(self._candles_per_year)
+        sd: float = self._returns.std() * np.sqrt(self._candles_per_year)
         return sd
 
 class SortinoRatio(__ProfitStdMetric):
