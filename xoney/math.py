@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from typing import TypeVar
 
+import numpy as np
+
 from xoney.config import ASSUME_ZERO
 
 
@@ -39,4 +41,6 @@ def multiply_diff(abs_change: T, multiplier: float | T = 1.0) -> T:
 def divide(num_1, num_2) -> float:
     if num_2 == num_1 == 0:
         return 1.0
+    elif num_2 == 0:
+        return np.inf
     return num_1 / num_2
