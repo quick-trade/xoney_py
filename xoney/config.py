@@ -12,4 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-ASSUME_ZERO = 1 / 10**10
+ASSUME_ZERO = 10 ** -5
