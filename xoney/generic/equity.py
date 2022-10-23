@@ -44,6 +44,12 @@ class Equity:
         """
         self._list[-1] = balance
 
+    def diff(self):
+        array = self.as_array()
+        diff = np.diff(array)
+        diff[0] = 0.0
+        return diff
+
     def __getitem__(self, item):
         item = utils.to_int_index(item=item,
                                   timestamp=self._timestamp)
@@ -52,7 +58,7 @@ class Equity:
     def __op(self, fn, other):
         if isinstance(other, Equity):
             other = other.as_array()
-        return Equity(
+        return self.__class__(
             iterable=fn(self.as_array(), other),
             timestamp=self._timestamp,
             timeframe=self.timeframe

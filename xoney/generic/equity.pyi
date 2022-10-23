@@ -41,6 +41,11 @@ class Equity:
     def update(self, balance: float) -> None:
         ...
 
+    def diff(self) -> np.ndarray:
+        array: np.ndarray
+        diff: np.ndarray
+        ...
+
     def __getitem__(self, item):
         item: int | slice
         ...
