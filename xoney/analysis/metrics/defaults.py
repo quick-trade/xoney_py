@@ -94,7 +94,7 @@ class __ProfitStdMetric(Metric, ABC):
         self._candles_per_year: float = self._equity.timeframe.candles_in_year
         equity_array: np.ndarray = self._equity.as_array()
 
-        absolute_profit: np.ndarray = np.diff(equity_array)
+        absolute_profit: np.ndarray = self._equity.diff()
         self._returns: np.ndarray = absolute_profit / equity_array[:-1]
         profit: float = self._returns.mean() * self._candles_per_year
 
