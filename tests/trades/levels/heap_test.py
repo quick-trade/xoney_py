@@ -262,3 +262,15 @@ def test_iter(breakouts):
 
     for edited_level in breakouts:
         assert edited_level.trigger_price == 0
+
+
+@pytest.mark.parametrize("obj",
+                         [123,
+                          "123",
+                          123.123123,
+                          {"dict": "key"},
+                          {123, 12, 1},
+                          [123, 123, 123]])
+def test_eq_type_false(breakouts, obj):
+    with pytest.raises(TypeError):
+        breakouts == 123
