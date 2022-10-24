@@ -71,6 +71,17 @@ class TestOperations:
     def test_eq_len_false(self, chart):
         assert chart != chart[1:]
 
+    @pytest.mark.parametrize("obj",
+                             [123,
+                              "123",
+                              123.123123,
+                              {"dict": "key"},
+                              {123, 12, 1},
+                              [123, 123, 123]])
+    def test_eq_type_false(self, chart, obj):
+        with pytest.raises(TypeError):
+            chart == 123
+
 
 class TestGetItem:
     @pytest.mark.parametrize("index",
@@ -169,3 +180,9 @@ def test_init_typeerror(not_an_array):
             low=not_an_array,
             close=[not_an_array,]  # array-like
         )
+
+
+@pytest.mark.parametrize("decrease",
+                         list(range(10)))
+def test_len(chart, decrease):
+    assert len(chart[decrease:]) == len(chart.close) - decrease
