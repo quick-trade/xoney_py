@@ -88,8 +88,6 @@ def candle_above_take_profit_2(candle_above_take_profit):
     return candle_above_take_profit + 5_000
 
 
-@pytest.mark.skip("skipped so as not to slow down "
-                  "the development of other features.")
 class TestLogic:
     def test_entry_only(self, trade, candle_below_entry, entry):
         expected_filled_after = trade.potential_volume * entry.trade_part
@@ -117,6 +115,8 @@ class TestLogic:
         assert trade.status == TradeStatus.ACTIVE
         assert trade.filled_volume == after_avg_entry
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_stop_loss(self, trade, candle_below_stop_loss):
         filled_before_breakout = 50
         filled_after_breakout = filled_before_breakout * (1 - 0.1)
@@ -130,6 +130,8 @@ class TestLogic:
         # stop-loss have not 100% trade_part
         assert trade.filled_volume == filled_after_breakout
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_take_profit(self,
                               trade,
                               candle_below_entry,
@@ -143,6 +145,8 @@ class TestLogic:
 
         assert is_equal(trade.filled_volume, filled_after_breakout)
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_take_profit_averaging_entry_stop_loss(
             self,
             trade,
@@ -164,6 +168,8 @@ class TestLogic:
         trade.update(candle_below_stop_loss)
         assert trade.filled_volume == filled_after_sl
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_tp2(self,
                        trade,
                        candle_above_take_profit_2,
@@ -210,8 +216,6 @@ class TestLogic:
         assert trade.potential_volume == 1
 
 
-@pytest.mark.skip("skipped so as not to slow down "
-                  "the development of other features.")
 class TestProfit:
     def test_entry_only(self, trade, candle_below_entry, entry):
         price = candle_below_entry.close
@@ -223,6 +227,8 @@ class TestProfit:
 
         assert is_equal(trade.profit, expected_profit)
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_stop_loss(self, trade, candle_below_stop_loss, stop_loss):
         price = candle_below_stop_loss.close
 
@@ -232,6 +238,8 @@ class TestProfit:
 
         assert is_equal(trade.profit, expected_profit)
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_take_profit(self,
                               trade,
                               candle_below_entry,
@@ -245,6 +253,8 @@ class TestProfit:
 
         assert is_equal(trade.profit, expected_profit)
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_take_profit_averaging_entry_stop_loss(
             self,
             trade,
@@ -264,6 +274,8 @@ class TestProfit:
 
         assert is_equal(trade.profit, expected_profit)
 
+    @pytest.mark.skip("skipped so as not to slow down "
+                      "the development of other features.")
     def test_entry_take_profit_averaging_entry_tp2(
             self,
             trade,
