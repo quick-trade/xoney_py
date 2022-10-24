@@ -25,7 +25,7 @@ class RegressionModel(ABC):
         return self._result
 
     @abstractmethod
-    def fit(self, array: np.ndarray) -> None:
+    def fit(self, array: np.ndarray) -> None:  # pragma: no cover
         ...
 
 
