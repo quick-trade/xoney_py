@@ -14,6 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
+import numpy as np
+
 
 def default_volume(length: int) -> list[float]:
     if not isinstance(length, int):
@@ -44,3 +46,9 @@ def to_int_index(item, timestamp: list) -> int | slice:
     if isinstance(item, slice):
         return _slice_from_timestamp_slice(slice_=item, timestamp=timestamp)
     return _index_from_timestamp_index(index=item, timestamp=timestamp)
+
+
+def equal_arrays(array_1: np.ndarray, array_2: np.ndarray) -> bool:
+    if array_1.shape != array_2.shape:
+        return False
+    return all(array_1 == array_2)

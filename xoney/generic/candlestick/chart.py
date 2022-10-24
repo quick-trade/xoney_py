@@ -155,3 +155,19 @@ class Chart:
 
     def __len__(self) -> int:
         return len(self._close)
+
+    def __eq__(self, other: Chart) -> bool:
+        if isinstance(other, Chart):
+            eq_open: bool = utils.equal_arrays(self._open, other._open)
+            eq_high: bool = utils.equal_arrays(self._high, other._high)
+            eq_low: bool = utils.equal_arrays(self._low, other._low)
+            eq_close: bool = utils.equal_arrays(self._close, other._close)
+            eq_volume: bool = utils.equal_arrays(self._volume, other._volume)
+            eq_time: bool = self._timestamp == other._timestamp
+            return all([eq_open,
+                        eq_high,
+                        eq_low,
+                        eq_close,
+                        eq_volume,
+                        eq_time])
+        raise TypeError(f"Object is not chart: {other}")

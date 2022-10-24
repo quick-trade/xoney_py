@@ -13,21 +13,29 @@
 # limitations under the License.
 # =============================================================================
 import numpy as np
+import pandas as pd
 import pytest
 
 from .data_array import tohlcv
-from xoney.generic.candlestick import Chart
+from xoney.generic.candlestick import Chart, Candle
 from xoney.system.exceptions import IncorrectChartLength
 
+
 @pytest.fixture
-def chart():
-    t, o, h, l, c, v = tohlcv.T
-    return Chart(open=o,
-                 high=h,
-                 low=l,
-                 close=c,
-                 timestamp=t,
-                 volume=v)
+def dataframe():
+    data = tohlcv
+    columns = ["time", "open", "high", "low", "close", "volume"]
+    return pd.DataFrame(data, columns=columns)
+
+
+@pytest.fixture
+def chart(dataframe):
+    return Chart(open=dataframe["open"],
+                 high=dataframe["high"],
+                 low=dataframe["low"],
+                 close=dataframe["close"],
+                 timestamp=dataframe["time"],
+                 volume=dataframe["volume"])
 
 
 class TestOperations:
@@ -46,12 +54,85 @@ class TestOperations:
         assert all(result.close == np.ones(chart.close.shape))
 
 
+class TestGetItem:
+    @pytest.mark.parametrize("index",
+                             [-1,
+                              1,
+                              0,
+                              50])
+    def test_candle(self, dataframe, chart, index):
+        result = chart[index]
+        expected = Candle(
+            open=dataframe["open"].values[index],
+            high=dataframe["high"].values[index],
+            low=dataframe["low"].values[index],
+            close=dataframe["close"].values[index],
+            timestamp=dataframe["time"].values[index],
+            volume=dataframe["volume"].values[index]
+        )
+        assert isinstance(result, Candle)
+        assert result == expected
+        assert result.volume == expected.volume
+        assert result.timestamp == expected.timestamp
+
+    @pytest.mark.parametrize("index",
+                             [-1,
+                              1,
+                              0,
+                              50,
+                              52])
+    def test_candle(self, dataframe, chart, index):
+        expected = Candle(
+            open=dataframe["open"].values[index],
+            high=dataframe["high"].values[index],
+            low=dataframe["low"].values[index],
+            close=dataframe["close"].values[index],
+            timestamp=dataframe["time"].values[index],
+            volume=dataframe["volume"].values[index]
+        )
+        index = dataframe["time"].values[index]
+        result = chart[index]
+        assert isinstance(result, Candle)
+        assert result == expected
+        assert result.volume == expected.volume
+        assert result.timestamp == expected.timestamp
+
+    @pytest.mark.parametrize("index",
+                             [slice(10, 30),
+                              slice(0, -1),
+                              slice(15, 25, 2),
+                              slice(15, 25, 10),
+                              slice(15, 25, 11)])
+    def test_chart(self, dataframe, chart, index):
+        expected = Chart(
+            open=dataframe["open"].values[index],
+            high=dataframe["high"].values[index],
+            low=dataframe["low"].values[index],
+            close=dataframe["close"].values[index],
+            timestamp=dataframe["time"].values[index],
+            volume=dataframe["volume"].values[index]
+        )
+
+        start = index.start
+        stop = index.stop
+        step = index.step
+
+        index = dataframe["time"].values
+        index = slice(index[start], index[stop], step)
+        result = chart[index]
+        assert isinstance(result, Chart)
+        assert result == expected
+        assert all(result.volume == expected.volume)
+        assert result.timestamp == expected.timestamp
+
+
 def test_empty():
     empty_chart = Chart()
     assert not empty_chart.open.shape[0]
     assert not empty_chart.high.shape[0]
     assert not empty_chart.low.shape[0]
     assert not empty_chart.close.shape[0]
+
 
 def test_incorrect_lens():
     with pytest.raises(IncorrectChartLength):
