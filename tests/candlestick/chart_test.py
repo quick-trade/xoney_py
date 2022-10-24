@@ -190,9 +190,12 @@ def test_len(chart, decrease):
 
 def test_iter(chart, dataframe):
     for i, candle in enumerate(chart):
-        assert candle == Candle(open=dataframe["open"][i],
+        expected = Candle(open=dataframe["open"][i],
                                 high=dataframe["high"][i],
                                 low=dataframe["low"][i],
                                 close=dataframe["close"][i],
                                 volume=dataframe["volume"][i],
                                 timestamp=dataframe["time"][i])
+        assert candle == expected
+        assert candle.timestamp == expected.timestamp
+        assert candle.volume == expected.volume
