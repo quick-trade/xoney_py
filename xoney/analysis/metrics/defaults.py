@@ -85,19 +85,19 @@ class __ProfitStdMetric(Metric, ABC):
     _positive = True
     _risk_free: float
     _equity: Equity
-    _candles_per_year: float | int
+    _candles: float | int
 
     def __init__(self, risk_free: float = 0):
         self._risk_free = risk_free
 
     def _calculate_profit(self) -> float:
-        self._candles_per_year: float = self._equity.timeframe.candles_in_year
-        equity_array: np.ndarray = self._equity.as_array()
+        self._candles = self._equity.timeframe.candles_in_year
 
-        absolute_profit: np.ndarray = self._equity.diff()
-        self._returns: np.ndarray = absolute_profit / equity_array[:-1]
-        profit: float = self._returns.mean() * self._candles_per_year
+        self._returns: np.ndarray = self._equity.change().as_array()
 
+        mean: float = self._returns.mean()
+
+        profit: float = mean * self._candles - self._risk_free
         return profit
 
     @abstractmethod
@@ -107,22 +107,23 @@ class __ProfitStdMetric(Metric, ABC):
     def calculate(self, equity: Equity) -> None:
         self._equity = equity
         profit: float = self._calculate_profit()
-        variance: float = self._calculate_standard_deviation()
+        std: float = self._calculate_standard_deviation()
 
-        self._value = math.divide(profit, variance)
+        self._value = math.divide(profit, std)
 
 
 class SharpeRatio(__ProfitStdMetric):
     def _calculate_standard_deviation(self) -> float:
-        sd: float = self._returns.std() * np.sqrt(self._candles_per_year)
-        return sd
+        return self._returns.std() * np.sqrt(self._candles)
+
 
 class SortinoRatio(__ProfitStdMetric):
     def _calculate_standard_deviation(self) -> float:
         neg_ret: np.ndarray = self._returns[self._returns < 0]
 
-        sd: float = neg_ret.std() * np.sqrt(self._candles_per_year)
-        return sd
+        sd: float = neg_ret.std()
+        return sd * np.sqrt(self._candles)
+
 
 def evaluate_metric(metric: type | Metric, equity: Equity) -> float:
     if isinstance(metric, type):
