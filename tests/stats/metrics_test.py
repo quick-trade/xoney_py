@@ -57,7 +57,7 @@ class TestYearProfit:
         assert is_equal(metric.value, 1.01**(365*24))
 
     def test_positive(self):
-        assert SortinoRatio.positive
+        assert SortinoRatio().positive
 
 
 class TestMaxDrawDown:
@@ -76,7 +76,7 @@ class TestMaxDrawDown:
         assert is_equal(metric.value, 0.15)
 
     def test_positive(self):
-        assert not MaxDrawDown.positive
+        assert not MaxDrawDown().positive
 
 
 class TestCalmarRatio:
@@ -94,7 +94,7 @@ class TestCalmarRatio:
                         expected)
 
     def test_positive(self):
-        assert CalmarRatio.positive
+        assert CalmarRatio().positive
 
 
 class TestSharpeRatio:
@@ -115,7 +115,7 @@ class TestSharpeRatio:
         assert is_equal(value, expected)
 
     def test_positive(self):
-        assert SharpeRatio.positive
+        assert SharpeRatio().positive
 
 
 class TestSortinoRatio:
@@ -136,4 +136,4 @@ class TestSortinoRatio:
         assert is_equal(value, expected)
 
     def test_positive(self):
-        assert SortinoRatio.positive is True
+        assert SortinoRatio().positive is True
