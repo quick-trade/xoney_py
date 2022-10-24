@@ -5,7 +5,7 @@ from distutils.core import setup
 with open('README.md') as file:
     long_desc = file.read()
 
-__version__ = "0.0.5dev"
+__version__ = "0.0.6dev"
 
 packages = find_packages()
 for package in packages:
@@ -31,7 +31,7 @@ setup(
     },
     install_requires=[
         "numpy==1.23.4",
-        "optuna==3.0.3",
+        "optuna==2.10.0",
         "scipy==1.9.3"
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
