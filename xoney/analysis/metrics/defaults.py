@@ -27,7 +27,6 @@ class Metric(ABC):
     _value: float
     _positive: bool
 
-    @classmethod
     @property
     def positive(self) -> bool:
         return self._positive
