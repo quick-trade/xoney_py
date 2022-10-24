@@ -186,3 +186,13 @@ def test_init_typeerror(not_an_array):
                          list(range(10)))
 def test_len(chart, decrease):
     assert len(chart[decrease:]) == len(chart.close) - decrease
+
+
+def test_iter(chart, dataframe):
+    for i, candle in enumerate(chart):
+        assert candle == Candle(open=dataframe["open"][i],
+                                high=dataframe["high"][i],
+                                low=dataframe["low"][i],
+                                close=dataframe["close"][i],
+                                volume=dataframe["volume"][i],
+                                timestamp=dataframe["time"][i])
