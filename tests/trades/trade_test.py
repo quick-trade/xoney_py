@@ -47,22 +47,33 @@ def averaging_entry():
     return AveragingEntry(32_500,
                           0.4)
 
+
 @pytest.fixture
 def take_profit():
     return TakeProfit(40_000,
                      0.7)
+
 
 @pytest.fixture
 def take_profit2():
     return TakeProfit(45_000,
                      1.0)
 
+@pytest.fixture
+def breakouts(stop_loss, take_profit, take_profit2):
+    return LevelHeap([stop_loss, take_profit, take_profit2])
+
 
 @pytest.fixture
-def trade(stop_loss, entry, averaging_entry, take_profit, take_profit2):
+def entries(entry, averaging_entry):
+    return LevelHeap([entry, averaging_entry])
+
+
+@pytest.fixture
+def trade(entries, breakouts):
     return Trade(side=TradeSide.LONG,
-                 entries=LevelHeap([entry, averaging_entry]),
-                 breakouts=LevelHeap([stop_loss, take_profit, take_profit2]),
+                 entries=entries,
+                 breakouts=breakouts,
                  potential_volume=50.0)
 
 
@@ -214,6 +225,10 @@ class TestLogic:
         trade.set_potential_volume(5.5)
 
         assert trade.potential_volume == 1
+
+    def test_levels(self, trade, breakouts, entries):
+        for level in (*breakouts, *entries):
+            assert level in trade._levels
 
 
 class TestProfit:
