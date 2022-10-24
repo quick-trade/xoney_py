@@ -56,6 +56,9 @@ class TestYearProfit:
 
         assert is_equal(metric.value, 1.01**(365*24))
 
+    def test_positive(self):
+        assert SortinoRatio.positive
+
 
 class TestMaxDrawDown:
     def test_d1(self, equity_d1_exp):
@@ -72,6 +75,9 @@ class TestMaxDrawDown:
 
         assert is_equal(metric.value, 0.15)
 
+    def test_positive(self):
+        assert not MaxDrawDown.positive
+
 
 class TestCalmarRatio:
     def test_d1(self, equity_d1_exp):
@@ -86,6 +92,9 @@ class TestCalmarRatio:
         ) / 0.15
         assert is_equal(value,
                         expected)
+
+    def test_positive(self):
+        assert CalmarRatio.positive
 
 
 class TestSharpeRatio:
@@ -105,6 +114,9 @@ class TestSharpeRatio:
         expected = (mean_profit / std_profit) * candles_sqrt
         assert is_equal(value, expected)
 
+    def test_positive(self):
+        assert SharpeRatio.positive
+
 
 class TestSortinoRatio:
     @pytest.mark.parametrize("risk_free",
@@ -123,3 +135,5 @@ class TestSortinoRatio:
                    (std_profit * candles**0.5)
         assert is_equal(value, expected)
 
+    def test_positive(self):
+        assert SortinoRatio.positive is True
