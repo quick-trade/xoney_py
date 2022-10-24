@@ -36,8 +36,18 @@ class SymbolArgumentsError(SymbolError):
                          f"{*args, kwargs}")
 
 
-class IncorrectChartLength(XoneyException):
+class ChartError(XoneyException):
+    pass
+
+
+class IncorrectChartLength(ChartError):
     def __init__(self, lengths):
         lengths = map(str, lengths)
         super().__init__("All arrays must be of the same length "
                          "Received lengths: " + ", ".join(lengths))
+
+
+class InvalidChartParameters(ChartError):
+    def __init__(self):
+        super().__init__("Incorrect parameters of Chart initialization. "
+                         "Please check types of parameters")

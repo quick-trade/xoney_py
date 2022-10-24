@@ -81,12 +81,15 @@ class Chart:
             timestamp = [None for _ in close]
         self.timeframe = timeframe
 
-        _validation.validate_chart_length(open,
-                                          high,
-                                          low,
-                                          close,
-                                          volume,
-                                          timestamp)
+        _params: tuple = (open,
+                          high,
+                          low,
+                          close,
+                          volume,
+                          timestamp)
+
+        _validation.validate_chart_parameters(*_params)
+        _validation.validate_chart_length(*_params)
 
         self._open = np.array(open)
         self._high = np.array(high)
@@ -108,6 +111,15 @@ class Chart:
                               low=func(self._low, low),
                               close=func(self._close, close),
                               timeframe=self.timeframe)
+
+    def __add__(self, other):
+        return self.__operation(other=other, func=operator.add)
+
+    def __sub__(self, other):
+        return self.__operation(other=other, func=operator.sub)
+
+    def __mul__(self, other):
+        return self.__operation(other=other, func=operator.mul)
 
     def __truediv__(self, other):
         # Rearranging low and high to account for

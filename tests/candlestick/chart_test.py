@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+import copy
+
 import numpy as np
 import pandas as pd
 import pytest
 
 from .data_array import tohlcv
 from xoney.generic.candlestick import Chart, Candle
-from xoney.system.exceptions import IncorrectChartLength
+from xoney.system.exceptions import (IncorrectChartLength,
+                                     InvalidChartParameters)
 
 
 @pytest.fixture
@@ -52,6 +55,21 @@ class TestOperations:
         assert all(result.high == chart.high / chart.low)
         assert all(result.low == chart.low / chart.high)
         assert all(result.close == np.ones(chart.close.shape))
+
+    def test_eq_true(self, chart):
+        assert chart == copy.deepcopy(chart)
+
+    @pytest.mark.parametrize("op",
+                             [lambda x, y: x * y,
+                              lambda x, y: x / y,
+                              lambda x, y: x + y,
+                              lambda x, y: x - y])
+    def test_eq_false(self, chart, op):
+        chart_2 = copy.deepcopy(op(chart, 1.5))
+        assert chart != chart_2
+
+    def test_eq_len_false(self, chart):
+        assert chart != chart[1:]
 
 
 class TestGetItem:
@@ -137,3 +155,17 @@ def test_empty():
 def test_incorrect_lens():
     with pytest.raises(IncorrectChartLength):
         chart = Chart([1.], [1., 2., 3.], [3.], [4.3])
+
+
+@pytest.mark.parametrize("not_an_array",
+                         ['123',
+                          453,
+                          {'dict': 123}])
+def test_init_typeerror(not_an_array):
+    with pytest.raises(InvalidChartParameters):
+        chart = Chart(
+            open=not_an_array,
+            high=not_an_array,
+            low=not_an_array,
+            close=[not_an_array,]  # array-like
+        )
