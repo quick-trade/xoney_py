@@ -34,6 +34,13 @@ class Equity:
         self._timestamp = timestamp
         self._list = list(iterable)
 
+    def __eq__(self, other):
+        if any(other.as_array() != self.as_array()):
+            return False
+        if self.timeframe != other.timeframe:
+            return False
+        return True
+
     def append(self, balance):
         self._list.append(balance)
 

@@ -35,6 +35,9 @@ class Equity:
                  timeframe: TimeFrame = DAY_1):
         ...
 
+    def __eq__(self, other: Equity):
+        ...
+
     def append(self, balance: float) -> None:
         ...
 
