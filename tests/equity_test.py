@@ -16,6 +16,7 @@ import numpy as np
 import pytest
 
 from xoney.generic.equity import Equity
+from xoney.generic.timeframes import HOUR_1
 
 
 @pytest.fixture
@@ -48,3 +49,10 @@ def test_log(equity_1d):
 
 def test_len(equity_1d):
     assert len(equity_1d) == len(equity_1d.as_array())
+
+
+def test_eq_tf(equity_1d):
+    other = Equity(equity_1d.as_array(),
+                   timeframe=HOUR_1,
+                   timestamp=equity_1d._timestamp)
+    assert other != equity_1d
