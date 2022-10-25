@@ -73,6 +73,10 @@ class Equity:
     def __getitem__(self, item):
         item = utils.to_int_index(item=item,
                                   timestamp=self._timestamp)
+        if isinstance(item, slice):
+            return self.__class__(iterable=self._list[item],
+                                  timestamp=self._timestamp[item],
+                                  timeframe=self.timeframe)
         return self._list[item]
 
     def __op(self, fn, other):
