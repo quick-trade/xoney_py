@@ -21,12 +21,14 @@ from xoney.generic.timeframes import HOUR_1
 
 @pytest.fixture
 def equity_1d():
-    return Equity([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    return Equity([1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                  timestamp=list('123456789a'))
 
 
 @pytest.fixture
 def equity_1d_2():
-    return Equity([2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+    return Equity([2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+                  timestamp=list('123456789a'))
 
 
 def test_append(equity_1d):
@@ -66,6 +68,24 @@ def test_eq_tf(equity_1d):
 def test_iter(equity_1d):
     for i, val in enumerate(equity_1d):
         assert val == equity_1d.as_array()[i] == equity_1d[i]
+
+
+@pytest.mark.parametrize("item",
+                         [slice(3, 5),
+                          slice(3, 7, 2),
+                          slice(1, -1, 3)])
+def test_getitem(equity_1d, item):
+    expected = Equity(equity_1d.as_array()[item],
+                      timestamp=equity_1d._timestamp[item])
+
+    start = equity_1d._timestamp[item.start]
+    stop = equity_1d._timestamp[item.stop]
+    step = item.step
+
+    value = equity_1d[start:stop:step]
+
+    assert value == expected
+    assert value._timestamp == expected._timestamp
 
 
 @pytest.mark.parametrize("op",
