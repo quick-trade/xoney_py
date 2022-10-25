@@ -65,7 +65,7 @@ def test_eq_tf(equity_1d):
 
 def test_iter(equity_1d):
     for i, val in enumerate(equity_1d):
-        assert val == equity_1d.as_array()[i]
+        assert val == equity_1d.as_array()[i] == equity_1d[i]
 
 
 @pytest.mark.parametrize("op",
