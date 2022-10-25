@@ -29,7 +29,10 @@ def is_zero(number) -> bool:
 
 
 def is_equal(num_1, num_2) -> bool:
-    return is_zero(divide(num_1, num_2) - 1) or num_1 is num_2
+    by_is: bool = num_1 is num_2
+    by_pct: bool = is_zero(divide(num_1, num_2) - 1)
+    by_abs: bool = is_zero(num_1 - num_2)
+    return any((by_abs, by_pct, by_is))
 
 
 def multiply_diff(abs_change: T, multiplier: float | T = 1.0) -> T:
