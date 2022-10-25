@@ -24,6 +24,11 @@ def equity_1d():
     return Equity([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
 
+@pytest.fixture
+def equity_1d_2():
+    return Equity([2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+
+
 def test_append(equity_1d):
     expected = Equity([*equity_1d.as_array(), 11, 12],
                       timeframe=equity_1d.timeframe)
@@ -56,3 +61,29 @@ def test_eq_tf(equity_1d):
                    timeframe=HOUR_1,
                    timestamp=equity_1d._timestamp)
     assert other != equity_1d
+
+
+def test_iter(equity_1d):
+    for i, val in enumerate(equity_1d):
+        assert val == equity_1d.as_array()[i]
+
+
+@pytest.mark.parametrize("op",
+                         [lambda x, y: x * y,
+                          lambda x, y: x / y,
+                          lambda x, y: x + y,
+                          lambda x, y: x - y])
+def test_op(equity_1d, op, equity_1d_2):
+    assert op(equity_1d, equity_1d_2) == Equity(op(equity_1d.as_array(),
+                                                   equity_1d_2.as_array()))
+
+
+@pytest.mark.parametrize("op",
+                         [lambda x, y: x * y,
+                          lambda x, y: x / y,
+                          lambda x, y: x + y,
+                          lambda x, y: x - y])
+@pytest.mark.parametrize("val",
+                         [2.5, 6, 1, 2])
+def test_op_float(op, equity_1d, val):
+    assert op(equity_1d, val) == Equity(op(equity_1d.as_array(), val))
