@@ -165,3 +165,14 @@ class TestMagic:
     def test_repr(self, trade_long):
         breakouts = trade_long._Trade__breakouts
         assert repr(breakouts) == str(breakouts)
+
+
+def test_pending(trade_short):
+    levels: LevelHeap = trade_short._Trade__breakouts
+    assert levels.pending == levels
+
+    trade_short.update(Candle(1, 1, 1, 1))
+    trade_short.update(Candle(99999, 99999, 99999, 99999))
+
+    assert not len(levels.pending)
+    assert len(levels.crossed) == 2
