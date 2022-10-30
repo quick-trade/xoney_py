@@ -80,7 +80,7 @@ class Trade:
 
     def _bind_levels(self) -> None:
         for level in (*self.__entries, *self.__breakouts):
-            level._bind_trade(self)
+            level._bind_trade(trade=self)
 
     def _update_levels(self, candle: Candle) -> None:
         self.__entries.update(candle=candle)

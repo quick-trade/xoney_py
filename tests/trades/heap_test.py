@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+import copy
+
 import pytest
 
 from xoney.generic.trades import TradeHeap
@@ -81,15 +83,15 @@ def entries_2(entry, averaging_entry):
 @pytest.fixture
 def trade(entries, breakouts):
     return Trade(side=TradeSide.LONG,
-                 entries=entries,
-                 breakouts=breakouts,
+                 entries=copy.deepcopy(entries),
+                 breakouts=copy.deepcopy(breakouts),
                  potential_volume=50.0)
 
 @pytest.fixture
 def trade_2(entries_2, breakouts_2):
     return Trade(side=TradeSide.LONG,
-                 entries=entries_2,
-                 breakouts=breakouts_2,
+                 entries=copy.deepcopy(entries_2),
+                 breakouts=copy.deepcopy(breakouts_2),
                  potential_volume=150.0)
 
 
@@ -124,3 +126,17 @@ class TestPotentialVolume:
 
     def test_zero(self, trade_heap, trade, trade_2):
         assert is_zero(trade_heap.closed.potential_volume)
+
+
+class TestProfit:
+    def test_at_init(self,
+                     trade,
+                     trade_2,
+                     trade_heap,
+                     candle_below_entry,
+                     entry):
+        trade_heap.update_trades(candle_below_entry)
+        assert is_equal(
+            trade_heap.filled_volume,
+            sum(t._levels.crossed.quote_volume for t in (trade, trade_2))
+        )
