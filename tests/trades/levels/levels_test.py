@@ -135,3 +135,8 @@ class TestCallbacks:
         take_profit._trade.update(candle_above)
 
         assert callback_var == 5 + 3 + 7
+
+
+def test_repr(take_profit):
+    assert repr(take_profit) == "<long TakeProfit on 30000.0. " \
+                                "Part of trade: 0.1>"
