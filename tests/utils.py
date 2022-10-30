@@ -49,13 +49,3 @@ def random_df(length=100):
         data.append(candle.as_array())
         prev = candle
     return pd.DataFrame(data, columns=["Open", "High", "Low", "Close"])
-
-
-def connect_trade(level: Level, side: TradeSide, volume: float) -> None:
-    is_entry = isinstance(level, BaseEntry)
-    is_breakout = isinstance(level, BaseBreakout)
-
-    _trade = Trade(side=side,
-                   potential_volume=volume,
-                   entries=LevelHeap([level] if is_entry else None),
-                   breakouts=LevelHeap([level] if is_breakout else None))
