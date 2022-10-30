@@ -135,4 +135,33 @@ def test_iter(_breakouts):
                           [123, 123, 123]])
 def test_eq_type_false(_breakouts, obj):
     with pytest.raises(TypeError):
-        _breakouts == 123
+        _breakouts == obj
+
+
+class TestMagic:
+    def test_empty(self):
+        empty_heap = LevelHeap([])
+        assert not len(empty_heap)
+
+    def test_remove(self, trade_long):
+        levels = copy.deepcopy(trade_long._Trade__breakouts)
+        l1 = levels[0]
+        l2 = levels[1]
+        levels.remove(levels[0])
+        assert l1 not in levels
+        assert l2 in levels
+
+    def test_iteration(self, trade_long):
+        breakouts = trade_long._Trade__breakouts
+        for level in breakouts:
+            assert level in breakouts
+
+    def test_str(self, trade_long):
+        breakouts = trade_long._Trade__breakouts
+        assert str(breakouts) == "LevelHeap([<long StopLoss on 30000. " \
+                                 "Part of trade: 0.8>, <long TakeProfit on " \
+                                 "45000. Part of trade: 0.7>])"
+
+    def test_repr(self, trade_long):
+        breakouts = trade_long._Trade__breakouts
+        assert repr(breakouts) == str(breakouts)
