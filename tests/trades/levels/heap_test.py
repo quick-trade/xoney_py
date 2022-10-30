@@ -42,6 +42,28 @@ def trade_short(_entries, _breakouts):
 
 
 @pytest.fixture
+def trade_long(_entries_2, _breakouts_2):
+    return Trade(TradeSide.LONG,
+                 entries=_entries_2,
+                 breakouts=_breakouts_2,
+                 potential_volume=150)
+
+@pytest.fixture
+def _entries_2():
+    return LevelHeap([SimpleEntry(40_000, 0.6)])
+
+
+@pytest.fixture
+def _breakouts_2():
+    return LevelHeap([StopLoss(30_000, 0.8), TakeProfit(45_000, 0.7)])
+
+
+@pytest.fixture
+def trade_heap(trade_short, trade_long):
+    return TradeHeap([trade_short, trade_long])
+
+
+@pytest.fixture
 def candle_below_entry(_entries):
     entry = _entries[0]
     price = entry.trigger_price
@@ -56,16 +78,23 @@ def candle_above_sl(_breakouts):
 
 
 def test_short_entry(trade_short,
+                     trade_long,
+                     trade_heap,
                      candle_below_entry):
     last_price = candle_below_entry.close
     entr = trade_short._Trade__entries[0].trigger_price
+    entr2 = trade_long._Trade__entries[0].trigger_price
     entr_vol = trade_short._Trade__entries[0].trade_part
+    entr_vol2 = trade_long._Trade__entries[0].trade_part
 
-    expected = (entr-last_price)*entr_vol / entr * trade_short.potential_volume
+    expected_short = (entr-last_price)*entr_vol / entr * trade_short.potential_volume
+    expected_long = (last_price-entr2)*entr_vol2 / entr2 * trade_long.potential_volume
 
-    trade_short.update(candle_below_entry)
+    expected = expected_short + expected_long
 
-    assert is_equal(expected, trade_short.profit)
+    trade_heap.update_trades(candle_below_entry)
+
+    assert is_equal(expected, trade_heap.profit)
 
 
 class TestTraceBacks:
