@@ -37,8 +37,13 @@ class Backtester(Worker):  # TODO
         return self._free_balance
 
     def __init__(self,
-                 strategies: Iterable[Strategy]):
+                 strategies: Iterable[Strategy],
+                 max_trades: int = 1):
         self._strategies = list(strategies)
+        self.max_trades = max_trades
+
+    def set_max_trades(self, max_trades: int):
+        self.max_trades = max_trades
 
     def __handle_closed_trades(self) -> None:
         self._free_balance += self._trades.closed.profit

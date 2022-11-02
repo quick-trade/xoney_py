@@ -111,6 +111,16 @@ def candle_below_stop_loss(candle_below_averaging_entry):
 
 
 @pytest.fixture
+def candle_above_take_profit_2(take_profit2):
+    return Candle(1, 1, 1, 1) * take_profit2.trigger_price
+
+
+@pytest.fixture
+def candle_above_take_profit(take_profit):
+    return Candle(1, 1, 1, 1) * take_profit.trigger_price
+
+
+@pytest.fixture
 def trade_heap(trade, trade_2):
     return TradeHeap([trade, trade_2])
 
@@ -140,3 +150,17 @@ class TestProfit:
             trade_heap.filled_volume,
             sum(t._levels.crossed.quote_volume for t in (trade, trade_2))
         )
+
+
+@pytest.mark.skip("skipped so as not to slow down "
+                  "the development of other features.")
+def test_cleanup_closed(trade_heap,
+                        candle_below_entry,
+                        candle_above_take_profit_2):
+    assert not len(trade_heap.closed)
+    trade_heap.update_trades(candle_below_entry)
+    trade_heap.update_trades(candle_above_take_profit_2)
+    trade_heap.update_trades(candle_below_entry)
+    assert not len(trade_heap.active)
+    trade_heap.cleanup_closed()
+    assert not len(trade_heap)
