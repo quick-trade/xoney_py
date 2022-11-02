@@ -123,4 +123,3 @@ def test_set_max_trades(dataframe, max_trades):
     equity_2 = backtester_2.equity
 
     assert equity_2 == equity_1
-
