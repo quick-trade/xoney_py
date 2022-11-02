@@ -107,3 +107,20 @@ def test_return_type_equity(dataframe, n, deposit, commission):
                    initial_depo=deposit,
                    commission=commission)
     assert isinstance(backtester.equity, Equity)
+
+
+@pytest.mark.parametrize("max_trades",
+                         [1, 2, 3])
+def test_set_max_trades(dataframe, max_trades):
+    backtester_1 = Backtester(strategies=[TrendCandleStrategy()],
+                              max_trades=max_trades)
+    backtester_1.run(chart=dataframe, initial_depo=100, commission=0.01)
+    equity_1 = backtester_1.equity
+
+    backtester_2 = Backtester(strategies=[TrendCandleStrategy()])
+    backtester_2.set_max_trades(max_trades=max_trades)
+    backtester_2.run(chart=dataframe, initial_depo=100, commission=0.01)
+    equity_2 = backtester_2.equity
+
+    assert equity_2 == equity_1
+

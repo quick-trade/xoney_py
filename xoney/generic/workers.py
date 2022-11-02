@@ -40,8 +40,8 @@ class Worker(ABC):
         return self._trades.potential_volume + self._trades.profit
 
     @abstractproperty
-    def free_balance(self):
-        return self._free_balance
+    def free_balance(self):  # pragma: no cover
+        ...
 
     @property
     def filled_balance(self):
