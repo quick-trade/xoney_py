@@ -32,14 +32,23 @@ class TrendCandleStrategy(Strategy):
     candle: Candle
 
     def __init__(self, n: int = 3):
+        self._signal = None
         self.edit_settings({'n': n})
 
     def run(self, chart: Chart) -> None:
         diff: np.ndarray = chart.close - chart.open
         if all(diff > 0):
-            self._signal = "long"
+            signal = "long"
         elif all(diff < 0):
-            self._signal = "short"
+            signal = "short"
+        else:
+            signal = None
+
+        if self._signal != signal:
+            self._signal = signal
+        else:
+            self._signal = None
+
         self.candle = chart[-1]
 
     def fetch_events(self) -> Iterable[Event]:
