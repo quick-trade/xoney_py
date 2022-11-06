@@ -1,4 +1,5 @@
 - [Getting started](docs/getting_started.md)
 - Manual
   - [Strategy creating](docs/manual/strategy_creating.md)
-    - [Trades and levels](https://quick-trade.github.io/xoney/#/docs/manual/strategy_creating?id=trades-and-levels)
+  - [Optimization](docs/manual/optimization.md)
+  - [Live trading](docs/manual/live_trading.md)
