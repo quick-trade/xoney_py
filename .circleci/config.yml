@@ -18,10 +18,10 @@ jobs:
       - run:
           name: Make .xml file
           command: coverage xml
-      - codecov/upload
-      - uploading to codacy:
-          name: uploading
+      - run:
+          name: uploading to codaccy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh)
+      - codecov/upload
 
 workflows:
   main:
