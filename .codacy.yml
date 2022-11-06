@@ -1,1 +1,4 @@
-test/**
+---
+exclude_paths:
+  - "tests/**"
+  - "**/__init__.py"
