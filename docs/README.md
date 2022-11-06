@@ -1,4 +1,4 @@
-#What is xoney?
+# What is xoney?
 
 Xoney is a flexible framework for creating trading systems based on the results
 of statistical hypothesis testing.
