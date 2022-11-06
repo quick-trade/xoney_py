@@ -19,6 +19,9 @@ jobs:
           name: Make .xml file
           command: coverage xml
       - run:
+          - name: setting codacy secret
+          - command: export CODACY_PROJECT_TOKEN=${{secrets.CODACY_PROJECT_TOKEN}}
+      - run:
           name: uploading to codacy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh)
       - codecov/upload
