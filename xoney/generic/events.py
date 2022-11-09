@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from xoney.generic.enums import TradeStatus
 from xoney.generic.trades import Trade, TradeHeap
 from xoney.generic.trades.levels import Level
 from xoney.generic.volume_distribution import (VolumeDistributor,
@@ -77,10 +78,9 @@ class CloseTrade(Event):
         self._trade = trade
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        self._trade.cleanup()
-
         trade_value: float = self._trade.potential_volume + self._trade.profit
         self._worker._free_balance += trade_value
+        self._trade.cleanup()
 
 
 class CloseAllTrades(Event):
