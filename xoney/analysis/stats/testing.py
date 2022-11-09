@@ -15,7 +15,7 @@
 import numpy as np
 from scipy import stats
 
-from xoney.analysis.stats import intervals
+from xoney.analysis.stats import _intervals
 
 
 def critical_level_p(mean: float,
@@ -44,14 +44,14 @@ class WorstPopulation:
     def _worst_dist_std(cls,
                         x: np.ndarray,
                         alpha: float = 0.05) -> float:
-        return intervals.max_std(x=x, alpha=alpha)
+        return _intervals.max_std(x=x, alpha=alpha)
 
     @classmethod
     def _worst_dist_mean(cls,
                          x: np.ndarray,
                          alternative: str = "greater",
                          alpha: float = 0.05) -> float:
-        return intervals.PopulationMean.evaluate(
+        return _intervals.PopulationMean.evaluate(
             x=x,
             alpha=alpha,
             alternative=alternative

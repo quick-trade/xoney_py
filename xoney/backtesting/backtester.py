@@ -20,7 +20,6 @@ from xoney.generic.trades import TradeHeap
 from xoney.generic.events import Event
 from xoney.strategy import Strategy
 from xoney.generic.equity import Equity
-from xoney.generic.timeframes import TimeFrame, DAY_1
 
 from typing import Iterable
 

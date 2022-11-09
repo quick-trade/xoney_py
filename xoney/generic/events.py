@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from xoney.generic.enums import TradeStatus
 from xoney.generic.trades import Trade, TradeHeap
 from xoney.generic.trades.levels import Level
 from xoney.generic.volume_distribution import (VolumeDistributor,
