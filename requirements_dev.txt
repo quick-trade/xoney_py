@@ -1,5 +1,4 @@
 -r ./requirements.txt
 pytest==7.2.0
 codecov==2.1.12
-pandas==1.5.1
 ta==0.10.2
