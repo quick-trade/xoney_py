@@ -32,10 +32,6 @@ class BollingerTrendStrategy(Strategy):
     _signal = None
     _signal_prev_real = None
 
-    def __init__(self, length=100, dev=1):
-        self._settings["length"] = length
-        self._settings["dev"] = dev
-
     def run(self, chart: Chart) -> None:
         bollinger = BollingerBands(
             close=pd.Series(chart.close[-self._settings["length"]:]),

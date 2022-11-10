@@ -20,6 +20,9 @@ from abc import ABC, abstractmethod
 class Strategy(ABC):
     _settings = dict()
 
+    def __init__(self, **settings):
+        self.edit_settings(settings)
+
     def edit_settings(self, settings):
         self._settings = settings
 

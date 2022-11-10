@@ -26,6 +26,10 @@ from xoney.generic.events import Event
 class Strategy(ABC):
     _settings: dict[str, typing.Any]
 
+    def __init__(self, **settings):
+        ...
+
+
     def edit_settings(self,
                       settings: dict[str, object]) -> None:
         ...

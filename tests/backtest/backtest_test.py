@@ -32,8 +32,8 @@ class TrendCandleStrategy(Strategy):
     candle: Candle
 
     def __init__(self, n: int = 3):
+        super().__init__(n=n)
         self._signal = None
-        self.edit_settings({'n': n})
 
     def run(self, chart: Chart) -> None:
         diff: np.ndarray = chart.close - chart.open
