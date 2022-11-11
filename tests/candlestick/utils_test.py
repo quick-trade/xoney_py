@@ -14,9 +14,8 @@
 # =============================================================================
 import pytest
 
-from xoney.generic.candlestick import utils
+from xoney.generic.candlestick import _utils
 import datetime as dt
-from xoney.generic.timeframes import HOUR_1
 
 
 @pytest.fixture
@@ -46,10 +45,10 @@ class TestDefaultVolume:
     ])
     def test_typeerror(self, value):
         with pytest.raises(TypeError):
-            utils.default_volume(value)
+            _utils.default_volume(value)
 
     def test_list_123(self):
-        result = utils.default_volume(123)
+        result = _utils.default_volume(123)
 
         assert type(result) == list
         assert len(result) == 123

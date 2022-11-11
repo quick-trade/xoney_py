@@ -14,7 +14,7 @@
 # =============================================================================
 import operator
 
-from xoney.generic.candlestick import utils
+from xoney.generic.candlestick import _utils
 from xoney.generic.timeframes import DAY_1
 
 import numpy as np
@@ -71,8 +71,8 @@ class Equity:
         return self.as_array().std()
 
     def __getitem__(self, item):
-        item = utils.to_int_index(item=item,
-                                  timestamp=self._timestamp)
+        item = _utils.to_int_index(item=item,
+                                   timestamp=self._timestamp)
         if isinstance(item, slice):
             return self.__class__(iterable=self._list[item],
                                   timestamp=self._timestamp[item],

@@ -20,7 +20,7 @@ from typing import Collection, Any
 import numpy as np
 
 from xoney.generic.candlestick import _validation
-from xoney.generic.candlestick import utils
+from xoney.generic.candlestick import _utils
 from xoney.generic.candlestick import Candle
 from xoney.generic.timeframes import TimeFrame, DAY_1
 
@@ -75,7 +75,7 @@ class Chart:
         if close is None:
             close = []
         if volume is None:
-            volume = utils.default_volume(length=len(close))
+            volume = _utils.default_volume(length=len(close))
         if timestamp is None:
             timestamp = [None for _ in close]
         self.timeframe = timeframe
@@ -138,7 +138,7 @@ class Chart:
         return self.__operation(other=other, func=operator.truediv)
 
     def __getitem__(self, item):
-        item = utils.to_int_index(item=item, timestamp=self._timestamp)
+        item = _utils.to_int_index(item=item, timestamp=self._timestamp)
         dict_init_params: dict = dict(
             open=self._open[item],
             high=self._high[item],
@@ -169,11 +169,11 @@ class Chart:
 
     def __eq__(self, other: Chart) -> bool:
         if isinstance(other, Chart):
-            eq_open: bool = utils.equal_arrays(self._open, other._open)
-            eq_high: bool = utils.equal_arrays(self._high, other._high)
-            eq_low: bool = utils.equal_arrays(self._low, other._low)
-            eq_close: bool = utils.equal_arrays(self._close, other._close)
-            eq_volume: bool = utils.equal_arrays(self._volume, other._volume)
+            eq_open: bool = _utils.equal_arrays(self._open, other._open)
+            eq_high: bool = _utils.equal_arrays(self._high, other._high)
+            eq_low: bool = _utils.equal_arrays(self._low, other._low)
+            eq_close: bool = _utils.equal_arrays(self._close, other._close)
+            eq_volume: bool = _utils.equal_arrays(self._volume, other._volume)
             eq_time: bool = self._timestamp == other._timestamp
             return all([eq_open,
                         eq_high,
