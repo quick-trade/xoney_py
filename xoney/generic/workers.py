@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from abc import abstractproperty, abstractmethod, ABC
 
+
 class Worker(ABC):
     @abstractmethod
     def run(self,
@@ -23,6 +24,8 @@ class Worker(ABC):
             **kwargs) -> None:  # pragma: no cover
         ...
 
+
+class EquityWorker(Worker):
     @abstractproperty
     def equity(self):  # pragma: no cover
         ...

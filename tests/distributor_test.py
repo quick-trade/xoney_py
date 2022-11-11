@@ -17,7 +17,7 @@ from __future__ import annotations
 import pytest
 
 from xoney.generic.volume_distribution import DefaultDistributor
-from xoney.generic.workers import Worker
+from xoney.generic.workers import EquityWorker
 
 from xoney.generic.trades import Trade, TradeHeap
 from xoney.generic.enums import TradeSide, TradeStatus
@@ -26,7 +26,7 @@ from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 from xoney.math import is_equal
 
 
-class TemplateWorker(Worker):
+class TemplateWorker(EquityWorker):
     _free_balance: float
     _opened_trades: int
     _total_balance: float

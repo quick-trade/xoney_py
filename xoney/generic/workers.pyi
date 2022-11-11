@@ -22,17 +22,20 @@ from xoney.generic.equity import Equity
 
 
 class Worker(ABC):
-    _trades: TradeHeap
     _strategies: list[Strategy]
-    max_trades: int
-    commission: float
-    _free_balance: float
 
     @abstractmethod
     def run(self,
             *args,
             **kwargs) -> None:
         ...
+
+
+class EquityWorker(Worker):
+    _trades: TradeHeap
+    max_trades: int
+    commission: float
+    _free_balance: float
 
     @abstractproperty
     def equity(self) -> Equity:

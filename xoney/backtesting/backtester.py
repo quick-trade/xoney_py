@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 from xoney.generic.candlestick import Chart, Candle
-from xoney.generic.workers import Worker
+from xoney.generic.workers import EquityWorker
 from xoney.generic.trades import TradeHeap
 from xoney.generic.events import Event
 from xoney.strategy import Strategy
@@ -24,7 +24,7 @@ from xoney.generic.equity import Equity
 from typing import Iterable
 
 
-class Backtester(Worker):  # TODO
+class Backtester(EquityWorker):  # TODO
     _equity: Equity
 
     @property

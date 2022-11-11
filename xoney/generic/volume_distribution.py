@@ -16,14 +16,14 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from xoney.generic.workers import Worker
+from xoney.generic.workers import EquityWorker
 from xoney.generic.trades import Trade
 
 
 class VolumeDistributor(ABC):
-    _worker: Worker
+    _worker: EquityWorker
 
-    def set_worker(self, worker: Worker) -> None:
+    def set_worker(self, worker: EquityWorker) -> None:
         self._worker = worker
 
     @abstractmethod

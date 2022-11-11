@@ -20,18 +20,18 @@ from xoney.generic.trades import Trade, TradeHeap
 from xoney.generic.trades.levels import Level
 from xoney.generic.volume_distribution import (VolumeDistributor,
                                                DefaultDistributor)
-from xoney.generic.workers import Worker
+from xoney.generic.workers import EquityWorker
 
 
 class Event(ABC):
-    _worker: Worker
+    _worker: EquityWorker
 
     @abstractmethod
     def handle_trades(self,
                       trades: TradeHeap) -> None:  # pragma: no cover
         ...
 
-    def set_worker(self, worker: Worker) -> None:
+    def set_worker(self, worker: EquityWorker) -> None:
         self._worker = worker
 
 
@@ -48,7 +48,7 @@ class OpenTrade(Event):
         self._volume_distributor = volume_distributor
         self._trade = trade
 
-    def set_worker(self, worker: Worker) -> None:
+    def set_worker(self, worker: EquityWorker) -> None:
         super().set_worker(worker=worker)
         self._volume_distributor.set_worker(worker)
         self.__set_trade_commission()
