@@ -14,8 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
-from . import _formatting
-from . import _validation
+from xoney.generic.symbol import _formatting
+from xoney.generic.symbol import _validation
 
 
 class Symbol:
@@ -102,3 +102,6 @@ class Symbol:
             raise TypeError("To compare an object with symbol "
                             "that object must be of type <Symbol>")
         return self.symbol == symbol
+
+    def __hash__(self):
+        return hash((self.__base, self.__quote))

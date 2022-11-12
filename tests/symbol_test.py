@@ -130,3 +130,9 @@ def test_str():
 def test_repr():
     symbol = Symbol("BTC", "USD")
     assert repr(symbol) == "BTC/USD"
+
+def test_hashing():
+    symbol_1 = Symbol("BTC", "CAD")
+    symbol_2 = Symbol("BTC", "CAD")
+    hashtable = {symbol_1: 123, symbol_2: 234}
+    assert len(hashtable.items()) == 1
