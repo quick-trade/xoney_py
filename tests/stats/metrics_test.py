@@ -137,3 +137,9 @@ class TestSortinoRatio:
 
     def test_positive(self):
         assert SortinoRatio().positive is True
+
+
+def test_equity_method(equity_1d_15_pct_dd):
+    by_evaluate = evaluate_metric(SortinoRatio, equity_1d_15_pct_dd)
+    by_method = equity_1d_15_pct_dd.evaluate(SortinoRatio)
+    assert is_equal(by_method, by_evaluate)
