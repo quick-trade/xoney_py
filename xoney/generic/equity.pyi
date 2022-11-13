@@ -16,6 +16,7 @@ from __future__ import annotations
 
 from typing import Iterable, Callable
 
+from xoney.analysis.metrics import Metric
 from xoney.generic.timeframes import TimeFrame, DAY_1
 
 import numpy as np
@@ -83,4 +84,7 @@ class Equity:
         ...
 
     def __len__(self) -> int:
+        ...
+
+    def evaluate(self, metric: Metric | type) -> float:
         ...
