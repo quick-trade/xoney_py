@@ -15,24 +15,23 @@
 from __future__ import annotations
 
 import operator
-from typing import Collection, Any
+from typing import Collection
 
 import numpy as np
 
+from xoney.generic._series import TimeSeries
 from xoney.generic.candlestick import _validation
 from xoney.generic.candlestick import _utils
 from xoney.generic.candlestick import Candle
 from xoney.generic.timeframes import TimeFrame, DAY_1
 
 
-class Chart:
+class Chart(TimeSeries):
     _open: np.ndarray
     _high: np.ndarray
     _low: np.ndarray
     _close: np.ndarray
     _volume: np.ndarray
-    _timestamp: list[Any]
-    timeframe: TimeFrame
 
     @property
     def open(self) -> np.ndarray:
@@ -51,7 +50,7 @@ class Chart:
         return self._close
 
     @property
-    def timestamp(self) -> list[Any]:
+    def timestamp(self) -> list:
         return self._timestamp
 
     @property
@@ -64,7 +63,7 @@ class Chart:
                  low: Collection[float] | None = None,
                  close: Collection[float] | None = None,
                  volume: Collection[float] | None = None,
-                 timestamp: Collection[Any] | None = None,
+                 timestamp: Collection | None = None,
                  timeframe: TimeFrame = DAY_1):
         if open is None:
             open = []

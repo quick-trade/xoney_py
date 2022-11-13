@@ -24,8 +24,6 @@ import numpy as np
 
 class Equity:
     _list: list[float]
-    _timestamp: list
-    timeframe: TimeFrame
 
     def as_array(self) -> np.ndarray:
         ...

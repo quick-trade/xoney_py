@@ -15,13 +15,14 @@
 import operator
 
 from xoney.analysis.metrics import evaluate_metric
+from xoney.generic._series import TimeSeries
 from xoney.generic.candlestick import _utils
 from xoney.generic.timeframes import DAY_1
 
 import numpy as np
 
 
-class Equity:
+class Equity(TimeSeries):
     def as_array(self):
         return np.array(self._list)
 
