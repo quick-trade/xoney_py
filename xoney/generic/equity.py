@@ -14,6 +14,7 @@
 # =============================================================================
 import operator
 
+from xoney.analysis.metrics import evaluate_metric
 from xoney.generic.candlestick import _utils
 from xoney.generic.timeframes import DAY_1
 
@@ -106,3 +107,7 @@ class Equity:
 
     def __len__(self):
         return len(self._list)
+
+    def evaluate(self, metric):
+        return evaluate_metric(metric=metric,
+                               equity=self)

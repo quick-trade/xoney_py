@@ -19,43 +19,38 @@ from abc import ABC, abstractmethod
 import numpy as np
 
 from xoney import math
-from xoney.generic.equity import Equity
 from xoney.analysis.regression import ExponentialRegression
 
 
 class Metric(ABC):
-    _value: float
-    _positive: bool
-
     @property
-    def positive(self) -> bool:
+    def positive(self):
         return self._positive
 
     @property
-    def value(self) -> float:
+    def value(self):
         return self._value
 
     @abstractmethod
-    def calculate(self, equity: Equity) -> None:  # pragma: no cover
+    def calculate(self, equity):  # pragma: no cover
         ...
 
 
 class YearProfit(Metric):
-    __model: ExponentialRegression
     _positive = True
 
     def __init__(self):
         self.__model = ExponentialRegression()
 
-    def calculate(self, equity: Equity) -> None:
+    def calculate(self, equity):
         self.__model.fit(array=equity.as_array())
 
         regression = self.__model.curve
 
-        profit_per_candle: float = regression[1] / regression[0]
-        candles_per_year: float = equity.timeframe.candles_in_year
+        profit_per_candle = regression[1] / regression[0]
+        candles_per_year = equity.timeframe.candles_in_year
 
-        profit_per_year: float = profit_per_candle ** candles_per_year
+        profit_per_year = profit_per_candle ** candles_per_year
 
         self._value = profit_per_year
 
@@ -63,10 +58,10 @@ class YearProfit(Metric):
 class MaxDrawDown(Metric):
     _positive = False
 
-    def calculate(self, equity: Equity) -> None:
-        array: np.ndarray = equity.as_array()
-        accumulation: np.ndarray = np.maximum.accumulate(array)
-        max_dd: float = -np.min(array / accumulation - 1)
+    def calculate(self, equity):
+        array = equity.as_array()
+        accumulation = np.maximum.accumulate(array)
+        max_dd = -np.min(array / accumulation - 1)
 
         self._value = max_dd
 
@@ -74,59 +69,55 @@ class MaxDrawDown(Metric):
 class CalmarRatio(Metric):
     _positive = True
 
-    def calculate(self, equity: Equity) -> None:
-        profit: float = evaluate_metric(YearProfit, equity)
-        drawdown: float = evaluate_metric(MaxDrawDown, equity)
+    def calculate(self, equity):
+        profit = evaluate_metric(YearProfit, equity)
+        drawdown = evaluate_metric(MaxDrawDown, equity)
 
         self._value = math.divide(profit, drawdown)
 
 
 class __ProfitStdMetric(Metric, ABC):
     _positive = True
-    _risk_free: float
-    _equity: Equity
-    _candles: float | int
 
-    def __init__(self, risk_free: float = 0):
+    def __init__(self, risk_free=0):
         self._risk_free = risk_free
 
-    def _calculate_profit(self) -> float:
+    def _calculate_profit(self):
         self._candles = self._equity.timeframe.candles_in_year
+        self._returns = self._equity.change().as_array()
 
-        self._returns: np.ndarray = self._equity.change().as_array()
+        mean = self._returns.mean()
+        profit = mean * self._candles - self._risk_free
 
-        mean: float = self._returns.mean()
-
-        profit: float = mean * self._candles - self._risk_free
         return profit
 
     @abstractmethod
-    def _calculate_standard_deviation(self) -> float:  # pragma: no cover
+    def _calculate_standard_deviation(self):  # pragma: no cover
         ...
 
-    def calculate(self, equity: Equity) -> None:
+    def calculate(self, equity):
         self._equity = equity
-        profit: float = self._calculate_profit()
-        std: float = self._calculate_standard_deviation()
+        profit = self._calculate_profit()
+        std = self._calculate_standard_deviation()
 
         self._value = math.divide(profit, std)
 
 
 class SharpeRatio(__ProfitStdMetric):
-    def _calculate_standard_deviation(self) -> float:
+    def _calculate_standard_deviation(self):
         return self._returns.std() * np.sqrt(self._candles)
 
 
 class SortinoRatio(__ProfitStdMetric):
-    def _calculate_standard_deviation(self) -> float:
-        neg_ret: np.ndarray = self._returns[self._returns < 0]
+    def _calculate_standard_deviation(self):
+        neg_ret = self._returns[self._returns < 0]
 
-        sd: float = neg_ret.std()
+        sd = neg_ret.std()
         return sd * np.sqrt(self._candles)
 
 
-def evaluate_metric(metric: type | Metric, equity: Equity) -> float:
+def evaluate_metric(metric, equity):
     if isinstance(metric, type):
-        metric: Metric = metric()
+        metric = metric()
     metric.calculate(equity=equity)
     return metric.value
