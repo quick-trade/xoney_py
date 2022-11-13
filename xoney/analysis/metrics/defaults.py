@@ -70,8 +70,8 @@ class CalmarRatio(Metric):
     _positive = True
 
     def calculate(self, equity):
-        profit = evaluate_metric(YearProfit, equity)
-        drawdown = evaluate_metric(MaxDrawDown, equity)
+        profit = equity.evaluate(YearProfit)
+        drawdown = equity.evaluate(MaxDrawDown)
 
         self._value = math.divide(profit, drawdown)
 
