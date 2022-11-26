@@ -45,7 +45,7 @@ setup(
     },
     install_requires=[
         "pandas==1.5.2",
-        "optuna==2.10.0",
+        "optuna==3.0.3",
         "scipy==1.9.3"
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
