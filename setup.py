@@ -44,7 +44,7 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "pandas==1.5.2",
+        "pandas==1.5.3",
         "optuna==2.10.0",
         "scipy==1.9.3"
     ],
