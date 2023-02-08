@@ -21,7 +21,7 @@ import numpy as np
 from xoney.config import ASSUME_ZERO
 
 
-T: TypeVar = TypeVar("T")
+T = TypeVar("T")
 
 
 def is_zero(number) -> bool:
