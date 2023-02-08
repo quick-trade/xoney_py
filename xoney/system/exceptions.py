@@ -43,7 +43,7 @@ class ChartError(XoneyException):
 class IncorrectChartLength(ChartError):
     def __init__(self, lengths):
         lengths = map(str, lengths)
-        super().__init__("All arrays must be of the same length "
+        super().__init__("All arrays must be of the same length. "
                          "Received lengths: " + ", ".join(lengths))
 
 
@@ -51,6 +51,13 @@ class InvalidChartParameters(ChartError):
     def __init__(self):
         super().__init__("Incorrect parameters of Chart initialization. "
                          "Please check types of parameters")
+
+
+class UnexpectedParameter(XoneyException):
+    def __init__(self, parameter):
+        super().__init__(f"Unexpected parameter type: {type(parameter)}. "
+                         "Parameter will be <IntParameter>, <FloatParameter> "
+                         "or <CategoricalParameter>")
 
 
 class TradingSystemException(XoneyException):
