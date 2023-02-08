@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from setuptools import find_packages
-from distutils.core import setup
+from setuptools import find_packages, setup
 
 
 with open('README.md') as file:
     long_desc = file.read()
 
-__version__ = "0.1.0dev"
+__version__ = "0.1.1dev"
 
 packages = find_packages()
 for package in packages:
@@ -44,9 +43,8 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "pandas==1.5.3",
-        "optuna==3.1.0",
-        "scipy==1.10.0"
+        "optuna==2.10.0",
+        "scipy==1.9.3"
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
     keywords=[
