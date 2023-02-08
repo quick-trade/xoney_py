@@ -51,3 +51,13 @@ class InvalidChartParameters(ChartError):
     def __init__(self):
         super().__init__("Incorrect parameters of Chart initialization. "
                          "Please check types of parameters")
+
+
+class TradingSystemException(XoneyException):
+    pass
+
+
+class DifferentSystemSignaturesError(TradingSystemException):
+    def __init__(self):
+        super().__init__("Types of strategies are different in trading "
+                         "systems")
