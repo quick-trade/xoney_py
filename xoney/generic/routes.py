@@ -14,6 +14,7 @@
 # =============================================================================
 from __future__ import annotations
 
+import itertools
 from typing import Iterable
 from dataclasses import dataclass
 
@@ -30,15 +31,19 @@ class Instrument:
 
 class TradingSystem:
     _config: dict[Strategy, Iterable[Instrument]]
+    max_trades: int
 
-    def __init__(self, config: dict[Strategy, Iterable[Instrument]]):
+    def __init__(self,
+                 config: dict[Strategy, Iterable[Instrument]],
+                 max_trades: int = 1):
         self._config = config
+        self.max_trades = max_trades
 
     @property
     def items(self) -> list[tuple[Strategy, Instrument]]:
         items: list[tuple[Strategy, Instrument]] = []
 
-        strategy: Strategy
+        strategy: Strategy 
         instruments: Iterable[Instrument]
         instrument: Instrument
         for strategy, instruments in self._config.items():
@@ -46,3 +51,28 @@ class TradingSystem:
                 items.append((strategy, instrument))
 
         return items
+
+    @property
+    def symbols(self) -> list[Symbol]:
+        symbols: list[Symbol] = []
+
+        symbol: Symbol
+        instrument: Instrument
+        for instrument in self.instruments:
+            symbol = instrument.symbol
+            if symbol not in symbols:
+                symbols.append(symbol)
+        return symbols
+
+    @property
+    def strategies(self) -> tuple[Strategy, ...]:
+        return tuple(self._config.keys())
+
+    @property
+    def instruments(self) -> tuple[Iterable[Instrument], ...]:
+        return tuple(self._config.values())
+
+    @property
+    def n_instruments(self) -> int:
+        flat_list: set[Instrument] = set(itertools.chain(*self.instruments))
+        return len(flat_list)
