@@ -41,6 +41,7 @@ class Strategy(ABC):
     def fetch_events(self) -> Iterable[Event]:
         ...
 
+    @property
     def parameters(self) -> dict[str, Parameter]:
         ...
 
