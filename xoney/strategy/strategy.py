@@ -36,7 +36,7 @@ class Strategy(ABC):
         Important: name of parameter will contains in _settings of the strategy
 
         """
-        self._settings |= settings
+        self._settings.update(settings)
 
     @abstractmethod
     def run(self, chart):  # pragma: no cover
