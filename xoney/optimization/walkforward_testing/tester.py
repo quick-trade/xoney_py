@@ -12,5 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from xoney.optimization.optimizer import Optimizer
-from xoney.optimization.optimizers import DefaultOptimizer
+from xoney.generic.workers import Worker
+
+
+class WalkForward(Worker):
+    ... # TODO
