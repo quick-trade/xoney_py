@@ -108,7 +108,7 @@ def test_correct_initialization(length, dev):
                          [(103, 3),
                           (45, 5),
                           (200, 2)])
-def test_correct_initialization(length, dev):
+def test_correct_editing(length, dev):
     strategy = BollingerTrendStrategy(length=random.randint(1, 300),
                                       dev=random.randint(1, 5))
 

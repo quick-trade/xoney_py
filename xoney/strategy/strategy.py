@@ -14,6 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
+from warnings import warn
+
 import copy
 from abc import ABC, abstractmethod, abstractproperty
 
@@ -44,9 +46,10 @@ class Strategy(ABC):
     def fetch_events(self):  # pragma: no cover
         ...
 
-    @abstractproperty
-    def parameters(self):  # pragma: no cover
-        ...
+    @property
+    def parameters(self):
+        warn("[OPTIMIZATION WARNING] If you want to optimize parameters for "
+        f"\"{self.__class__.__name__}\" strategy, you may redefine \"parameters()\" property")
 
     @property
     def min_candles(self):
