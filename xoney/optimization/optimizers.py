@@ -102,8 +102,8 @@ class DefaultOptimizer(Optimizer):  # TODO
                                                          trial=trial)
             system: TradingSystem = self._parser.as_system(flatten=flatten)
             self._backtester.run(trading_system=system,
-                                charts=charts,
-                                commission=commission)
+                                 charts=charts,
+                                 commission=commission)
             return self._backtester.equity.evaluate(metric=metric)
 
         return objective
