@@ -20,7 +20,7 @@ from typing import Iterable
 
 import copy
 
-T: TypeVar = TypeVar("T")
+T = TypeVar("T")
 
 
 class Heap:
