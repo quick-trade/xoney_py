@@ -181,3 +181,11 @@ class Chart(TimeSeries):
                         eq_volume,
                         eq_time])
         raise TypeError(f"Object is not chart: {other}")
+
+    def append(self, candle: Candle) -> None:
+        if isinstance(candle, Candle):
+            self._close = np.append(self._close, candle.close)
+            self._open = np.append(self._open, candle.open)
+            self._high = np.append(self._high, candle.high)
+            self._low = np.append(self._low, candle.high)
+        raise TypeError(f"Object is not candle: {candle}")
