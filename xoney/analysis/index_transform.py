@@ -12,4 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from xoney.analysis.metrics.defaults import *
+from typing import Sequence
+
+from xoney.generic._series import TimeSeries
+
+
+def unify_series(series: Sequence[TimeSeries]) -> Sequence[TimeSeries]:
+    """
+    :return: Sequence of series with same length, but different timeframes (gaps filled)
+    """
+    ...  # TODO
