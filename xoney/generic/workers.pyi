@@ -16,13 +16,14 @@ from __future__ import annotations
 
 from abc import abstractproperty, abstractmethod, ABC
 
+from xoney.generic.routes import TradingSystem
+from xoney.generic.symbol import Symbol
 from xoney.generic.trades import TradeHeap
-from xoney.strategy import Strategy
 from xoney.generic.equity import Equity
 
 
 class Worker(ABC):
-    _strategies: list[Strategy]
+    _trading_system: TradingSystem
 
     @abstractmethod
     def run(self,
@@ -36,6 +37,7 @@ class EquityWorker(Worker):
     max_trades: int
     commission: float
     _free_balance: float
+    _current_symbol: Symbol
 
     @abstractproperty
     def equity(self) -> Equity:
