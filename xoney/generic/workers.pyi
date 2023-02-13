@@ -37,7 +37,6 @@ class EquityWorker(Worker):
     max_trades: int
     commission: float
     _free_balance: float
-    _current_symbol: Symbol
 
     @abstractproperty
     def equity(self) -> Equity:
