@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide, TradeStatus
-from xoney.generic.symbol import Symbol
 from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import LevelHeap
 
@@ -31,7 +30,6 @@ class Trade:
     __potential_volume: float
     __opened: bool
     __update_price: float
-    _symbol: Symbol
 
     @property
     def status(self) -> TradeStatus:
@@ -79,9 +77,6 @@ class Trade:
     def set_potential_volume(self, potential_volume: float) -> None:
         if self.__potential_volume is None:
             self.__potential_volume = potential_volume
-
-    def _set_symbol(self, symbol: Symbol) -> None:
-        self._symbol = symbol
 
     def _bind_levels(self) -> None:
         for level in (*self.__entries, *self.__breakouts):
