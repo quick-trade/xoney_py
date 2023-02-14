@@ -24,6 +24,7 @@ def unify_series(series: Sequence[TimeSeries]) -> Sequence[TimeSeries]:
     :return: Sequence of series with same length, but different timeframes (gaps filled)
     """
     ...  # TODO
-    
+
+
 def charts_length(unified: dict[Instrument, Chart]) -> int:
     return len(list(unified.values())[0])
