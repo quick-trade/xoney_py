@@ -81,6 +81,12 @@ class Backtester(EquityWorker):  # TODO
             self._handle_event(event=event)
 
     def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
+        """
+        Here we update trades by symbol (but not by instrument), 
+        because we want to account for price changes
+        
+        """
+
         trade: Trade
         for trade in self._trades:
             if trade._symbol == symbol:
@@ -104,7 +110,7 @@ class Backtester(EquityWorker):  # TODO
                       chart: Chart,
                       candle: Candle,
                       instrument: Instrument):
-        self._current_symbol = instrument.symbol
+        self.set_symbol(instrument.symbol)
         self._handle_chart(strategy=strategy,
                            candle=candle,
                            chart=chart)
@@ -134,12 +140,12 @@ class Backtester(EquityWorker):  # TODO
         )
         chart_length: int = charts_length(unified=unified_charts)
 
-        for e in range(chart_length):
+        for curr_index in range(chart_length):
             self.__handle_closed_trades()
             for strategy, instrument in self._trading_system.items:
                 na_chart = unified_charts[instrument]
-                candle = na_chart[e]
-                chart = _drop_na_chart(chart=na_chart[:e])
+                candle = na_chart[curr_index]
+                chart = _drop_na_chart(chart=na_chart[:curr_index])
                 self._run_strategy(chart=chart,
                                    candle=candle,
                                    strategy=strategy,
