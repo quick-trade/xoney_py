@@ -31,8 +31,8 @@ class TrendCandleStrategy(Strategy):
     _signal: str
     candle: Candle
 
-    def __init__(self, n: int = 3):
-        super().__init__(n=n)
+    def __init__(self):
+        super().__init__()
         self._signal = None
 
     def run(self, chart: Chart) -> None:
