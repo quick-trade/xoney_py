@@ -108,10 +108,8 @@ def dataframe():
                          [0.1, 0, 0.01, 0.5])
 @pytest.mark.parametrize("deposit",
                          [100, 0.1, 897*10**5])
-@pytest.mark.parametrize("n",
-                         [1, 2, 3, 4, 5])
-def test_return_type_equity(dataframe, n, deposit, commission):
-    backtester = Backtester(strategies=[TrendCandleStrategy(n=n)])
+def test_return_type_equity(dataframe, deposit, commission):
+    backtester = Backtester(strategies=[TrendCandleStrategy()])
     backtester.run(chart=dataframe,
                    initial_depo=deposit,
                    commission=commission)
