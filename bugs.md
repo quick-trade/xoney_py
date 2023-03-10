@@ -1,4 +1,4 @@
 ## Bugs
 
 Oct 20. 2022:
-- incorrect profit in complex strategies
+- `Trade` class shows an incorrect profit when the candle does not close at the trigger price of `Breakout`.

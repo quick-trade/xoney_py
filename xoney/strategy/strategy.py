@@ -33,7 +33,7 @@ class Strategy(ABC):
         for example:
             {"window_length": xoney.strategy.IntParameter(min=1, max=500)}
         
-        Important: name of parameter will contains in _settings of the strategy
+        Important: name of parameter will contain in _settings of the strategy
 
         """
         self._settings.update(settings)

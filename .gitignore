@@ -133,3 +133,8 @@ dmypy.json
 # IDE's
 .vscode
 .idea
+
+# Other useless stuff
+quick_test
+__init__.py
+dataframes

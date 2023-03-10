@@ -103,7 +103,7 @@ class Trade:
         # TODO: debug
         active_volume: float = self.filled_volume_base * self.__update_price
         volume_multiplier: float = math.divide(active_volume,
-                                              self.filled_volume)
+                                               self.filled_volume)
 
         if self.side == TradeSide.SHORT:
             volume_multiplier = math.multiply_diff(volume_multiplier, -1)
