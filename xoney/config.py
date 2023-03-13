@@ -12,4 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
+from multiprocessing import cpu_count
+
+
 ASSUME_ZERO = 10 ** -10
+
+n_processes = cpu_count()

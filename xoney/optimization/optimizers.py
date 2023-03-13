@@ -30,6 +30,7 @@ from xoney.strategy import (Parameter,
 from xoney.optimization._system_parsing import Parser
 
 from xoney.system.exceptions import UnexpectedParameter
+from xoney.config import n_processes
 
 from optuna import Study, create_study, Trial
 from optuna.samplers import NSGAIISampler
@@ -57,13 +58,14 @@ class DefaultOptimizer(Optimizer):  # TODO
     _study: Study
     _study_params: dict[str, object] = dict()
     _opt_params: dict[str, object] = dict()
+    _max_trades: IntParameter
 
     def __initialize_metric(self, metric: Metric | type) -> None:
         if isinstance(metric, type):
             metric = metric()
         self._metric = metric
 
-    def __max_trades_parameter(self,
+    def __initialize_max_trades(self,
                                min: int | None,
                                max: int | None) -> IntParameter:
         # During the optimization process, the parameter of the maximum
@@ -73,38 +75,28 @@ class DefaultOptimizer(Optimizer):  # TODO
         if min is None or max is None:
             min = n_instruments
             max = n_instruments
-        return IntParameter(min=min,
-                            max=max)
+        self._max_trades =  IntParameter(min=min,
+                                         max=max)
 
     def __initialize_parser(self, trading_system: TradingSystem) -> None:
         self._parser = Parser(system_signature=trading_system)
 
-    def _system_to_objective(
-            self,
-            trading_system: TradingSystem,
-            max_trades: IntParameter,
-            charts: dict[Instrument, Chart],
-            commission: float,
-            metric: Metric
-    ) -> Callable[[Trial], float]:
+    def _system_to_objective(self, trading_system: TradingSystem) -> Callable[[Trial], float]:
         self.__initialize_parser(trading_system=trading_system)
 
         def objective(trial: Trial) -> float:
             flatten: dict[str, Any] = dict()
-            for path, parameter in self._parser.parameters:
+            for path, parameter in self._parser.parameters.items():
                 flatten[path] = _parameter_to_value(
                     parameter=parameter,
                     path=path,
                     trial=trial
                 )
-            flatten["max_trades"] = _parameter_to_value(parameter=max_trades,
-                                                         path="max_parameter",
-                                                         trial=trial)
+            flatten["max_trades"] = _parameter_to_value(parameter=self._max_trades,
+                                                        path="max_parameter",
+                                                        trial=trial)
             system: TradingSystem = self._parser.as_system(flatten=flatten)
-            self._backtester.run(trading_system=system,
-                                 charts=charts,
-                                 commission=commission)
-            return self._backtester.equity.evaluate(metric=metric)
+            return self._system_score(trading_system=system)
 
         return objective
 
@@ -115,22 +107,30 @@ class DefaultOptimizer(Optimizer):  # TODO
             commission: float = 0.1 * 0.01,
             min_trades: int | None = None,
             max_trades: int | None = None,
+            n_jobs: int | None = None,
+            n_trials: int = 100,
             **kwargs) -> None:
-        self.__initialize_metric(metric)
+        self._charts = charts
+        self._commission = commission
         self._trading_system = trading_system
-        direction: str = "maximize" if metric.positive else "minimize"
-        self._study = create_study(direction=direction,
-                                   **self._study_params)
-        max_trades_parameter: IntParameter = self.__max_trades_parameter(
+        self.__initialize_metric(metric)
+        self.__initialize_max_trades(
             min=min_trades,
             max=max_trades
         )
+
+        if n_jobs is None:
+            n_jobs = n_processes
+
+        self._opt_params.update(
+            dict(n_jobs=n_jobs,
+                 n_trials=n_trials)
+        )
+        direction: str = "maximize" if metric.positive else "minimize"
+        self._study = create_study(direction=direction,
+                                   **self._study_params)
         objective = self._system_to_objective(
-            trading_system=trading_system,
-            max_trades=max_trades_parameter,
-            charts=charts,
-            commission=commission,
-            metric=self._metric
+            trading_system=trading_system
         )
         self._study.optimize(func=objective,
                              **self._opt_params)
@@ -156,4 +156,4 @@ class DefaultOptimizer(Optimizer):  # TODO
 
 
 class GeneticAlgorithmOptimizer(DefaultOptimizer):
-    _opt_params: dict[str, object] = dict(sampler=NSGAIISampler())
+    _study_params: dict[str, object] = dict(sampler=NSGAIISampler())
