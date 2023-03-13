@@ -79,14 +79,15 @@ class Parser:
         path: ParameterPath
         s_paths: list[ParameterPath] = []
         paths: list[tuple[ParameterPath, ...]] = []
-        __table: dict[str, Parameter]
 
         for s, strategy in enumerate(self.__strategies):
-            for p, parameter in enumerate(self._parameters):
+            s_paths = []
+            for p, parameter in enumerate(self._parameters[s]):
                 path = ParameterPath(strategy=s, parameter=p)
                 s_paths.append(path)
             paths.append(tuple(s_paths))
         self._parameters_paths = tuple(paths)
+
 
     def __save_parameters_names(self) -> None:
         strategy: Strategy
