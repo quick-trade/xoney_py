@@ -35,8 +35,8 @@ def _unify_instruments_charts(
 ) -> dict[Instrument, Chart]:
     instruments, charts = zip(*charts.items())
     charts = unify_series(charts)
-    return {instrument: chart 
-            for instrument, chart in 
+    return {instrument: chart
+            for instrument, chart in
             zip(instruments, charts)}
 
 def _is_nan_candle(candle: Candle) -> bool:
@@ -81,11 +81,8 @@ class Backtester(EquityWorker):  # TODO
             self._handle_event(event=event)
 
     def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
-        """
-        Here we update trades by symbol (but not by instrument), 
-        because we want to account for price changes
-        
-        """
+        # Here we update trades by symbol (but not by instrument),
+        # because we want to account for price changes
 
         trade: Trade
         for trade in self._trades:
