@@ -71,3 +71,6 @@ class TimeFrame:
                              seconds=self.seconds / other)
         raise TypeError("To divide the <TimeFrame> by an object, "
                         "that object must be a number")
+
+    def __hash__(self) -> int:
+        return hash((self.__name, self.__seconds))

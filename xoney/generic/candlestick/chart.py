@@ -167,20 +167,19 @@ class Chart(TimeSeries):
         return len(self._close)
 
     def __eq__(self, other: Chart) -> bool:
-        if isinstance(other, Chart):
-            eq_open: bool = _utils.equal_arrays(self._open, other._open)
-            eq_high: bool = _utils.equal_arrays(self._high, other._high)
-            eq_low: bool = _utils.equal_arrays(self._low, other._low)
-            eq_close: bool = _utils.equal_arrays(self._close, other._close)
-            eq_volume: bool = _utils.equal_arrays(self._volume, other._volume)
-            eq_time: bool = self._timestamp == other._timestamp
-            return all([eq_open,
-                        eq_high,
-                        eq_low,
-                        eq_close,
-                        eq_volume,
-                        eq_time])
-        raise TypeError(f"Object is not chart: {other}")
+        if not isinstance(other, Chart):
+            raise TypeError(f"Object is not chart: {other}")
+
+        should_eq: tuple[str, ...] = ("_open", "_high", "_low", "_close")
+        for attr in should_eq:
+            if not _utils.equal_arrays(getattr(self, attr),
+                                       getattr(other, attr)):
+                return False
+        
+        if self._timestamp != other._timestamp:
+            return False
+
+        return True
 
     def append(self, candle: Candle) -> None:
         if isinstance(candle, Candle):

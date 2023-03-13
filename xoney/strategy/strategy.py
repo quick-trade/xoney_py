@@ -29,10 +29,10 @@ class Strategy(ABC):
     def edit_settings(self, settings):
         """
         Parameters for strategy optimization.
-        
+
         for example:
             {"window_length": xoney.strategy.IntParameter(min=1, max=500)}
-        
+
         Important: name of parameter will contains in _settings of the strategy
 
         """
@@ -58,3 +58,6 @@ class Strategy(ABC):
     @property
     def settings(self):
         return copy.deepcopy(self._settings)
+
+    def __hash__(self) -> int:
+        return hash(tuple(self._settings.items()))

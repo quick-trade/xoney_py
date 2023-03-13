@@ -23,7 +23,7 @@ from xoney.generic.timeframes import TimeFrame
 from xoney.strategy import Strategy
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, unsafe_hash=True)
 class Instrument:
     symbol: Symbol
     timeframe: TimeFrame
@@ -43,7 +43,7 @@ class TradingSystem:
     def items(self) -> list[tuple[Strategy, Instrument]]:
         items: list[tuple[Strategy, Instrument]] = []
 
-        strategy: Strategy 
+        strategy: Strategy
         instruments: Iterable[Instrument]
         instrument: Instrument
         for strategy, instruments in self._config.items():
