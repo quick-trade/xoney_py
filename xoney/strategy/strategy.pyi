@@ -52,3 +52,6 @@ class Strategy(ABC):
     @property
     def settings(self) -> dict[str, Any]:
         ...
+
+    def __hash__(self) -> int:
+        ...

@@ -59,5 +59,5 @@ class Strategy(ABC):
     def settings(self):
         return copy.deepcopy(self._settings)
 
-    def __hash__(self) -> int:
+    def __hash__(self):
         return hash(tuple(self._settings.items()))

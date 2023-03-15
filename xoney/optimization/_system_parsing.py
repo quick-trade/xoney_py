@@ -77,7 +77,7 @@ class Parser:
         p: int
         strategy: Strategy
         path: ParameterPath
-        s_paths: list[ParameterPath] = []
+        s_paths: list[ParameterPath]
         paths: list[tuple[ParameterPath, ...]] = []
 
         for s, strategy in enumerate(self.__strategies):
