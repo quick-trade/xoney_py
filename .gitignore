@@ -135,6 +135,6 @@ dmypy.json
 .idea
 
 # Other useless stuff
-quick_test
+quick_test.py
 __init__.py
 dataframes
