@@ -140,10 +140,10 @@ class DefaultOptimizer(Optimizer):  # TODO
         # can be used in optimization
         trial_score: Callable = lambda trial: trial.values[0]
         trials: list[FrozenTrial] = self._study.trials
-        sorted_trials: list = sorted(trials, key=trial_score)
-        if not self._metric.positive:
-            sorted_trials = sorted_trials[::-1]
-        return sorted_trials[-n:][::-1]  # The best systems should come first
+        sorted_trials: list = sorted(trials,
+                                     key=trial_score,
+                                     reverse=self._metric.positive)
+        return sorted_trials[:n] # The best systems should come first
 
     def _trial_to_system(self, trial: FrozenTrial) -> TradingSystem:
         settings: dict[str, Any] = trial.params
