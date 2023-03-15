@@ -114,5 +114,10 @@ def test_correct_editing(length, dev):
 
     strategy.edit_settings(settings=dict(length=length, dev=dev))
 
-    assert strategy._settings["length"] == length
-    assert strategy._settings["dev"] == dev
+    assert strategy.settings["length"] == length
+    assert strategy.settings["dev"] == dev
+
+def test_parameters_impl():
+    strategy = BollingerTrendStrategy(length=50, dev=2)
+    with pytest.warns(UserWarning):
+        strategy.parameters

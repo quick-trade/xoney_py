@@ -29,10 +29,10 @@ class Strategy(ABC):
     def edit_settings(self, settings):
         """
         Parameters for strategy optimization.
-        
+
         for example:
             {"window_length": xoney.strategy.IntParameter(min=1, max=500)}
-        
+
         Important: name of parameter will contain in _settings of the strategy
 
         """
@@ -52,7 +52,7 @@ class Strategy(ABC):
         f"\"{self.__class__.__name__}\" strategy, you may redefine \"parameters()\" property")
 
     @property
-    def min_candles(self):
+    def min_candles(self):  # pragma: no cover
         return 0
 
     @property
