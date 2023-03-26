@@ -16,7 +16,7 @@
 import pytest
 
 from xoney.generic.timeframes import TimeFrameFactory
-from xoney.generic.timeframes.defaults import HOUR_1, DAY_1, WEEK_1
+from xoney.generic.timeframes.defaults import HOUR_1, DAY_1, WEEK_1, MINUTE_5
 
 
 class TestEqual:
@@ -59,6 +59,9 @@ class TestEqual:
         D7 = TimeFrameFactory.from_days(7)
         with pytest.raises(TypeError):
             D7 == {"key": D7}
+
+    def test_5m_300s(self):
+        assert MINUTE_5 == TimeFrameFactory.from_seconds(300)
 
 
 class TestMultiply:

@@ -54,3 +54,8 @@ class TimeFrameFactory:
     def from_weeks(cls, weeks: int | float) -> TimeFrame:
         return TimeFrame(name=f"{weeks}w",
                          seconds=ToSeconds.from_weeks(weeks))
+
+    @classmethod
+    def from_seconds(cls, seconds: int | float) -> TimeFrame:
+        return TimeFrame(name=f"{seconds}s",
+                         seconds=seconds)
