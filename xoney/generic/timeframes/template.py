@@ -72,5 +72,17 @@ class TimeFrame:
         raise TypeError("To divide the <TimeFrame> by an object, "
                         "that object must be a number")
 
+    def __lt__(self, other):
+        if isinstance(other, TimeFrame):
+            return self.seconds < other.seconds
+        raise TypeError("To compare the <TimeFrame> with an object, "
+                        "that object must be a TimeFrame")
+
+    def __gt__(self, other):
+        if isinstance(other, TimeFrame):
+            return self.seconds > other.seconds
+        raise TypeError("To compare the <TimeFrame> with an object, "
+                        "that object must be a TimeFrame")
+
     def __hash__(self) -> int:
         return hash((self.__name, self.__seconds))
