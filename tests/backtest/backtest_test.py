@@ -18,6 +18,7 @@ from typing import Iterable
 import pytest
 
 from xoney.generic.equity import Equity
+from xoney.generic.routes import Instrument
 from xoney.strategy import Strategy
 from xoney.generic.candlestick import Chart, Candle
 from xoney.generic.events import Event, OpenTrade, CloseAllTrades
@@ -25,6 +26,8 @@ from xoney.generic.enums import TradeSide
 from xoney.generic.trades import Trade
 from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 from xoney.backtesting import Backtester
+from xoney import TradingSystem, Symbol
+from xoney.generic.timeframes import DAY_1
 
 
 class TrendCandleStrategy(Strategy):
@@ -111,24 +114,13 @@ def dataframe():
 @pytest.mark.parametrize("n",
                          [1, 2, 3, 4, 5])
 def test_return_type_equity(dataframe, n, deposit, commission):
-    backtester = Backtester(strategies=[TrendCandleStrategy(n=n)])
-    backtester.run(chart=dataframe,
-                   initial_depo=deposit,
-                   commission=commission)
+    some_pair = Instrument(Symbol("SOME/THING"), DAY_1)
+    strategy = TrendCandleStrategy(n=n)
+
+    trading_system = TradingSystem(config={strategy: [some_pair]})
+
+    backtester = Backtester(initial_depo=deposit)
+    backtester.run(charts={some_pair: dataframe},
+                   commission=commission,
+                   trading_system=trading_system)
     assert isinstance(backtester.equity, Equity)
-
-
-@pytest.mark.parametrize("max_trades",
-                         [1, 2, 3])
-def test_set_max_trades(dataframe, max_trades):
-    backtester_1 = Backtester(strategies=[TrendCandleStrategy()],
-                              max_trades=max_trades)
-    backtester_1.run(chart=dataframe, initial_depo=100, commission=0.01)
-    equity_1 = backtester_1.equity
-
-    backtester_2 = Backtester(strategies=[TrendCandleStrategy()])
-    backtester_2.set_max_trades(max_trades=max_trades)
-    backtester_2.run(chart=dataframe, initial_depo=100, commission=0.01)
-    equity_2 = backtester_2.equity
-
-    assert equity_2 == equity_1
