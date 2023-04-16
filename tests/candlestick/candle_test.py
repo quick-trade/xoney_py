@@ -127,7 +127,7 @@ class TestContains:
                         np.float32(-5),
                         np.float64(5),
                         np.short(10),
-                        np.byte(10 ** 9)]
+                        np.byte(100)]
         assert_contains(contains, not_contains, candle)
 
     def test_float_contains(self, candle):
