@@ -15,6 +15,10 @@
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
+
+from xoney.generic.timeframes.template import TimeFrame
+from xoney.config import DEFAULT_CURR_TIME
 
 
 def default_volume(length: int) -> list[float]:
@@ -52,3 +56,20 @@ def equal_arrays(array_1: np.ndarray, array_2: np.ndarray) -> bool:
     if array_1.shape != array_2.shape:
         return False
     return all(array_1 == array_2)
+
+
+def default_timestamp(length: int, timeframe: TimeFrame) -> pd.TimedeltaIndex:
+    start = -timeframe.timedelta * (length-1)
+
+    return DEFAULT_CURR_TIME + pd.timedelta_range(
+        start=start,
+        end=0,
+        periods=length
+    )
+
+
+def auto_loc_iloc(df: pd.DataFrame, index):
+    try:
+        return df.loc[index]
+    except:
+        return df.iloc[index]

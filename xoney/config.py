@@ -13,8 +13,11 @@
 # limitations under the License.
 # =============================================================================
 from multiprocessing import cpu_count
+from datetime import datetime
 
 
 ASSUME_ZERO = 10 ** -10
 
 n_processes = cpu_count()
+
+DEFAULT_CURR_TIME = datetime(1970, 1, 1)
