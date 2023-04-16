@@ -17,12 +17,13 @@ from __future__ import annotations
 from typing import Iterable, Callable
 
 from xoney.analysis.metrics import Metric
+from xoney.generic._series import TimeSeries
 from xoney.generic.timeframes import TimeFrame, DAY_1
 
 import numpy as np
 
 
-class Equity:
+class Equity(TimeSeries):
     _list: list[float]
 
     def as_array(self) -> np.ndarray:

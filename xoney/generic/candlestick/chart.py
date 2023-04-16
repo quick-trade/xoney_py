@@ -17,7 +17,8 @@ from __future__ import annotations
 import operator
 from typing import Collection
 
-import numpy as np
+import pandas as pd
+from pandas.api.types import is_numeric_dtype
 
 from xoney.generic._series import TimeSeries
 from xoney.generic.candlestick import _validation
@@ -27,35 +28,32 @@ from xoney.generic.timeframes import TimeFrame, DAY_1
 
 
 class Chart(TimeSeries):
-    _open: np.ndarray
-    _high: np.ndarray
-    _low: np.ndarray
-    _close: np.ndarray
-    _volume: np.ndarray
+    _df: pd.DataFrame
+    timeframe: TimeFrame
 
     @property
-    def open(self) -> np.ndarray:
-        return self._open
+    def close(self) -> pd.Series:
+        return self._df["Close"]
 
     @property
-    def high(self) -> np.ndarray:
-        return self._high
+    def open(self) -> pd.Series:
+        return self._df["Open"]
 
     @property
-    def low(self) -> np.ndarray:
-        return self._low
+    def high(self) -> pd.Series:
+        return self._df["High"]
 
     @property
-    def close(self) -> np.ndarray:
-        return self._close
+    def low(self) -> pd.Series:
+        return self._df["Low"]
 
     @property
-    def timestamp(self) -> list:
-        return self._timestamp
+    def volume(self) -> pd.Series:
+        return self._df["Volume"]
 
     @property
-    def volume(self) -> np.ndarray[float]:
-        return self._volume
+    def timestamp(self) -> pd.Series:
+        return self._df.index
 
     def __init__(self,
                  open: Collection[float] | None = None,
@@ -76,8 +74,8 @@ class Chart(TimeSeries):
         if volume is None:
             volume = _utils.default_volume(length=len(close))
         if timestamp is None:
-            timestamp = [None for _ in close]
-        self.timeframe = timeframe
+            timestamp = _utils.default_timestamp(length=len(close),
+                                                 timeframe=timeframe)
 
         _params: tuple = (open,
                           high,
@@ -89,26 +87,35 @@ class Chart(TimeSeries):
         _validation.validate_chart_parameters(*_params)
         _validation.validate_chart_length(*_params)
 
-        self._open = np.array(open)
-        self._high = np.array(high)
-        self._low = np.array(low)
-        self._close = np.array(close)
-        self._volume = np.array(volume)
-        self._timestamp = list(timestamp)
+        self.timeframe = timeframe
+        self._df = pd.DataFrame({'Open': open,
+                                 'High': high,
+                                 'Low': low,
+                                 'Close': close,
+                                 'Volume': volume,
+                                 'Timestamp': timestamp})
+        self._df.set_index('Timestamp', inplace=True)
 
     def __operation(self, other, func):
         if isinstance(other, Chart):
-            open = other._open
-            high = other._high
-            low = other._low
-            close = other._close
+            df = other._df
         else:
-            open = high = low = close = other
-        return self.__class__(open=func(self._open, open),
-                              high=func(self._high, high),
-                              low=func(self._low, low),
-                              close=func(self._close, close),
-                              timeframe=self.timeframe)
+            df = pd.DataFrame({'Open': other,
+                               'High': other,
+                               'Low': other,
+                               'Close': other,
+                               'Volume': other},
+                              index=self._df.index)
+        result = self._df.copy()
+        for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
+            if is_numeric_dtype(result[col]) and is_numeric_dtype(df[col]):
+                result[col] = func(result[col], df[col])
+        return Chart(open=result['Open'],
+                     high=result['High'],
+                     low=result['Low'],
+                     close=result['Close'],
+                     volume=result['Volume'],
+                     timestamp=result.index)
 
     def __add__(self, other):
         return self.__operation(other=other, func=operator.add)
@@ -127,57 +134,73 @@ class Chart(TimeSeries):
         #   - new low = this low / other high
         #       as minimum possible price.
         if isinstance(other, Chart):
-            other = self.__class__(open=other._open,
-                                   high=other._low,
-                                   low=other._high,
-                                   close=other._close,
-                                   volume=other._volume,
-                                   timestamp=other._timestamp,
-                                   timeframe=other.timeframe)
+            other = Chart(open=other._df['Open'],
+                          high=other._df['Low'],
+                          low=other._df['High'],
+                          close=other._df['Close'],
+                          volume=other._df['Volume'],
+                          timestamp=other._df.index,
+                          timeframe=self.timeframe)
         return self.__operation(other=other, func=operator.truediv)
 
     def __getitem__(self, item):
-        item = _utils.to_int_index(item=item, timestamp=self._timestamp)
-        dict_init_params: dict = dict(
-            open=self._open[item],
-            high=self._high[item],
-            low=self._low[item],
-            close=self._close[item],
-            timestamp=self._timestamp[item],
-            volume=self._volume[item])
+        result = _utils.auto_loc_iloc(self._df, item)
+        if isinstance(result, pd.Series):
+            timestamp = result.name
+        else:
+            timestamp = result.index
+        init_params = dict(
+            open=result['Open'],
+            high=result['High'],
+            low=result['Low'],
+            close=result['Close'],
+            volume=result['Volume'],
+            timestamp=timestamp
+        )
         if isinstance(item, slice):
-            return Chart(**dict_init_params)
-        return Candle(**dict_init_params)
+            return Chart(**init_params, timeframe=self.timeframe)
+        else:
+            return Candle(**init_params)
 
     def __iter__(self):
-        for o, h, l, c, v, t in zip(self._open,
-                                    self._high,
-                                    self._low,
-                                    self._close,
-                                    self._volume,
-                                    self._timestamp):
-            yield Candle(open=o,
-                         high=h,
-                         low=l,
-                         close=c,
-                         timestamp=t,
-                         volume=v)
+        for row in self._df.itertuples():
+            yield Candle(open=row.Open,
+                         high=row.High,
+                         low=row.Low,
+                         close=row.Close,
+                         timestamp=row.Index,
+                         volume=row.Volume)
 
     def __len__(self) -> int:
-        return len(self._close)
+        return len(self._df["Close"])
 
     def __eq__(self, other: Chart) -> bool:
-        if isinstance(other, Chart):
-            eq_open: bool = _utils.equal_arrays(self._open, other._open)
-            eq_high: bool = _utils.equal_arrays(self._high, other._high)
-            eq_low: bool = _utils.equal_arrays(self._low, other._low)
-            eq_close: bool = _utils.equal_arrays(self._close, other._close)
-            eq_volume: bool = _utils.equal_arrays(self._volume, other._volume)
-            eq_time: bool = self._timestamp == other._timestamp
-            return all([eq_open,
-                        eq_high,
-                        eq_low,
-                        eq_close,
-                        eq_volume,
-                        eq_time])
-        raise TypeError(f"Object is not chart: {other}")
+        if not isinstance(other, Chart):
+            raise TypeError(f"Object is not chart: {other}")
+
+        should_eq: tuple[str, ...] = ("Open", "High", "Low", "Close")
+        for attr in should_eq:
+            if not _utils.equal_arrays(self._df[attr].values,
+                                       other._df[attr].values):
+                return False
+
+        if any(self.timestamp != other.timestamp):
+            return False
+
+        return True
+
+    def append(self, candle: Candle) -> None:
+        if isinstance(candle, Candle):
+            self.df = self.df.append(
+                {"open": candle.open,
+                 "high": candle.high,
+                 "low": candle.low,
+                 "close": candle.close,
+                 "volume": candle.volume,
+                 "timestamp": candle.timestamp},
+                ignore_index=False)
+        else:
+            raise TypeError(f"Object is not candle: {candle}")
+
+    def latest_before(self, index) -> Candle:
+        return self[:index][-1]

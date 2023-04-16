@@ -28,7 +28,9 @@ from xoney.system.exceptions import (IncorrectChartLength,
 def dataframe():
     data = tohlcv
     columns = ["time", "open", "high", "low", "close", "volume"]
-    return pd.DataFrame(data, columns=columns)
+    df = pd.DataFrame(data, columns=columns)
+    df["time"] = pd.to_datetime(df["time"])
+    return df
 
 
 @pytest.fixture
@@ -143,16 +145,17 @@ class TestGetItem:
         )
 
         start = index.start
-        stop = index.stop
+        stop = index.stop - 1  # current time should be included in the result.
         step = index.step
 
         index = dataframe["time"].values
         index = slice(index[start], index[stop], step)
         result = chart[index]
         assert isinstance(result, Chart)
+        assert len(result) == len(expected)
         assert result == expected
         assert all(result.volume == expected.volume)
-        assert result.timestamp == expected.timestamp
+        assert all(result.timestamp == expected.timestamp)
 
 
 def test_empty():
@@ -191,11 +194,11 @@ def test_len(chart, decrease):
 def test_iter(chart, dataframe):
     for i, candle in enumerate(chart):
         expected = Candle(open=dataframe["open"][i],
-                                high=dataframe["high"][i],
-                                low=dataframe["low"][i],
-                                close=dataframe["close"][i],
-                                volume=dataframe["volume"][i],
-                                timestamp=dataframe["time"][i])
+                          high=dataframe["high"][i],
+                          low=dataframe["low"][i],
+                          close=dataframe["close"][i],
+                          volume=dataframe["volume"][i],
+                          timestamp=dataframe["time"][i])
         assert candle == expected
         assert candle.timestamp == expected.timestamp
         assert candle.volume == expected.volume

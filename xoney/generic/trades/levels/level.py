@@ -69,7 +69,6 @@ class Level(ABC):
         self.__trade_part = trade_part
         self.__cross_flag = False
         self.__quote_volume = 0.0
-        self.__update = True
 
     def edit_trigger_price(self, price: float):
         if not self.crossed:

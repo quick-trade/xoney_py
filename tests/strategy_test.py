@@ -27,6 +27,8 @@ from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 
 from ta.volatility import BollingerBands
 
+from xoney.strategy.parameters import *
+
 
 class BollingerTrendStrategy(Strategy):
     _signal = None

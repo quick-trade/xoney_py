@@ -49,3 +49,6 @@ class EquityWorker(Worker):
     @property
     def filled_balance(self):
         return self._trades.filled_volume + self._trades.profit
+
+    def _set_symbol(self, symbol):
+        self._current_symbol = symbol

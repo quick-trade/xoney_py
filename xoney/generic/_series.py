@@ -14,7 +14,9 @@
 # =============================================================================
 from xoney.generic.timeframes import TimeFrame
 
+from abc import ABC
 
-class TimeSeries:
+
+class TimeSeries(ABC):
     timeframe: TimeFrame
     _timestamp: list

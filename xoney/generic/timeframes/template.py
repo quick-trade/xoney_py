@@ -54,8 +54,7 @@ class TimeFrame:
 
     def __eq__(self, other):
         if not isinstance(other, TimeFrame):
-            raise TypeError("To compare an object with a <TimeFrame>, "
-                            "this object must be of type <TimeFrame>")
+            return False
         return self.seconds == other.seconds
 
     def __mul__(self, other):
@@ -71,3 +70,18 @@ class TimeFrame:
                              seconds=self.seconds / other)
         raise TypeError("To divide the <TimeFrame> by an object, "
                         "that object must be a number")
+
+    def __lt__(self, other):
+        if isinstance(other, TimeFrame):
+            return self.seconds < other.seconds
+        raise TypeError("To compare the <TimeFrame> with an object, "
+                        "that object must be a TimeFrame")
+
+    def __gt__(self, other):
+        if isinstance(other, TimeFrame):
+            return self.seconds > other.seconds
+        raise TypeError("To compare the <TimeFrame> with an object, "
+                        "that object must be a TimeFrame")
+
+    def __hash__(self) -> int:
+        return hash((self.__name, self.__seconds))

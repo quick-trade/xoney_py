@@ -58,3 +58,13 @@ class UnexpectedParameter(XoneyException):
         super().__init__(f"Unexpected parameter type: {type(parameter)}. "
                          "Parameter will be <IntParameter>, <FloatParameter> "
                          "or <CategoricalParameter>")
+
+
+class TradingSystemException(XoneyException):
+    pass
+
+
+class DifferentSystemSignaturesError(TradingSystemException):
+    def __init__(self):
+        super().__init__("Types of strategies are different in trading "
+                         "systems")

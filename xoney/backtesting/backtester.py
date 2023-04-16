@@ -13,19 +13,28 @@
 # limitations under the License.
 # =============================================================================
 from __future__ import annotations
+from datetime import timedelta
 
 from xoney.generic.candlestick import Chart, Candle
+from xoney.generic.routes import Instrument, TradingSystem
+from xoney.generic.symbol import Symbol
+from xoney.generic.timeframes.template import TimeFrame
 from xoney.generic.workers import EquityWorker
-from xoney.generic.trades import TradeHeap
+from xoney.generic.trades import TradeHeap, Trade
 from xoney.generic.events import Event
-from xoney.strategy import Strategy
 from xoney.generic.equity import Equity
 
 from typing import Iterable
+from numbers import Number
+
+from xoney.strategy import Strategy
+from xoney.backtesting import _utils
 
 
-class Backtester(EquityWorker):  # TODO
+
+class Backtester(EquityWorker):  # TODO: stats support
     _equity: Equity
+    _initial_depo: float
 
     @property
     def equity(self) -> Equity:
@@ -36,44 +45,91 @@ class Backtester(EquityWorker):  # TODO
         return self._free_balance
 
     def __init__(self,
-                 strategies: Iterable[Strategy],
-                 max_trades: int = 1):
-        self._strategies = list(strategies)
-        self.max_trades = max_trades
-
-    def set_max_trades(self, max_trades: int):
-        self.max_trades = max_trades
+                 initial_depo: float = 100.0):
+        self._initial_depo = initial_depo
 
     def __handle_closed_trades(self) -> None:
         self._free_balance += self._trades.closed.profit
         self._trades.cleanup_closed()
 
+    def _handle_event(self, event: Event) -> None:
+        event.set_worker(self)
+        event.handle_trades(self._trades)
+
+    def _handle_events(self, events: Iterable[Event]) -> None:
+        event: Event
+        for event in events:
+            self._handle_event(event=event)
+
+    def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
+        # Here we update trades by symbol (but not by instrument),
+        # because we want to account for price changes
+
+        trade: Trade
+        for trade in self._trades:
+            if trade._symbol == symbol:
+                trade.update(candle=candle)
+
+    def _handle_chart(self,
+                      strategy: Strategy,
+                      candle: Candle,
+                      chart: Chart) -> None:
+        events: Iterable[Event]
+
+        strategy.run(chart)
+        events = strategy.fetch_events()
+        self._handle_events(events=events)
+        self._update_symbol_trades(candle=candle,
+                                   symbol=self._current_symbol)
+
+    def _run_strategy(self,
+                      strategy: Strategy,
+                      chart: Chart,
+                      candle: Candle,
+                      instrument: Instrument):
+        self._set_symbol(instrument.symbol)
+        self._handle_chart(strategy=strategy,
+                           candle=candle,
+                           chart=chart)
+
     def run(self,
-            chart: Chart,
-            initial_depo: float | int,
-            commission: float) -> None:
-        self._free_balance = initial_depo
+            trading_system: TradingSystem,
+            charts: dict[Instrument, Chart],
+            commission: float = 0.1 * 0.01,
+            time_adjustment: Number | TimeFrame | timedelta = 0.5,
+            **kwargs) -> None:
+        self._trading_system = trading_system
+        self.max_trades = trading_system.max_trades
+        self._free_balance = self._initial_depo
         self._trades = TradeHeap()
         self.commission = commission
 
+        equity_timeframe: TimeFrame = _utils.min_timeframe(charts)
+        adj: timedelta = _utils.time_adjustment(
+            adj=time_adjustment,
+            timeframe=equity_timeframe
+        )
+
+        timestamp = _utils.equity_timestamp(charts=charts.values(),
+                                            timeframe=equity_timeframe)
+
         self._equity = Equity([],
-                              timeframe=chart.timeframe,
-                              timestamp=chart.timestamp)
+                              timeframe=equity_timeframe,
+                              timestamp=timestamp)
 
-        event: Event
         candle: Candle
-        events: Iterable[Event] = []
-        for e, candle in enumerate(chart, start=1):
-            for strategy in self._strategies:
-                strategy.run(chart[:e])
+        instrument: Instrument
+        strategy: Strategy
+        chart: Chart
 
-                for event in events:
-                    event.set_worker(self)
-                    event.handle_trades(self._trades)
-
-                self._trades.update_trades(candle=candle)
-                self.__handle_closed_trades()
-
-                events = strategy.fetch_events()
-
+        for curr_time in timestamp + adj:
+            self.__handle_closed_trades()
+            for strategy, instrument in self._trading_system.items:
+                chart = charts[instrument]
+                chart = chart[:curr_time]
+                candle = chart.latest_before(curr_time)
+                self._run_strategy(chart=chart,
+                                   candle=candle,
+                                   strategy=strategy,
+                                   instrument=instrument)
             self._equity.append(self.total_balance)

@@ -50,6 +50,7 @@ class OpenTrade(Event):
 
     def set_worker(self, worker: EquityWorker) -> None:
         super().set_worker(worker=worker)
+        self._trade._set_symbol(symbol=worker._current_symbol)
         self._volume_distributor.set_worker(worker)
         self.__set_trade_commission()
 
@@ -63,7 +64,9 @@ class OpenTrade(Event):
                 self._worker._free_balance -= commission_size
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        if self._worker.max_trades > self._worker.opened_trades:
+        max_trades: int = self._worker._trading_system.max_trades
+        opened_trades: int = self._worker.opened_trades
+        if max_trades > opened_trades:
             self._volume_distributor.set_trade_volume(self._trade)
 
             trades.add(self._trade)

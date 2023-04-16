@@ -13,17 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-import copy
-
 import pandas as pd
 import random
 from xoney.generic.candlestick import Candle
-from xoney.generic.trades import Trade
-from xoney.generic.trades.levels import (LevelHeap,
-                                         BaseEntry,
-                                         BaseBreakout,
-                                         Level)
-from xoney.generic.enums import TradeSide
 
 
 random.seed(0)
