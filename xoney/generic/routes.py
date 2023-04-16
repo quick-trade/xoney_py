@@ -76,3 +76,7 @@ class TradingSystem:
     def n_instruments(self) -> int:
         flat_list: set[Instrument] = set(itertools.chain(*self.instruments))
         return len(flat_list)
+
+    @property
+    def n_strategies(self) -> int:
+        return len(self._config)
