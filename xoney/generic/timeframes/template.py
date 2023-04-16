@@ -54,8 +54,7 @@ class TimeFrame:
 
     def __eq__(self, other):
         if not isinstance(other, TimeFrame):
-            raise TypeError("To compare an object with a <TimeFrame>, "
-                            "this object must be of type <TimeFrame>")
+            return False
         return self.seconds == other.seconds
 
     def __mul__(self, other):

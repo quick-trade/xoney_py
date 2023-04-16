@@ -45,21 +45,6 @@ class TestEqual:
         H1 = TimeFrameFactory.from_hours(1)
         assert H1 == M60
 
-    def test_raises_str(self):
-        M60 = TimeFrameFactory.from_minutes(60)
-        with pytest.raises(TypeError):
-            M60 == "string"
-
-    def test_raises_int(self):
-        W1 = TimeFrameFactory.from_weeks(1)
-        with pytest.raises(TypeError):
-            W1 == 1
-
-    def test_raises_dict(self):
-        D7 = TimeFrameFactory.from_days(7)
-        with pytest.raises(TypeError):
-            D7 == {"key": D7}
-
     def test_5m_300s(self):
         assert MINUTE_5 == TimeFrameFactory.from_seconds(300)
 
