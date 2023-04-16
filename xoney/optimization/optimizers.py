@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Callable, Any
 
 from optuna.trial import FrozenTrial
+from xoney.backtesting.backtester import Backtester
 
 from xoney.optimization import Optimizer
 from xoney.generic.routes import TradingSystem, Instrument
@@ -66,15 +67,14 @@ class DefaultOptimizer(Optimizer):  # TODO
         self._metric = metric
 
     def __initialize_max_trades(self,
-                               min: int | None,
-                               max: int | None) -> IntParameter:
+                                min: int | None,
+                                max: int | None) -> IntParameter:
         # During the optimization process, the parameter of the maximum
         # number of open trades can change, but if it is not specified,
-        # then the strategy has 1 trade for 1 pair.
-        n_instruments = self._trading_system.n_instruments
+        # then the strategy has 1 trade for 1 strategy.
+        n_strategies = self._trading_system.n_strategies
         if min is None or max is None:
-            min = n_instruments
-            max = n_instruments
+            min = max = n_strategies
         self._max_trades =  IntParameter(min=min,
                                          max=max)
 
@@ -93,7 +93,7 @@ class DefaultOptimizer(Optimizer):  # TODO
                     trial=trial
                 )
             flatten["max_trades"] = _parameter_to_value(parameter=self._max_trades,
-                                                        path="max_parameter",
+                                                        path="max_trades",
                                                         trial=trial)
             system: TradingSystem = self._parser.as_system(flatten=flatten)
             return self._system_score(trading_system=system)
@@ -156,4 +156,20 @@ class DefaultOptimizer(Optimizer):  # TODO
 
 
 class GeneticAlgorithmOptimizer(DefaultOptimizer):
-    _study_params: dict[str, object] = dict(sampler=NSGAIISampler())
+    def __init__(self,
+                 backtester: Backtester,
+                 population_size: int = 30,
+                 mutation_prob: float | None = None,
+                 crossover_prob: float = 0.9,
+                 swapping_prob: float = 0.5,
+                 seed: int | None = None,
+                 **NSGA2_sampler_kwargs):
+        self._study_params = dict(
+            sampler=NSGAIISampler(population_size=population_size,
+                                  mutation_prob=mutation_prob,
+                                  crossover_prob=crossover_prob,
+                                  swapping_prob=swapping_prob,
+                                  seed=seed,
+                                  **NSGA2_sampler_kwargs)
+        )
+        super().__init__(backtester)

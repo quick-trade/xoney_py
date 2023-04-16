@@ -13,45 +13,26 @@
 # limitations under the License.
 # =============================================================================
 from __future__ import annotations
+from datetime import timedelta
 
 from xoney.generic.candlestick import Chart, Candle
 from xoney.generic.routes import Instrument, TradingSystem
 from xoney.generic.symbol import Symbol
+from xoney.generic.timeframes.template import TimeFrame
 from xoney.generic.workers import EquityWorker
 from xoney.generic.trades import TradeHeap, Trade
 from xoney.generic.events import Event
 from xoney.generic.equity import Equity
-from xoney.analysis.index_transform import charts_length, unify_series
 
 from typing import Iterable
+from numbers import Number
 
 from xoney.strategy import Strategy
-
-import numpy as np
-
-
-def _unify_instruments_charts(
-        charts: dict[Instrument, Chart]
-) -> dict[Instrument, Chart]:
-    instruments, charts = zip(*charts.items())
-    charts = unify_series(charts)
-    return {instrument: chart
-            for instrument, chart in
-            zip(instruments, charts)}
-
-def _is_nan_candle(candle: Candle) -> bool:
-    return candle.close == np.nan
+from xoney.backtesting import _utils
 
 
-def _drop_na_chart(chart: Chart) -> Chart:
-    dropped: Chart = Chart(timeframe=chart.timeframe)
-    for candle in chart:
-        if not _is_nan_candle(candle=candle):
-            dropped.append(candle)
-    return dropped
 
-
-class Backtester(EquityWorker):  # TODO
+class Backtester(EquityWorker):  # TODO: stats support
     _equity: Equity
     _initial_depo: float
 
@@ -95,19 +76,18 @@ class Backtester(EquityWorker):  # TODO
                       chart: Chart) -> None:
         events: Iterable[Event]
 
-        if not _is_nan_candle(candle=candle):
-            self._update_symbol_trades(candle=candle,
-                                       symbol=self._current_symbol)
-            strategy.run(chart)
-            events = strategy.fetch_events()
-            self._handle_events(events=events)
+        strategy.run(chart)
+        events = strategy.fetch_events()
+        self._handle_events(events=events)
+        self._update_symbol_trades(candle=candle,
+                                   symbol=self._current_symbol)
 
     def _run_strategy(self,
                       strategy: Strategy,
                       chart: Chart,
                       candle: Candle,
                       instrument: Instrument):
-        self.set_symbol(instrument.symbol)
+        self._set_symbol(instrument.symbol)
         self._handle_chart(strategy=strategy,
                            candle=candle,
                            chart=chart)
@@ -116,33 +96,38 @@ class Backtester(EquityWorker):  # TODO
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart],
             commission: float = 0.1 * 0.01,
+            time_adjustment: Number | TimeFrame | timedelta = 0.5,
             **kwargs) -> None:
         self._trading_system = trading_system
+        self.max_trades = trading_system.max_trades
         self._free_balance = self._initial_depo
         self._trades = TradeHeap()
         self.commission = commission
 
+        equity_timeframe: TimeFrame = _utils.min_timeframe(charts)
+        adj: timedelta = _utils.time_adjustment(
+            adj=time_adjustment,
+            timeframe=equity_timeframe
+        )
+
+        timestamp = _utils.equity_timestamp(charts=charts.values(),
+                                            timeframe=equity_timeframe)
+
         self._equity = Equity([],
-                              timeframe=...,
-                              timestamp=...)  # TODO
+                              timeframe=equity_timeframe,
+                              timestamp=timestamp)
 
         candle: Candle
         instrument: Instrument
         strategy: Strategy
-        na_chart: Chart
         chart: Chart
 
-        unified_charts: dict[Instrument, Chart] = _unify_instruments_charts(
-            charts=charts
-        )
-        chart_length: int = charts_length(unified=unified_charts)
-
-        for curr_index in range(chart_length):
+        for curr_time in timestamp + adj:
             self.__handle_closed_trades()
             for strategy, instrument in self._trading_system.items:
-                na_chart = unified_charts[instrument]
-                candle = na_chart[curr_index]
-                chart = _drop_na_chart(chart=na_chart[:curr_index])
+                chart = charts[instrument]
+                chart = chart[:curr_time]
+                candle = chart.latest_before(curr_time)
                 self._run_strategy(chart=chart,
                                    candle=candle,
                                    strategy=strategy,
