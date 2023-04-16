@@ -27,6 +27,8 @@ from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 
 from ta.volatility import BollingerBands
 
+from xoney.strategy.parameters import *
+
 
 class BollingerTrendStrategy(Strategy):
     _signal = None
@@ -91,6 +93,11 @@ class BollingerTrendStrategy(Strategy):
                 )
             ]
         return []
+
+    @property
+    def parameters(self) -> dict[str, Parameter]:
+        return {"length": IntParameter(1, 350),
+                "dev": FloatParameter(0.5, 4)}
 
 
 @pytest.mark.parametrize("length, dev",
