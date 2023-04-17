@@ -12,6 +12,9 @@ jobs:
       - run:
           name: Install requirements
           command: pip install -r requirements_dev.txt
+      - run:
+          name: Run tests
+          command: pytest tests
       - codecov/upload
 
 workflows:
