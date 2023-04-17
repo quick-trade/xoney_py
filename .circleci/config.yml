@@ -14,7 +14,7 @@ jobs:
           command: pip install -r requirements_dev.txt
       - run:
           name: Run tests
-          command: pytest tests
+          command: pytest tests --cov=./ --cov-report=xml
       - codecov/upload
 
 workflows:
