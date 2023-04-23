@@ -37,6 +37,10 @@ class TimeFrame:
     def candles_in_year(self) -> float:
         return self.__candles_in_year
 
+    @property
+    def name(self) -> str:
+        return self.__name
+
     def __init__(self,
                  name: str,
                  seconds: int | float):
