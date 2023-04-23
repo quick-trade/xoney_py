@@ -74,9 +74,17 @@ class TradingSystem:
 
     @property
     def n_instruments(self) -> int:
+        """
+        Number of unique instruments
+        """
         flat_list: set[Instrument] = set(itertools.chain(*self.instruments))
         return len(flat_list)
 
     @property
     def n_strategies(self) -> int:
-        return len(self._config)
+        """
+        Number of pairs like (strategy, instrument)
+        """
+
+        flat_list: tuple[Instrument] = tuple(itertools.chain(*self.instruments))
+        return len(flat_list)
