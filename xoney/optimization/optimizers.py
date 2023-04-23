@@ -126,7 +126,7 @@ class DefaultOptimizer(Optimizer):  # TODO
             dict(n_jobs=n_jobs,
                  n_trials=n_trials)
         )
-        direction: str = "maximize" if metric.positive else "minimize"
+        direction: str = "maximize" if self._metric.positive else "minimize"
         self._study = create_study(direction=direction,
                                    **self._study_params)
         objective = self._system_to_objective(
@@ -140,6 +140,7 @@ class DefaultOptimizer(Optimizer):  # TODO
         # can be used in optimization
         trial_score: Callable = lambda trial: trial.values[0]
         trials: list[FrozenTrial] = self._study.trials
+        # TODO: debug. Trials now is just a list of best trials ^
         sorted_trials: list = sorted(trials,
                                      key=trial_score,
                                      reverse=self._metric.positive)
