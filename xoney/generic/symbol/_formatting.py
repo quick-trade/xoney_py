@@ -14,7 +14,7 @@
 # =============================================================================
 from __future__ import annotations
 
-SYMBOL_SPLIT: str = "/"
+from xoney.config import SYMBOL_SPLIT
 
 
 def split_base_and_quote(symbol: str) -> tuple[str, str]:

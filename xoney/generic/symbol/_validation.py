@@ -16,13 +16,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from xoney.config import SYMBOL
+
 from xoney.system.exceptions import SymbolArgumentsError
 from xoney.system.exceptions import InvalidSymbolError
-import re
 
-# [A-Z0-9]+ -- Capital letters or numbers;
-# / -- Separation character (slash).
-SYMBOL: str = r"[A-Z0-9]+/[A-Z0-9]+"
+import re
 
 
 def valid_args_type(args: tuple, kwargs: dict) -> bool:
