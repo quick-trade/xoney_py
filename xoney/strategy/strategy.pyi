@@ -14,7 +14,7 @@
 # =============================================================================
 from __future__ import annotations
 
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
 from typing import Iterable, Any
 
 from xoney.generic.candlestick import Chart
