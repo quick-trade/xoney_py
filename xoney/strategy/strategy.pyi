@@ -24,6 +24,10 @@ from xoney.strategy.parameters import Parameter
 
 class Strategy(ABC):
     _settings: dict[str, Any]
+    _id: int
+
+    def __generate_id(self) -> None:
+        ...
 
     def __init__(self, **settings: dict[str, Any]):
         ...

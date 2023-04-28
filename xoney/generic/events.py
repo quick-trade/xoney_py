@@ -97,3 +97,20 @@ class CloseAllTrades(Event):
             close_trade = CloseTrade(trade=trade)
             close_trade.set_worker(self._worker)
             close_trade.handle_trades(trades=trades)
+
+
+class CloseStrategyTrades(Event):
+    __id: int
+
+    def __init__(self, strategy_id: int):
+        self.__id = strategy_id
+
+    def handle_trades(self, trades: TradeHeap) -> None:
+        trade: Trade
+        close_trade: CloseTrade
+
+        for trade in trades:
+            if trade.meta_info.strategy_id == self.__id:
+                close_trade = CloseTrade(trade=trade)
+                close_trade.set_worker(self._worker)
+                close_trade.handle_trades(trades=trades)

@@ -21,9 +21,9 @@ from xoney.generic.equity import Equity
 from xoney.generic.routes import Instrument
 from xoney.strategy import Strategy
 from xoney.generic.candlestick import Chart, Candle
-from xoney.generic.events import Event, OpenTrade, CloseAllTrades
+from xoney.generic.events import Event, OpenTrade, CloseStrategyTrades
 from xoney.generic.enums import TradeSide
-from xoney.generic.trades import Trade
+from xoney.generic.trades import Trade, TradeMetaInfo
 from xoney.generic.trades.levels import LevelHeap, SimpleEntry
 from xoney.backtesting import Backtester
 from xoney import TradingSystem, Symbol
@@ -57,7 +57,7 @@ class TrendCandleStrategy(Strategy):
     def fetch_events(self) -> Iterable[Event]:
         if self._signal == "long":
             return [
-                CloseAllTrades(),
+                CloseStrategyTrades(strategy_id=self._id),
                 OpenTrade(
                     Trade(
                         side=TradeSide.LONG,
@@ -69,14 +69,15 @@ class TrendCandleStrategy(Strategy):
                                 )
                             ]
                         ),
-                        breakouts=LevelHeap()
+                        breakouts=LevelHeap(),
+                        meta_info=TradeMetaInfo(strategy_id=self._id)
                     )
                 )
             ]
 
         if self._signal == "short":
             return [
-                CloseAllTrades(),
+                CloseStrategyTrades(strategy_id=self._id),
                 OpenTrade(
                     Trade(
                         side=TradeSide.SHORT,
@@ -88,7 +89,8 @@ class TrendCandleStrategy(Strategy):
                                 )
                             ]
                         ),
-                        breakouts=LevelHeap()
+                        breakouts=LevelHeap(),
+                        meta_info=TradeMetaInfo(strategy_id=self._id)
                     )
                 )
             ]

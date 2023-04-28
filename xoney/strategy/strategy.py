@@ -17,14 +17,20 @@ from __future__ import annotations
 from warnings import warn
 
 import copy
-from abc import ABC, abstractmethod, abstractproperty
+from abc import ABC, abstractmethod
+
+from time import time
 
 
 class Strategy(ABC):
     _settings = dict()
 
+    def __generate_id(self):
+        self._id = hash(time())
+
     def __init__(self, **settings):
         self.edit_settings(settings)
+        self.__generate_id()
 
     def edit_settings(self, settings):
         """

@@ -13,5 +13,5 @@
 # limitations under the License.
 # =============================================================================
 
-from .trade import Trade
+from .trade import Trade, TradeMetaInfo
 from .heap import TradeHeap

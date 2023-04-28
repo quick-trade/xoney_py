@@ -14,6 +14,8 @@
 # =============================================================================
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide, TradeStatus
 from xoney.generic.symbol import Symbol
@@ -21,6 +23,10 @@ from xoney.system.exceptions import UnexpectedTradeSideError
 from xoney.generic.trades.levels import LevelHeap
 
 from xoney import math
+
+@dataclass
+class TradeMetaInfo:
+    strategy_id: int
 
 
 class Trade:
@@ -32,6 +38,7 @@ class Trade:
     __opened: bool
     __update_price: float
     _symbol: Symbol
+    meta_info: TradeMetaInfo
 
     @property
     def status(self) -> TradeStatus:
@@ -49,11 +56,13 @@ class Trade:
                  side: TradeSide,
                  entries: LevelHeap,
                  breakouts: LevelHeap,
-                 potential_volume: float | None = None):
+                 potential_volume: float | None = None,
+                 meta_info: TradeMetaInfo | None = None):
         self.__entries = entries
         self.__breakouts = breakouts
         self.__status = TradeStatus.ACTIVE
         self.__potential_volume = potential_volume
+        self.meta_info = meta_info
 
         self.__opened = False
 
