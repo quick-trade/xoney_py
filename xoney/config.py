@@ -24,5 +24,7 @@ DEFAULT_CURR_TIME = datetime(1970, 1, 1)
 
 
 SYMBOL_SPLIT: str = "/"
+EXCHANGE_REGEX: str = r"[a-zA-Z0-9]+"
+EXCHANGE_SPLIT: str = ":"
 # [A-Z0-9]+ -- Capital letters or numbers;
 SYMBOL: str = r"[A-Z0-9]+" + SYMBOL_SPLIT + r"[A-Z0-9]+"

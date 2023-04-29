@@ -18,11 +18,6 @@ from abc import ABC, abstractmethod
 
 
 class Exchange(ABC):
-    _stop_loss_type = "stop_loss"
-    _take_profit_type = "take_profit_limit"
-    _simple_entry_type = "market"
-    _averaging_entry_type = "limit"
-
     @abstractmethod
     def new_order(self,
                   symbol: str,

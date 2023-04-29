@@ -16,7 +16,6 @@
 import pytest
 
 from xoney.generic.symbol import Symbol
-from xoney.system.exceptions import SymbolArgumentsError
 from xoney.system.exceptions import InvalidSymbolError
 
 
@@ -30,28 +29,8 @@ class TestSymbolCorrectInitialization:
         self.pair = Symbol("BTC/USD")
         self.assert_base_quote_symbol()
 
-    def test_base_quote_args(self):
-        self.pair = Symbol("BTC", "USD")
-        self.assert_base_quote_symbol()
-
     def test_base_quote_kwarg(self):
         self.pair = Symbol(symbol="BTC/USD")
-        self.assert_base_quote_symbol()
-
-    def test_base_quote_kwargs(self):
-        self.pair = Symbol(base="BTC", quote="USD")
-        self.assert_base_quote_symbol()
-
-    def test_quote_base_kwargs(self):
-        self.pair = Symbol(quote="USD", base="BTC")
-        self.assert_base_quote_symbol()
-
-    def test_base_quote_arg_kwarg(self):
-        self.pair = Symbol("BTC", quote="USD")
-        self.assert_base_quote_symbol()
-
-    def test_base_quote_arg_kwarg_base(self):
-        self.pair = Symbol("USD", base="BTC")
         self.assert_base_quote_symbol()
 
 
@@ -69,22 +48,6 @@ class TestSymbolIncorrectInitialization:
         with pytest.raises(TypeError):
             self.pair = Symbol(*args)
 
-    @pytest.mark.parametrize("kwargs", [
-        dict(unexpected="BTC/USD"),
-        dict(symbol="BTC/USD",
-             unexpected="some unexpected data"),
-        dict()
-    ])
-    @pytest.mark.parametrize("args", [
-        ("BTC", "USD", "some unexpected data"),
-        ("BTC/USD", "BTC", "USD"),
-        ("ABC k", "1}23", "correct"),
-        ()
-    ])
-    def test_unexpected_args(self, args, kwargs):
-        with pytest.raises(SymbolArgumentsError):
-            self.pair = Symbol(*args, **kwargs)
-
 
 class TestInvalidSymbol:
     def test_incorrect_symbol(self):
@@ -93,46 +56,40 @@ class TestInvalidSymbol:
 
     def test_incorrect_base_quote(self):
         with pytest.raises(InvalidSymbolError):
-            self.pair = Symbol(base="AB3C.",
-                               quote="2AB{C")
+            self.pair = Symbol("AB3C./2AB{C")
 
     def test_incorrect_arg(self):
         with pytest.raises(InvalidSymbolError):
             self.pair = Symbol("ABC 123")
 
-    def test_incorrect_args(self):
-        with pytest.raises(InvalidSymbolError):
-            self.pair = Symbol("ABC k", "1}23")
-
 
 class TestEqual:
     def test_str(self):
-        assert Symbol("BTC", "USD") == "BTC/USD"
+        assert Symbol("BTC/USD") == "BTC/USD"
 
     def test_symbol(self):
-        assert Symbol("BTC", "USD") == Symbol("BTC/USD")
+        assert Symbol("BTC/USD") == Symbol("BTC/USD")
 
     @pytest.mark.parametrize("not_a_symbol", [
         1,
         {"BASE": "BTC",
          "QUOTE": "USD"}
     ])
-    def test_typeerror(self, not_a_symbol):
-        with pytest.raises(TypeError):
-            self.result = Symbol("BTC", "USD") == not_a_symbol
+    def test_false(self, not_a_symbol):
+        assert (Symbol("BTC/USD") == not_a_symbol) == False
 
 
 def test_str():
-    symbol = Symbol("BTC", "USD")
+    symbol = Symbol("BTC/USD")
     assert str(symbol) == "BTC/USD"
 
 
 def test_repr():
-    symbol = Symbol("BTC", "USD")
+    symbol = Symbol("BTC/USD")
     assert repr(symbol) == "BTC/USD"
 
 def test_hashing():
-    symbol_1 = Symbol("BTC", "CAD")
-    symbol_2 = Symbol("BTC", "CAD")
+    symbol_1 = Symbol("BTC/CAD")
+    symbol_2 = Symbol("BTC/CAD")
     hashtable = {symbol_1: 123, symbol_2: 234}
     assert len(hashtable.items()) == 1

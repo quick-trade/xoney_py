@@ -21,19 +21,9 @@ class UnexpectedTradeSideError(XoneyException):
         super().__init__(f"Unexpected trade side: {side}")
 
 
-class SymbolError(XoneyException):
-    pass
-
-
-class InvalidSymbolError(SymbolError):
+class InvalidSymbolError(XoneyException):
     def __init__(self, symbol):
         super().__init__(f"Invalid symbol: {symbol}")
-
-
-class SymbolArgumentsError(SymbolError):
-    def __init__(self, args, kwargs):
-        super().__init__("Unexpected symbol initializing: "
-                         f"{*args, kwargs}")
 
 
 class ChartError(XoneyException):
