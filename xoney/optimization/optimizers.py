@@ -55,7 +55,7 @@ def _parameter_to_value(parameter: Parameter,
         raise UnexpectedParameter(parameter)
 
 
-class DefaultOptimizer(Optimizer):  # TODO
+class DefaultOptimizer(Optimizer):
     _study: Study
     _study_params: dict[str, object] = dict()
     _opt_params: dict[str, object] = dict()
