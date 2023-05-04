@@ -22,6 +22,7 @@ from xoney.generic.routes import TradingSystem, Instrument
 from xoney.generic.workers import Worker
 from xoney.generic.candlestick import Chart
 from xoney.backtesting import Backtester
+from xoney.generic.equity import Equity
 
 
 class Optimizer(Worker, ABC):
@@ -34,12 +35,16 @@ class Optimizer(Worker, ABC):
                  backtester: Backtester):
         self._backtester = backtester
 
-    def _system_score(self, trading_system: TradingSystem) -> float:
+    def _backtest(self, trading_system: TradingSystem) -> Equity:
         tester: Backtester = copy.deepcopy(self._backtester)
         tester.run(charts=self._charts,
                    trading_system=trading_system,
                    commission=self._commission)
-        return tester.equity.evaluate(self._metric)
+        return tester.equity
+
+
+    def _system_score(self, trading_system: TradingSystem) -> float:
+        return self._backtest(trading_system).evaluate(self._metric)
 
     @abstractmethod
     def best_systems(self,
