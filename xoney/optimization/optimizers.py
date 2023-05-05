@@ -57,8 +57,8 @@ def _parameter_to_value(parameter: Parameter,
 
 class DefaultOptimizer(Optimizer):
     _study: Study
-    _study_params: dict[str, object] = dict()
-    _opt_params: dict[str, object] = dict()
+    _study_params: dict[str, Any] = dict()
+    _opt_params: dict[str, Any] = dict()
     _max_trades: IntParameter
 
     def __initialize_metric(self, metric: Metric | type) -> None:

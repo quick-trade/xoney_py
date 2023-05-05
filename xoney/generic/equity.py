@@ -37,6 +37,8 @@ class Equity(TimeSeries):
         self._list = list(iterable)
 
     def __eq__(self, other):
+        if not isinstance(other, Equity):
+            raise TypeError(f"Object is not Equity: {other}")
         if any(other.as_array() != self.as_array()):
             return False
         if self.timeframe != other.timeframe:

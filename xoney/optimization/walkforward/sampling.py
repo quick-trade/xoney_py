@@ -22,7 +22,7 @@ from xoney.backtesting import Backtester
 from xoney.generic.equity import Equity
 from xoney.optimization import Optimizer
 
-from copy import deepcopy
+import copy
 
 
 class Sample(ABC):
@@ -48,7 +48,7 @@ class InSample(Sample):
                  opt_params: dict[str, Any] | None = None) -> None:
         super().__init__(charts)
         if deepcopy:
-            optimizer = deepcopy(optimizer)
+            optimizer = copy.deepcopy(optimizer)
         if opt_params is None:
             opt_params = dict()
         self._optimizer = optimizer
@@ -87,7 +87,7 @@ class OutOfSample(Sample):
         super().__init__(charts=charts)
 
         if deepcopy_bt:
-            backtester = deepcopy(backtester)
+            backtester = copy.deepcopy(backtester)
         if bt_kwargs is None:
             bt_kwargs = dict()
 

@@ -53,18 +53,6 @@ class TradingSystem:
         return items
 
     @property
-    def symbols(self) -> list[Symbol]:
-        symbols: list[Symbol] = []
-
-        symbol: Symbol
-        instrument: Instrument
-        for instrument in self.instruments:
-            symbol = instrument.symbol
-            if symbol not in symbols:
-                symbols.append(symbol)
-        return symbols
-
-    @property
     def strategies(self) -> tuple[Strategy, ...]:
         return tuple(self._config.keys())
 
@@ -86,5 +74,5 @@ class TradingSystem:
         Number of pairs like (strategy, instrument)
         """
 
-        flat_list: tuple[Instrument] = tuple(itertools.chain(*self.instruments))
+        flat_list: tuple[Instrument, ...] = tuple(itertools.chain(*self.instruments))
         return len(flat_list)

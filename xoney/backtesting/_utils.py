@@ -20,18 +20,18 @@ import pandas as pd
 from xoney.generic.timeframes import TimeFrame
 from xoney import Chart
 
-from typing import Iterable
-from numbers import Number
+from typing import Collection, Iterable
 
 
-def min_timeframe(charts: Iterable[Chart]) -> TimeFrame:
+def min_timeframe(charts: Iterable) -> TimeFrame:
+    c: Chart
     timeframes: list[TimeFrame] = [c.timeframe for c in charts]
     return min(timeframes)
 
 
-def time_adjustment(adj: Number | TimeFrame | timedelta,
+def time_adjustment(adj: float | TimeFrame | timedelta,
                     timeframe: TimeFrame) -> timedelta:
-    if isinstance(adj, Number):
+    if isinstance(adj, float):
         return timeframe.timedelta * adj
     elif isinstance(adj, TimeFrame):
         return adj.timedelta
@@ -42,7 +42,7 @@ def time_adjustment(adj: Number | TimeFrame | timedelta,
         "a positive number, timeframe, or datetime.timedelta ")
 
 
-def equity_timestamp(charts: Iterable[Chart],
+def equity_timestamp(charts: Collection[Chart],
                      timeframe: TimeFrame) -> pd.Series:
     if len(charts) == 1:  # TODO: debug
         return list(charts)[0].timestamp

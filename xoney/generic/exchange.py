@@ -24,7 +24,7 @@ class Exchange(ABC):
                   side: str,
                   type: str,
                   amount: float,
-                  price: float) -> Order:  # pragma: no cover
+                  price: float | None) -> Order:  # pragma: no cover
         ...
 
     @abstractmethod
@@ -34,7 +34,7 @@ class Exchange(ABC):
     def edit_order(self,
                    order: Order,
                    amount: float,
-                   price: float) -> Order:
+                   price: float | None) -> Order:
         self.cancel_order(order=order)
         return self.new_order(symbol=order.symbol,
                               side=order.side,
@@ -110,7 +110,7 @@ class Order:
         self.__price = price
         self.__exchange = exchange
 
-    def edit_price(self, price: float):
+    def edit_price(self, price: float | None):
         order_after_editing = self.__exchange.edit_order(
             order=self,
             amount=self.__amount,

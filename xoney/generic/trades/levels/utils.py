@@ -16,6 +16,8 @@ from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeSide
 from xoney.generic.trades.levels import Level
 
+from xoney.system.exceptions import UnexpectedTradeSideError
+
 
 # Here we don't check just the crossing with the candle,
 # because there may be a market gap on the trigger price.
@@ -28,6 +30,8 @@ class CheckLevelBreakout:
             return candle.low <= level.trigger_price
         if level.side == TradeSide.SHORT:
             return candle.high >= level.trigger_price
+        else:
+            raise UnexpectedTradeSideError(level.side)
 
     @classmethod
     def by_trade_side(cls,
@@ -37,3 +41,5 @@ class CheckLevelBreakout:
             return candle.high >= level.trigger_price
         if level.side == TradeSide.SHORT:
             return candle.low <= level.trigger_price
+        else:
+            raise UnexpectedTradeSideError(level.side)

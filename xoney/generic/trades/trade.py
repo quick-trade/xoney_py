@@ -38,7 +38,7 @@ class Trade:
     __opened: bool
     __update_price: float
     _symbol: Symbol
-    meta_info: TradeMetaInfo
+    meta_info: TradeMetaInfo | None
 
     @property
     def status(self) -> TradeStatus:

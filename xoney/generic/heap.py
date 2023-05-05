@@ -15,15 +15,14 @@
 from __future__ import annotations
 
 
-from typing import TypeVar
-from typing import Iterable
+from typing import TypeVar, Iterable, Generic
 
 import copy
 
 T = TypeVar("T")
 
 
-class Heap:
+class Heap(Generic[T]):
     _members: list[T]
 
     def __init__(self, members: Iterable[T] | None = None):

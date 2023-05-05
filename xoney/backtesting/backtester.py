@@ -25,7 +25,6 @@ from xoney.generic.events import Event
 from xoney.generic.equity import Equity
 
 from typing import Iterable
-from numbers import Number
 
 from xoney.strategy import Strategy
 from xoney.backtesting import _utils
@@ -96,7 +95,7 @@ class Backtester(EquityWorker):  # TODO: stats support
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart],
             commission: float = 0.1 * 0.01,
-            time_adjustment: Number | TimeFrame | timedelta = 0.5,
+            time_adjustment: float | TimeFrame | timedelta = 0.5,
             **kwargs) -> None:
         self._trading_system = trading_system
         self.max_trades = trading_system.max_trades

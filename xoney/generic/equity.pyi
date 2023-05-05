@@ -35,7 +35,7 @@ class Equity(TimeSeries):
                  timeframe: TimeFrame = DAY_1):
         ...
 
-    def __eq__(self, other: Equity):
+    def __eq__(self, other: object):
         ...
 
     def append(self, balance: float) -> None:

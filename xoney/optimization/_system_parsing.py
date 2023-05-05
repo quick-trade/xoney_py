@@ -112,7 +112,7 @@ class Parser:
         self._parameters = tuple(parameters)
 
     def __save_parameters_table(self) -> None:
-        paths: tuple[ParameterPath]
+        paths: tuple[ParameterPath, ...]
         parameters: tuple[Parameter]
         path: ParameterPath
         parameter: Parameter
