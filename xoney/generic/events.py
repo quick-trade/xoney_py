@@ -35,7 +35,13 @@ class Event(ABC):
         self._worker = worker
 
 
-class OpenTrade(Event):
+class BalanceBaseEvent(Event, ABC):
+    @abstractmethod
+    def _handle_free_balance(self, *args, **kwargs) -> None:
+        ...  # TODO: support real-time trading
+
+
+class OpenTrade(BalanceBaseEvent):
     _trade: Trade
     _volume_distributor: VolumeDistributor
 
@@ -70,18 +76,24 @@ class OpenTrade(Event):
             self._volume_distributor.set_trade_volume(self._trade)
 
             trades.add(self._trade)
-            self._worker._free_balance -= self._trade.potential_volume
+            self._handle_free_balance()
+
+    def _handle_free_balance(self) -> None:
+        self._worker._free_balance -= self._trade.potential_volume
 
 
-class CloseTrade(Event):
+class CloseTrade(BalanceBaseEvent):
     _trade: Trade
 
     def __init__(self, trade: Trade):
         self._trade = trade
 
+    def _handle_free_balance(self, add_value: float) -> None:
+        self._worker._free_balance += add_value
+
     def handle_trades(self, trades: TradeHeap) -> None:
         trade_value: float = self._trade.potential_volume + self._trade.profit
-        self._worker._free_balance += trade_value
+        self._handle_free_balance(add_value=trade_value)
         self._trade.cleanup()
 
 
