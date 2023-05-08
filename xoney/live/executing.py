@@ -12,14 +12,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from xoney import Exchange, TradingSystem
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+
+from xoney import Exchange, TradingSystem, EquityWorker
+from xoney.live.stopping import StopCondition
 
 
-class Executor:
-    __exchange: Exchange
+class Executor(EquityWorker, ABC):
+    _exchange: Exchange
+    _stop_condition: StopCondition
+    _running: bool
 
     def __init__(self, exchange: Exchange) -> None:
-        self.__exchange = exchange
+        self._exchange = exchange
+        self._running = False
 
-    def trade(self, trading_system: TradingSystem) -> None:
-        ...  # TODO: write some code
+    @abstractmethod
+    def _loop(self) -> None:
+        ...
+
+    def run(self,
+            trading_system: TradingSystem,
+            stop_condition: StopCondition) -> None:
+        self._trading_system = trading_system
+        self._stop_condition = stop_condition
+        self._running = True
+
+        self._stop_condition.bind_executor(executor=self)
+
+        while self._running:
+            try:
+                self._loop()
+            except Exception as error:
+                self._handle_exception(error=error)
+
+    @abstractmethod
+    def _handle_exception(error: Exception) -> None:
+        ...
+
+    @property
+    def free_balance(self) -> float:
+        quote: str = self._current_symbol.quote
+        return self.__exchange.fetch_free_balance(currency=quote)
+
+    def stop_trading(self) -> None:
+        self._running = False
+
+
+class DefaultExecutor(Executor):
+    def _loop(self) -> None:
+        self._stop_condition.check_state()
+        # TODO: implement
