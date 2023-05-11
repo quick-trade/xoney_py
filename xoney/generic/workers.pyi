@@ -32,7 +32,7 @@ class Worker(ABC):
         ...
 
 
-class EquityWorker(Worker):
+class EquityWorker(Worker, ABC):
     _trades: TradeHeap
     max_trades: int
     commission: float

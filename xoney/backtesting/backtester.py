@@ -76,8 +76,7 @@ class Backtester(EquityWorker):  # TODO: stats support
         events: Iterable[Event]
 
         strategy.run(chart)
-        events = strategy.fetch_events()
-        self._handle_events(events=events)
+        self._handle_events(events=self.events)
         self._update_symbol_trades(candle=candle,
                                    symbol=self._current_symbol)
 

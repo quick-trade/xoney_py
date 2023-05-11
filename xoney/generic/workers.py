@@ -25,7 +25,7 @@ class Worker(ABC):
         ...
 
 
-class EquityWorker(Worker):
+class EquityWorker(Worker, ABC):
     @abstractproperty
     def equity(self):  # pragma: no cover
         ...
