@@ -24,6 +24,7 @@ from xoney.generic.trades.levels import LevelHeap
 
 from xoney import math
 
+
 @dataclass
 class TradeMetaInfo:
     strategy_id: int
@@ -153,6 +154,7 @@ class Trade:
 
         self.__entries = self.__entries.__class__()
         self.__breakouts = self.__breakouts.__class__()
+        self.__potential_volume = 0  # TODO: refactor
         # To zero the filled volume, the level
         # heaps are set empty, but of the same type.
 
