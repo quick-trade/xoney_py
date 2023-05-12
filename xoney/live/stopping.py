@@ -18,7 +18,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 
 from xoney.live import Executor
-from xoney.generic.events import CloseAllTrades
+from xoney.generic.events import CloseTrades
 
 
 class StopCondition(ABC):
@@ -42,7 +42,7 @@ class StopCondition(ABC):
 class ClosingTradesStopCondition(StopCondition, ABC):
      def stop(self) -> None:
         super().stop()
-        close_trades: CloseAllTrades = CloseAllTrades()
+        close_trades: CloseTrades = CloseTrades()
         close_trades.set_worker(self._executor)
         close_trades.handle_trades(self._executor._trades)
 

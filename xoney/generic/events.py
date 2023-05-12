@@ -97,7 +97,7 @@ class CloseTrade(BalanceBaseEvent):
         self._trade.cleanup()
 
 
-class CloseAllTrades(Event):
+class CloseTrades(Event):
     def __init__(self):
         pass
 
@@ -118,11 +118,11 @@ class CloseStrategyTrades(Event):
         self.__id = strategy_id
 
     def handle_trades(self, trades: TradeHeap) -> None:
-        trade: Trade
-        close_trade: CloseTrade
+        trades: list[Trade]
+        close_trades: CloseTrades
 
-        for trade in trades:
-            if trade.meta_info.strategy_id == self.__id:
-                close_trade = CloseTrade(trade=trade)
-                close_trade.set_worker(self._worker)
-                close_trade.handle_trades(trades=trades)
+        trades = [trade for trade in trades
+                  if trade.meta_info.strategy_id == self.__id]
+        close_trades = CloseTrades()
+        close_trades.set_worker(self._worker)
+        close_trades.handle_trades(trades=trades)
