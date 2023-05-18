@@ -47,50 +47,6 @@ class Backtester(EquityWorker):  # TODO: stats support
                  initial_depo: float = 100.0):
         self._initial_depo = initial_depo
 
-    def __handle_closed_trades(self) -> None:
-        self._free_balance += self._trades.closed.profit
-        self._trades.cleanup_closed()
-
-    def _handle_event(self, event: Event) -> None:
-        event.set_worker(self)
-        event.handle_trades(self._trades)
-
-    def _handle_events(self, events: Iterable[Event]) -> None:
-        event: Event
-        for event in events:
-            self._handle_event(event=event)
-
-    def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
-        # Here we update trades by symbol (but not by instrument),
-        # because we want to account for price changes
-
-        trade: Trade
-        for trade in self._trades:
-            if trade._symbol == symbol:
-                trade.update(candle=candle)
-
-    def _handle_chart(self,
-                      strategy: Strategy,
-                      candle: Candle,
-                      chart: Chart) -> None:
-        events: Iterable[Event]
-
-        strategy.run(chart)
-        events = strategy.fetch_events()
-        self._handle_events(events=events)
-        self._update_symbol_trades(candle=candle,
-                                   symbol=self._current_symbol)
-
-    def _run_strategy(self,
-                      strategy: Strategy,
-                      chart: Chart,
-                      candle: Candle,
-                      instrument: Instrument):
-        self._set_symbol(instrument.symbol)
-        self._handle_chart(strategy=strategy,
-                           candle=candle,
-                           chart=chart)
-
     def run(self,
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart],
@@ -132,3 +88,47 @@ class Backtester(EquityWorker):  # TODO: stats support
                                    strategy=strategy,
                                    instrument=instrument)
             self._equity.append(self.total_balance)
+
+    def _run_strategy(self,
+                      strategy: Strategy,
+                      chart: Chart,
+                      candle: Candle,
+                      instrument: Instrument):
+        self._set_symbol(instrument.symbol)
+        self._handle_chart(strategy=strategy,
+                           candle=candle,
+                           chart=chart)
+
+    def __handle_closed_trades(self) -> None:
+        self._free_balance += self._trades.closed.profit
+        self._trades.cleanup_closed()
+
+    def _handle_event(self, event: Event) -> None:
+        event.set_worker(self)
+        event.handle_trades(self._trades)
+
+    def _handle_events(self, events: Iterable[Event]) -> None:
+        event: Event
+        for event in events:
+            self._handle_event(event=event)
+
+    def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
+        # Here we update trades by symbol (but not by instrument),
+        # because we want to account for price changes
+
+        trade: Trade
+        for trade in self._trades:
+            if trade._symbol == symbol:
+                trade.update(candle=candle)
+
+    def _handle_chart(self,
+                      strategy: Strategy,
+                      candle: Candle,
+                      chart: Chart) -> None:
+        events: Iterable[Event]
+
+        strategy.run(chart)
+        events = strategy.fetch_events()
+        self._handle_events(events=events)
+        self._update_symbol_trades(candle=candle,
+                                   symbol=self._current_symbol)

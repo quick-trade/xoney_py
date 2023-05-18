@@ -38,7 +38,7 @@ class Trade:
     __potential_volume: float
     __opened: bool
     __update_price: float
-    _symbol: Symbol
+    _symbol: Symbol  # TODO: move to MetaInfo
     meta_info: TradeMetaInfo | None
 
     @property

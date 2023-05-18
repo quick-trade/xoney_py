@@ -32,7 +32,7 @@ class VolumeDistributor(ABC):
 
 
 class DefaultDistributor(VolumeDistributor):
-    def _get_trade_volume(self) -> float:
+    def _get_trade_volume(self) -> float:  # TODO: rename to _calculate_trade_volume
         free_balance: float = self._worker.free_balance
         opened_trades: float = self._worker.opened_trades
         max_trades: float = self._worker.max_trades
