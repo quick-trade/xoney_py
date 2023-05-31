@@ -43,7 +43,7 @@ def time_adjustment(adj: float | TimeFrame | timedelta,
 
 
 def equity_timestamp(charts: Collection[Chart],
-                     timeframe: TimeFrame) -> pd.Series:
+                     timeframe: TimeFrame) -> list:
     if len(charts) == 1:  # TODO: debug
         return list(charts)[0].timestamp
     timestamps = [c.timestamp for c in charts]
@@ -51,4 +51,4 @@ def equity_timestamp(charts: Collection[Chart],
     latest_end = max(ts[-1] for ts in timestamps)
     return pd.date_range(start=latest_start,
                          end=latest_end,
-                         freq=timeframe.timedelta)
+                         freq=timeframe.timedelta).to_list()

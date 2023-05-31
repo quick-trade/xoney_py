@@ -45,6 +45,7 @@ class Backtester(EquityWorker):  # TODO: stats support
 
     def __init__(self,
                  initial_depo: float = 100.0):
+        super().__init__()
         self._initial_depo = initial_depo
 
     def run(self,
