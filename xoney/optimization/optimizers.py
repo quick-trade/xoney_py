@@ -20,7 +20,7 @@ from optuna.trial import FrozenTrial
 from xoney.backtesting.backtester import Backtester
 
 from xoney.optimization import Optimizer
-from xoney.generic.routes import TradingSystem, Instrument
+from xoney.generic.routes import TradingSystem, Instrument, ChartContainer
 from xoney.generic.candlestick import Chart
 from xoney.analysis.metrics import Metric
 from xoney.strategy import (Parameter,
@@ -102,7 +102,7 @@ class DefaultOptimizer(Optimizer):
 
     def run(self,
             trading_system: TradingSystem,
-            charts: dict[Instrument, Chart],
+            charts: dict[Instrument, Chart] | ChartContainer,
             metric: Metric | type,
             commission: float = 0.1 * 0.01,
             min_trades: int | None = None,
@@ -110,6 +110,8 @@ class DefaultOptimizer(Optimizer):
             n_jobs: int | None = None,
             n_trials: int = 100,
             **kwargs) -> None:
+        if not isinstance(charts, ChartContainer):
+            charts = ChartContainer(charts=charts)
         self._charts = charts
         self._commission = commission
         self._trading_system = trading_system

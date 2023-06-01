@@ -17,22 +17,27 @@ from __future__ import annotations
 from typing import Any
 from abc import ABC
 
+
 from xoney import Instrument, Chart, TradingSystem
+from xoney.generic.routes import ChartContainer
 from xoney.backtesting import Backtester
 from xoney.generic.equity import Equity
 from xoney.optimization import Optimizer
+from xoney.backtesting._utils import equity_timestamp, min_timeframe
 
 import copy
 
 
 class Sample(ABC):
-    charts: dict[Instrument, Chart]
+    charts: ChartContainer
 
 
     def __init__(self,
-                 charts: dict[Instrument, Chart],
+                 charts: dict[Instrument, Chart] | ChartContainer,
                  *args,
                  **kwargs) -> None:
+        if not isinstance(charts, ChartContainer):
+            charts = ChartContainer(charts=charts)
         self.charts = charts
 
 
@@ -42,20 +47,20 @@ class InSample(Sample):
 
 
     def __init__(self,
-                 charts: dict[Instrument, Chart],
+                 charts: dict[Instrument, Chart] | ChartContainer,
                  optimizer: Optimizer,
-                 deepcopy: bool = True,
-                 opt_params: dict[str, Any] | None = None) -> None:
+                 deepcopy: bool = True) -> None:
         super().__init__(charts)
         if deepcopy:
             optimizer = copy.deepcopy(optimizer)
-        if opt_params is None:
-            opt_params = dict()
         self._optimizer = optimizer
-        self._opt_params = opt_params
 
     def optimize(self,
-                 trading_system: TradingSystem) -> None:
+                 trading_system: TradingSystem,
+                 opt_params: dict[str, Any] | None = None) -> None:
+        if opt_params is None:
+            opt_params = dict()
+        self._opt_params = opt_params
         self._optimizer.run(trading_system=trading_system,
                             charts=self.charts,
                             **self._opt_params)
@@ -65,7 +70,7 @@ class InSample(Sample):
 
 
 class OutOfSample(Sample):
-    _bt_params: dict[str, Any]
+    bt_params: dict[str, Any]
     _backtester: Backtester
     __equity: Equity
     __trading_system: TradingSystem
@@ -80,23 +85,30 @@ class OutOfSample(Sample):
         return self.__trading_system
 
     def __init__(self,
-                 charts: dict[Instrument, Chart],
+                 charts: dict[Instrument, Chart] | ChartContainer,
                  backtester: Backtester,
-                 deepcopy_bt: bool = True,
-                 bt_kwargs: dict[str, Any] | None = None):
+                 deepcopy_bt: bool = True):
         super().__init__(charts=charts)
 
         if deepcopy_bt:
             backtester = copy.deepcopy(backtester)
+        self._backtester = backtester
+
+    def backtest(self,
+                 trading_system: TradingSystem,
+                 bt_kwargs: dict[str, Any] | None = None):
         if bt_kwargs is None:
             bt_kwargs = dict()
+        self.bt_params = bt_kwargs
 
-        self._backtester = backtester
-        self._bt_params = bt_kwargs
-
-    def backtest(self, trading_system: TradingSystem):
         self._backtester.run(trading_system=trading_system,
                              charts=self.charts,
-                             **self._bt_params)
+                             **self.bt_params)
         self.__equity = self._backtester.equity
         self.__trading_system = trading_system
+
+
+def walk_forward_timestamp(charts) -> tuple[tuple, tuple]:
+    times = equity_timestamp(charts=charts,
+                             timeframe=min_timeframe(charts=charts))
+    # TODO: implement

@@ -18,7 +18,7 @@ import copy
 from abc import ABC, abstractmethod
 
 from xoney.analysis.metrics import Metric
-from xoney.generic.routes import TradingSystem, Instrument
+from xoney.generic.routes import TradingSystem, Instrument, ChartContainer
 from xoney.generic.workers import Worker
 from xoney.generic.candlestick import Chart
 from xoney.backtesting import Backtester
@@ -27,7 +27,7 @@ from xoney.generic.equity import Equity
 
 class Optimizer(Worker, ABC):
     _backtester: Backtester
-    _charts: dict[Instrument, Chart]
+    _charts: ChartContainer
     _commission: float
     _metric: Metric
 
@@ -54,7 +54,7 @@ class Optimizer(Worker, ABC):
     @abstractmethod
     def run(self,
             trading_system: TradingSystem,
-            charts: dict[Instrument, Chart],
+            charts: dict[Instrument, Chart] | ChartContainer,
             metric: Metric | type,
             commission: float = 0.1 * 0.01,
             min_trades: int | None = None,

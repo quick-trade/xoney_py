@@ -16,7 +16,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from xoney.generic.candlestick import Chart, Candle
-from xoney.generic.routes import Instrument, TradingSystem
+from xoney.generic.routes import Instrument, TradingSystem, ChartContainer
 from xoney.generic.symbol import Symbol
 from xoney.generic.timeframes.template import TimeFrame
 from xoney.generic.workers import EquityWorker
@@ -50,23 +50,25 @@ class Backtester(EquityWorker):  # TODO: stats support
 
     def run(self,
             trading_system: TradingSystem,
-            charts: dict[Instrument, Chart],
+            charts: dict[Instrument, Chart] | ChartContainer,
             commission: float = 0.1 * 0.01,
             time_adjustment: float | TimeFrame | timedelta = 0.5,
             **kwargs) -> None:
+        if not isinstance(charts, ChartContainer):
+            charts = ChartContainer(charts=charts)
         self._trading_system = trading_system
         self.max_trades = trading_system.max_trades
         self._free_balance = self._initial_depo
         self._trades = TradeHeap()
         self.commission = commission
 
-        equity_timeframe: TimeFrame = _utils.min_timeframe(charts)
+        equity_timeframe: TimeFrame = _utils.min_timeframe(charts.values)
         adj: timedelta = _utils.time_adjustment(
             adj=time_adjustment,
             timeframe=equity_timeframe
         )
 
-        timestamp = _utils.equity_timestamp(charts=charts.values(),
+        timestamp = _utils.equity_timestamp(charts=charts.values,
                                             timeframe=equity_timeframe)
 
         self._equity = Equity([],

@@ -15,12 +15,14 @@
 from __future__ import annotations
 
 import itertools
-from typing import Iterable
+from typing import Any, Iterable
 from dataclasses import dataclass
 
-from xoney.generic.symbol import Symbol
 from xoney.generic.timeframes import TimeFrame
 from xoney.strategy import Strategy
+from xoney.generic.symbol import Symbol
+from xoney.generic.candlestick import Chart
+
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -76,3 +78,26 @@ class TradingSystem:
 
         flat_list: tuple[Instrument, ...] = tuple(itertools.chain(*self.instruments))
         return len(flat_list)
+
+
+class ChartContainer:
+    _charts: dict[Instrument, Chart]
+
+    def __init__(self, charts: dict[Instrument, Chart]) -> None:
+        self._charts = charts
+        self.values = charts.values()
+        self.pairs = charts.items()
+
+    def __getitem__(self, item) -> ChartContainer:
+        i: Instrument
+        c: Chart
+
+        if isinstance(item, Instrument):
+            return self._charts[item]
+        return {i: c[item] for i, c in self._charts.items()}
+
+    def __len__(self) -> int:
+        return len(self._charts)
+
+    def __iter__(self):
+        return iter(self._charts)

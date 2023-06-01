@@ -14,41 +14,72 @@
 # =============================================================================
 from __future__ import annotations
 
+from typing import Any
+
 from xoney.generic.workers import Worker
 from xoney.generic.equity import Equity
 from xoney import TradingSystem, Instrument, Chart
+from xoney.generic.routes import ChartContainer
 from xoney.config import n_processes
 from xoney.optimization import Optimizer
-from xoney.optimization.walkforward.sampling import OutOfSample, InSample
+from xoney.optimization.walkforward.sampling import OutOfSample, InSample, walk_forward_timestamp
 
 
 class WalkForward(Worker):  # TODO
     _optimizer: Optimizer
-    _charts: dict[Instrument, Chart]
+    _charts: ChartContainer
 
     __IS: list[InSample]
     __OOS: list[OutOfSample]
 
+    _opt_params: dict[str, Any]
+    _bt_params: dict[str, Any]
 
-    def __init__(self, charts: dict[Instrument, Chart]) -> None:
+
+    def __init__(self, charts: dict[Instrument, Chart] | ChartContainer) -> None:
+        if not isinstance(charts, ChartContainer):
+            charts = ChartContainer(charts=charts)
         super().__init__()
         self._charts = charts
         self.__split_samples()
 
     def __split_samples(self) -> None:
-        self.__IS = ...
-        self.__OOS = ...
+        IS_time, OOS_time = walk_forward_timestamp(self._charts)
+        self.__IS = [InSample(charts=self._charts[idx],
+                              optimizer=self._optimizer) for idx in IS_time]
+        self.__OOS = [OutOfSample(charts=self._charts[idx],
+                                  optimizer=self._optimizer) for idx in OOS_time]
 
     def run(self,
             optimizer: Optimizer,
             trading_system: TradingSystem,
+            opt_params: dict[str, Any] | None = None,
+            bt_params: dict[str, Any] | None = None,
             n_jobs: int | None = None,
             *args,
             **kwargs) -> None:
         if n_jobs is None:
             n_jobs = n_processes
-        self.__optimize_IS()
+        self._trading_system = trading_system
+        self._optimizer = optimizer
+        self._opt_params = opt_params
+        self._bt_params = bt_params
+        self.__optimize_IS(opt_params=self._opt_params)
         self.__backtest_OOS()
+
+    def __optimize_IS(self) -> None:
+        IS: InSample
+
+        for IS in self.__IS:
+            IS.optimize(self._trading_system, opt_params=self._opt_params)
+
+    def __backtest_OOS(self) -> None:
+        IS: InSample
+        OOS: OutOfSample
+
+        for IS, OOS in zip(self.__IS, self.__OOS):
+            OOS.backtest(trading_system=IS.select_system(),
+                         bt_kwargs=self._bt_params)
 
     @property
     def equities(self) -> list[Equity]:
