@@ -17,6 +17,7 @@ from __future__ import annotations
 import itertools
 from typing import Any, Iterable
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
 from xoney.generic.timeframes import TimeFrame
 from xoney.strategy import Strategy
@@ -79,9 +80,28 @@ class TradingSystem:
         flat_list: tuple[Instrument, ...] = tuple(itertools.chain(*self.instruments))
         return len(flat_list)
 
+    @property
+    def min_duration(self) -> timedelta:
+        strategy: Strategy
+        instrument: Instrument
+
+        durations: list[timedelta] = []
+
+        for strategy, instrument in self.items():
+            durations.append(strategy.min_candles * instrument.timeframe.timedelta)
+        return max(durations)
+
 
 class ChartContainer:
     _charts: dict[Instrument, Chart]
+
+    @property
+    def start(self) -> datetime:
+        return min(c.timestamp[0] for c in self._charts.values())
+
+    @property
+    def end(self) -> datetime:
+        return max(c.timestamp[-1] for c in self._charts.values())
 
     def __init__(self, charts: dict[Instrument, Chart]) -> None:
         self._charts = charts

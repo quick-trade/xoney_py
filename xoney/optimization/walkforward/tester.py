@@ -15,6 +15,8 @@
 from __future__ import annotations
 
 from typing import Any
+from datetime import timedelta
+from xoney.generic.timeframes import TimeFrame
 
 from xoney.generic.workers import Worker
 from xoney.generic.equity import Equity
@@ -36,19 +38,25 @@ class WalkForward(Worker):  # TODO
     _bt_params: dict[str, Any]
 
 
-    def __init__(self, charts: dict[Instrument, Chart] | ChartContainer) -> None:
+    def __init__(self,
+                 charts: dict[Instrument, Chart] | ChartContainer,
+                 IS_len: TimeFrame | timedelta,
+                 OOS_len: TimeFrame | timedelta) -> None:
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
         super().__init__()
         self._charts = charts
-        self.__split_samples()
+        self.__split_samples(IS_len=IS_len,
+                             OOS_len=OOS_len)
 
-    def __split_samples(self) -> None:
-        IS_time, OOS_time = walk_forward_timestamp(self._charts)
-        self.__IS = [InSample(charts=self._charts[idx],
-                              optimizer=self._optimizer) for idx in IS_time]
-        self.__OOS = [OutOfSample(charts=self._charts[idx],
-                                  optimizer=self._optimizer) for idx in OOS_time]
+    def __split_samples(self, IS_len, OOS_len) -> None:
+        IS_time, OOS_time = walk_forward_timestamp(start_time=self._charts.start,
+                                                   end_time=self._charts.end,
+                                                   OOS_len=OOS_len,
+                                                   IS_len=IS_len,
+                                                   step=OOS_len)
+        self.__IS = [InSample(charts=self._charts[idx]) for idx in IS_time]
+        self.__OOS = [OutOfSample(charts=self._charts[idx]) for idx in OOS_time]
 
     def run(self,
             optimizer: Optimizer,
@@ -64,14 +72,16 @@ class WalkForward(Worker):  # TODO
         self._optimizer = optimizer
         self._opt_params = opt_params
         self._bt_params = bt_params
-        self.__optimize_IS(opt_params=self._opt_params)
+        self.__optimize_IS()
         self.__backtest_OOS()
 
     def __optimize_IS(self) -> None:
         IS: InSample
 
         for IS in self.__IS:
-            IS.optimize(self._trading_system, opt_params=self._opt_params)
+            IS.optimize(self._trading_system,
+                        optimizer=self._optimizer,
+                        opt_params=self._opt_params)
 
     def __backtest_OOS(self) -> None:
         IS: InSample
@@ -79,6 +89,7 @@ class WalkForward(Worker):  # TODO
 
         for IS, OOS in zip(self.__IS, self.__OOS):
             OOS.backtest(trading_system=IS.select_system(),
+                         backtester=self._optimizer._backtester,
                          bt_kwargs=self._bt_params)
 
     @property
