@@ -87,7 +87,7 @@ class TradingSystem:
 
         durations: list[timedelta] = []
 
-        for strategy, instrument in self.items():
+        for strategy, instrument in self.items:
             durations.append(strategy.min_candles * instrument.timeframe.timedelta)
         return max(durations)
 
