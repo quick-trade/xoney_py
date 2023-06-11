@@ -112,14 +112,21 @@ def walk_forward_timestamp(start_time: datetime,
                            end_time: datetime,
                            IS_len: TimeFrame | timedelta,
                            OOS_len: TimeFrame | timedelta,
-                           step: TimeFrame | timedelta | None = None) -> tuple[list[slice], list[slice]]:
+                           step: TimeFrame | timedelta | None = None,
+                           lookback: TimeFrame | timedelta | None = None) -> tuple[list[slice], list[slice]]:
+    zero_time = timedelta(0, 0, 0, 0, 0, 0, 0)
+    IS_len = _to_timedelta(IS_len)
+    OOS_len = _to_timedelta(IS_len)
+    if lookback is None:
+        lookback = zero_time
+    else:
+        print(lookback)
+        lookback = _to_timedelta(lookback)
     if step is None:
-        step = timedelta(0, 0, 0, 0, 0, 0, 0)
+        step = OOS_len
     else:
         step = _to_timedelta(step)
 
-    IS_len = _to_timedelta(IS_len)
-    OOS_len = _to_timedelta(IS_len)
 
     IS_ranges = []
     OOS_ranges = []
@@ -129,8 +136,8 @@ def walk_forward_timestamp(start_time: datetime,
         IS_end = current_time + IS_len
         OOS_end = IS_end + OOS_len
 
-        IS_ranges.append(slice(current_time, IS_end))
-        OOS_ranges.append(slice(IS_end, OOS_end))
+        IS_ranges.append(slice(current_time-lookback, IS_end))
+        OOS_ranges.append(slice(IS_end-lookback, OOS_end))
 
         current_time += step
 

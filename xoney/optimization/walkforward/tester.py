@@ -34,6 +34,9 @@ class WalkForward(Worker):  # TODO
     __IS: list[InSample]
     __OOS: list[OutOfSample]
 
+    __OOS_len: TimeFrame | timedelta
+    __IS_len: TimeFrame | timedelta
+
     _opt_params: dict[str, Any]
     _bt_params: dict[str, Any]
 
@@ -46,18 +49,22 @@ class WalkForward(Worker):  # TODO
             charts = ChartContainer(charts=charts)
         super().__init__()
         self._charts = charts
-        self.__split_samples(IS_len=IS_len,
-                             OOS_len=OOS_len)
+        self.__IS_len = IS_len
+        self.__OOS_len = OOS_len
 
-    def __split_samples(self, IS_len, OOS_len) -> None:
-        IS_time, OOS_time = walk_forward_timestamp(start_time=self._charts.start,
-                                                   end_time=self._charts.end,
-                                                   OOS_len=OOS_len,
-                                                   IS_len=IS_len,
-                                                   step=OOS_len)
+    def __split_samples(self, lookback: TimeFrame | timedelta) -> None:
+        IS_time, OOS_time = walk_forward_timestamp(
+            start_time=self._charts.start,
+            end_time=self._charts.end,
+            OOS_len=self.__OOS_len,
+            IS_len=self.__IS_len,
+            step=self.__OOS_len,
+            lookback=lookback
+        )
         self.__IS = [InSample(charts=self._charts[idx]) for idx in IS_time]
         self.__OOS = [OutOfSample(charts=self._charts[idx]) for idx in OOS_time]
 
+    # TODO: edit metric function (evaluate only representative data)
     def run(self,
             optimizer: Optimizer,
             trading_system: TradingSystem,
@@ -68,6 +75,7 @@ class WalkForward(Worker):  # TODO
             **kwargs) -> None:
         if n_jobs is None:
             n_jobs = n_processes
+        self.__split_samples(trading_system.min_duration)
         self._trading_system = trading_system
         self._optimizer = optimizer
         self._opt_params = opt_params
