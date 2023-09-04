@@ -43,7 +43,7 @@ setup(
         'Bug Tracker': f"{repository_url}/issues"
     },
     install_requires=[
-        "optuna==3.1.1",
+        "optuna==3.3.0",
         "scipy==1.10.1"
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
