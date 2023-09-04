@@ -62,7 +62,9 @@ class Chart(TimeSeries):
                  close: Collection[float] | None = None,
                  volume: Collection[float] | None = None,
                  timestamp: Collection | None = None,
+                 df: pd.DataFrame = None,
                  timeframe: TimeFrame = DAY_1):
+        self.timeframe = timeframe
         if open is None:
             open = []
         if high is None:
@@ -70,30 +72,37 @@ class Chart(TimeSeries):
         if low is None:
             low = []
         if close is None:
-            close = []
+            if df is None:
+                close = []
+            else:
+                close = df["Close"]
         if volume is None:
             volume = _utils.default_volume(length=len(close))
         if timestamp is None:
             timestamp = _utils.default_timestamp(length=len(close),
                                                  timeframe=timeframe)
+        if df is not None:
+            if "Volume" not in df.columns:
+               df["Volume"] = volume
+            if "Timestamp" not in df.columns or df.index.name == "Timestamp":
+                df["Timestamp"] = timestamp
+            self._df = df
+        else:
+            _params: tuple = (open,
+                              high,
+                              low,
+                              close,
+                              volume,
+                              timestamp)
+            _validation.validate_chart_parameters(*_params)
+            _validation.validate_chart_length(*_params)
 
-        _params: tuple = (open,
-                          high,
-                          low,
-                          close,
-                          volume,
-                          timestamp)
-
-        _validation.validate_chart_parameters(*_params)
-        _validation.validate_chart_length(*_params)
-
-        self.timeframe = timeframe
-        self._df = pd.DataFrame({'Open': open,
-                                 'High': high,
-                                 'Low': low,
-                                 'Close': close,
-                                 'Volume': volume,
-                                 'Timestamp': timestamp})
+            self._df = pd.DataFrame({'Open': open,
+                                     'High': high,
+                                     'Low': low,
+                                     'Close': close,
+                                     'Volume': volume,
+                                     'Timestamp': timestamp})
         self._df.set_index('Timestamp', inplace=True)
 
     def __operation(self, other, func):
@@ -192,12 +201,12 @@ class Chart(TimeSeries):
     def append(self, candle: Candle) -> None:
         if isinstance(candle, Candle):
             self.df = self.df.append(
-                {"open": candle.open,
-                 "high": candle.high,
-                 "low": candle.low,
-                 "close": candle.close,
-                 "volume": candle.volume,
-                 "timestamp": candle.timestamp},
+                {"Open": candle.open,
+                 "High": candle.high,
+                 "Low": candle.low,
+                 "Close": candle.close,
+                 "Volume": candle.volume,
+                 "Timestamp": candle.timestamp},
                 ignore_index=False)
         else:
             raise TypeError(f"Object is not candle: {candle}")

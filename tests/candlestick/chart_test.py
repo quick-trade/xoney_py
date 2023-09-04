@@ -27,20 +27,20 @@ from xoney.system.exceptions import (IncorrectChartLength,
 @pytest.fixture
 def dataframe():
     data = tohlcv
-    columns = ["time", "open", "high", "low", "close", "volume"]
+    columns = ["Timestamp", "Open", "High", "Low", "Close", "Volume"]
     df = pd.DataFrame(data, columns=columns)
-    df["time"] = pd.to_datetime(df["time"])
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
     return df
 
 
 @pytest.fixture
 def chart(dataframe):
-    return Chart(open=dataframe["open"],
-                 high=dataframe["high"],
-                 low=dataframe["low"],
-                 close=dataframe["close"],
-                 timestamp=dataframe["time"],
-                 volume=dataframe["volume"])
+    return Chart(open=dataframe["Open"],
+                 high=dataframe["High"],
+                 low=dataframe["Low"],
+                 close=dataframe["Close"],
+                 timestamp=dataframe["Timestamp"],
+                 volume=dataframe["Volume"])
 
 
 class TestOperations:
@@ -94,12 +94,12 @@ class TestGetItem:
     def test_candle(self, dataframe, chart, index):
         result = chart[index]
         expected = Candle(
-            open=dataframe["open"].values[index],
-            high=dataframe["high"].values[index],
-            low=dataframe["low"].values[index],
-            close=dataframe["close"].values[index],
-            timestamp=dataframe["time"].values[index],
-            volume=dataframe["volume"].values[index]
+            open=dataframe["Open"].values[index],
+            high=dataframe["High"].values[index],
+            low=dataframe["Low"].values[index],
+            close=dataframe["Close"].values[index],
+            timestamp=dataframe["Timestamp"].values[index],
+            volume=dataframe["Volume"].values[index]
         )
         assert isinstance(result, Candle)
         assert result == expected
@@ -114,14 +114,14 @@ class TestGetItem:
                               52])
     def test_candle(self, dataframe, chart, index):
         expected = Candle(
-            open=dataframe["open"].values[index],
-            high=dataframe["high"].values[index],
-            low=dataframe["low"].values[index],
-            close=dataframe["close"].values[index],
-            timestamp=dataframe["time"].values[index],
-            volume=dataframe["volume"].values[index]
+            open=dataframe["Open"].values[index],
+            high=dataframe["High"].values[index],
+            low=dataframe["Low"].values[index],
+            close=dataframe["Close"].values[index],
+            timestamp=dataframe["Timestamp"].values[index],
+            volume=dataframe["Volume"].values[index]
         )
-        index = dataframe["time"].values[index]
+        index = dataframe["Timestamp"].values[index]
         result = chart[index]
         assert isinstance(result, Candle)
         assert result == expected
@@ -136,19 +136,19 @@ class TestGetItem:
                               slice(15, 25, 11)])
     def test_chart(self, dataframe, chart, index):
         expected = Chart(
-            open=dataframe["open"].values[index],
-            high=dataframe["high"].values[index],
-            low=dataframe["low"].values[index],
-            close=dataframe["close"].values[index],
-            timestamp=dataframe["time"].values[index],
-            volume=dataframe["volume"].values[index]
+            open=dataframe["Open"].values[index],
+            high=dataframe["High"].values[index],
+            low=dataframe["Low"].values[index],
+            close=dataframe["Close"].values[index],
+            timestamp=dataframe["Timestamp"].values[index],
+            volume=dataframe["Volume"].values[index]
         )
 
         start = index.start
         stop = index.stop - 1  # current time should be included in the result.
         step = index.step
 
-        index = dataframe["time"].values
+        index = dataframe["Timestamp"].values
         index = slice(index[start], index[stop], step)
         result = chart[index]
         assert isinstance(result, Chart)
@@ -193,12 +193,17 @@ def test_len(chart, decrease):
 
 def test_iter(chart, dataframe):
     for i, candle in enumerate(chart):
-        expected = Candle(open=dataframe["open"][i],
-                          high=dataframe["high"][i],
-                          low=dataframe["low"][i],
-                          close=dataframe["close"][i],
-                          volume=dataframe["volume"][i],
-                          timestamp=dataframe["time"][i])
+        expected = Candle(open=dataframe["Open"][i],
+                          high=dataframe["High"][i],
+                          low=dataframe["Low"][i],
+                          close=dataframe["Close"][i],
+                          volume=dataframe["Volume"][i],
+                          timestamp=dataframe["Timestamp"][i])
         assert candle == expected
         assert candle.timestamp == expected.timestamp
         assert candle.volume == expected.volume
+
+
+def test_df(chart, dataframe):
+    chart_by_df = Chart(df=dataframe)
+    assert chart_by_df == chart

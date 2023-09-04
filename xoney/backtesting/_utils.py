@@ -42,13 +42,15 @@ def time_adjustment(adj: float | TimeFrame | timedelta,
         "a positive number, timeframe, or datetime.timedelta ")
 
 
-def equity_timestamp(charts: Collection[Chart],
-                     timeframe: TimeFrame) -> list:
-    if len(charts) == 1:  # TODO: debug
-        return list(charts)[0].timestamp
-    timestamps = [c.timestamp for c in charts]
+def _equity_start_stop(timestamps: Collection[pd.Series]) -> tuple:
     latest_start = max(ts[0] for ts in timestamps)
     latest_end = max(ts[-1] for ts in timestamps)
-    return pd.date_range(start=latest_start,
-                         end=latest_end,
-                         freq=timeframe.timedelta).to_list()
+    return latest_start, latest_end
+
+
+def equity_timestamp(charts: Collection[Chart],
+                     timeframe: TimeFrame) -> pd.Timestamp:
+    start, stop = _equity_start_stop([c.timestamp for c in charts])
+    return pd.date_range(start=start,
+                         end=stop,
+                         freq=timeframe.timedelta)
