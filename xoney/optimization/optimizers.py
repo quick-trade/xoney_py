@@ -142,7 +142,7 @@ class DefaultOptimizer(Optimizer):
         # can be used in optimization
         trial_score: Callable = lambda trial: trial.values[0]
         trials: list[FrozenTrial] = self._study.trials
-        # TODO: debug. Trials now is just a list of best trials ^
+        # TODO: debug. Trials now is just a list of best trials
         sorted_trials: list = sorted(trials,
                                      key=trial_score,
                                      reverse=self._metric.positive)
