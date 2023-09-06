@@ -45,6 +45,7 @@ class Executor(EquityWorker, ABC):
         while self._running:
             try:
                 self._loop()
+                self._stop_condition.check_state()
             except Exception as error:
                 self._handle_exception(error=error)
 
@@ -63,5 +64,5 @@ class Executor(EquityWorker, ABC):
 
 class DefaultExecutor(Executor):
     def _loop(self) -> None:
-        self._stop_condition.check_state()
+        pass
         # TODO: implement
