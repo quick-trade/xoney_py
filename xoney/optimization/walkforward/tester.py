@@ -52,14 +52,13 @@ class WalkForward(Worker):  # TODO
         self.__IS_len = IS_len
         self.__OOS_len = OOS_len
 
-    def __split_samples(self, lookback: TimeFrame | timedelta) -> None:
+    def __split_samples(self) -> None:
         IS_time, OOS_time = walk_forward_timestamp(
             start_time=self._charts.start,
             end_time=self._charts.end,
             OOS_len=self.__OOS_len,
             IS_len=self.__IS_len,
-            step=self.__OOS_len,
-            lookback=lookback
+            step=self.__OOS_len
         )
         self.__IS = [InSample(charts=self._charts[idx]) for idx in IS_time]
         self.__OOS = [OutOfSample(charts=self._charts[idx]) for idx in OOS_time]
@@ -75,7 +74,7 @@ class WalkForward(Worker):  # TODO
             **kwargs) -> None:
         if n_jobs is None:
             n_jobs = n_processes
-        self.__split_samples(trading_system.min_duration)
+        self.__split_samples()
         self._trading_system = trading_system
         self._optimizer = optimizer
         self._opt_params = opt_params

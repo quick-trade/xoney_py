@@ -30,18 +30,17 @@ import copy
 
 class Sample(ABC):
     charts: ChartContainer
-    _deepcopy: bool
+    _timerange: slice[datetime]
 
 
     def __init__(self,
                  charts: dict[Instrument, Chart] | ChartContainer,
-                 deepcopy: bool = True,
+                 timerange: slice[datetime],
                  *args,
                  **kwargs) -> None:
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
         self.charts = charts
-        self._deepcopy = deepcopy
 
 
 class InSample(Sample):
@@ -52,8 +51,7 @@ class InSample(Sample):
                  trading_system: TradingSystem,
                  optimizer: Optimizer,
                  opt_params: dict[str, Any] | None = None) -> None:
-        if self._deepcopy:
-            optimizer = copy.deepcopy(optimizer)
+        optimizer = copy.deepcopy(optimizer)
         self._optimizer = optimizer
         if opt_params is None:
             opt_params = dict()
@@ -85,9 +83,7 @@ class OutOfSample(Sample):
                  trading_system: TradingSystem,
                  backtester: Backtester,
                  bt_kwargs: dict[str, Any] | None = None):
-        if self._deepcopy:
-            backtester = copy.deepcopy(backtester)
-        self._backtester = backtester
+        self._backtester = copy.deepcopy(backtester)
         if bt_kwargs is None:
             bt_kwargs = dict()
         self.bt_params = bt_kwargs
@@ -107,26 +103,17 @@ def _to_timedelta(value) -> timedelta:
     raise ValueError(f"{value} is not of type <TimeFrame> or <timedelta>")
 
 
-# TODO: Make allowance for the minimum number of candles for the trading system.
 def walk_forward_timestamp(start_time: datetime,
                            end_time: datetime,
                            IS_len: TimeFrame | timedelta,
                            OOS_len: TimeFrame | timedelta,
-                           step: TimeFrame | timedelta | None = None,
-                           lookback: TimeFrame | timedelta | None = None) -> tuple[list[slice], list[slice]]:
-    zero_time = timedelta(0, 0, 0, 0, 0, 0, 0)
+                           step: TimeFrame | timedelta | None = None) -> tuple[list[slice], list[slice]]:
     IS_len = _to_timedelta(IS_len)
     OOS_len = _to_timedelta(IS_len)
-    if lookback is None:
-        lookback = zero_time
-    else:
-        print(lookback)
-        lookback = _to_timedelta(lookback)
     if step is None:
         step = OOS_len
     else:
         step = _to_timedelta(step)
-
 
     IS_ranges = []
     OOS_ranges = []
@@ -136,8 +123,8 @@ def walk_forward_timestamp(start_time: datetime,
         IS_end = current_time + IS_len
         OOS_end = IS_end + OOS_len
 
-        IS_ranges.append(slice(current_time-lookback, IS_end))
-        OOS_ranges.append(slice(IS_end-lookback, OOS_end))
+        IS_ranges.append(slice(current_time, IS_end))
+        OOS_ranges.append(slice(IS_end, OOS_end))
 
         current_time += step
 

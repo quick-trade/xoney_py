@@ -13,11 +13,11 @@
 # limitations under the License.
 # =============================================================================
 import pytest
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pandas as pd
 
-from xoney.backtesting._utils import _equity_start_stop
+from xoney.backtesting._utils import _equity_start_stop, time_adjustment
 from xoney import timeframes
 
 
@@ -43,3 +43,30 @@ def test_different_timeframes(timestamp_1h, timestamp_3D):
     start, stop = _equity_start_stop([timestamp_3D, timestamp_1h])
     assert datetime(2000, 1, 1, 1, 1, 0) == start
     assert datetime(2002, 1, 1, 2, 1, 0) == stop
+
+def test_float_adjustment():
+    adj = 0.5
+    timeframe = timeframes.HOUR_1
+    result = time_adjustment(adj, timeframe)
+    expected = timedelta(hours=0.5)
+    assert result == expected
+
+def test_timeframe_adjustment():
+    adj = timeframes.DAY_3
+    timeframe = timeframes.HOUR_1
+    result = time_adjustment(adj, timeframe)
+    expected = timedelta(days=3)
+    assert result == expected
+
+def test_timedelta_adjustment():
+    adj = timedelta(hours=2)
+    timeframe = timeframes.HOUR_1
+    result = time_adjustment(adj, timeframe)
+    expected = timedelta(hours=2)
+    assert result == expected
+
+def test_invalid_adjustment():
+    adj = "invalid_adjustment"
+    timeframe = timeframes.HOUR_1
+    with pytest.raises(ValueError):
+        time_adjustment(adj, timeframe)
