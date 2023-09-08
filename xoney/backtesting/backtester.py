@@ -34,6 +34,7 @@ from xoney.backtesting import _utils
 class Backtester(EquityWorker):  # TODO: stats support
     _equity: Equity
     _initial_depo: float
+    _time_adj: float | TimeFrame | timedelta
 
     @property
     def equity(self) -> Equity:
@@ -44,15 +45,17 @@ class Backtester(EquityWorker):  # TODO: stats support
         return self._free_balance
 
     def __init__(self,
-                 initial_depo: float = 100.0):
+                 initial_depo: float = 100.0,
+                 commission: float = 0.1 * 0.01,
+                 time_adjustment: float | TimeFrame | timedelta = 0.5):
         super().__init__()
+        self.commission = commission
+        self._time_adj = time_adjustment
         self._initial_depo = initial_depo
 
     def run(self,
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart] | ChartContainer,
-            commission: float = 0.1 * 0.01,
-            time_adjustment: float | TimeFrame | timedelta = 0.5,
             **kwargs) -> None:
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
@@ -60,11 +63,10 @@ class Backtester(EquityWorker):  # TODO: stats support
         self.max_trades = trading_system.max_trades
         self._free_balance = self._initial_depo
         self._trades = TradeHeap()
-        self.commission = commission
 
         equity_timeframe: TimeFrame = _utils.min_timeframe(charts.values)
         adj: timedelta = _utils.time_adjustment(
-            adj=time_adjustment,
+            adj=self._time_adj,
             timeframe=equity_timeframe
         )
 

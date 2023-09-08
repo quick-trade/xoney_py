@@ -122,8 +122,8 @@ def test_return_type_equity(dataframe, n, deposit, commission):
 
     trading_system = TradingSystem(config={strategy: [some_pair]})
 
-    backtester = Backtester(initial_depo=deposit)
+    backtester = Backtester(initial_depo=deposit,
+                            commission=commission)
     backtester.run(charts={some_pair: dataframe},
-                   commission=commission,
                    trading_system=trading_system)
     assert isinstance(backtester.equity, Equity)

@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Callable, Any
 
 from optuna.trial import FrozenTrial
+from xoney.backtesting import Backtester
 from xoney.backtesting.backtester import Backtester
 
 from xoney.optimization import Optimizer
@@ -60,23 +61,17 @@ class DefaultOptimizer(Optimizer):
     _study_params: dict[str, Any] = dict()
     _opt_params: dict[str, Any] = dict()
     _max_trades: IntParameter
+    n_jobs: int
 
-    def __initialize_metric(self, metric: Metric | type) -> None:
-        if isinstance(metric, type):
-            metric = metric()
-        self._metric = metric
-
-    def __initialize_max_trades(self,
-                                min: int | None,
-                                max: int | None) -> IntParameter:
-        # During the optimization process, the parameter of the maximum
-        # number of open trades can change, but if it is not specified,
-        # then the strategy has 1 trade for 1 strategy.
-        n_strategies = self._trading_system.n_strategies
-        if min is None or max is None:
-            min = max = n_strategies
-        self._max_trades =  IntParameter(min=min,
-                                         max=max)
+    def __init__(self,
+                 backtester: Backtester,
+                 metric: Metric,
+                 max_trades: IntParameter | None = None,
+                 n_jobs: int | None = None):
+        if n_jobs is None:
+            n_jobs = n_processes
+        self.n_jobs = n_jobs
+        super().__init__(backtester, metric, max_trades)
 
     def __initialize_parser(self, trading_system: TradingSystem) -> None:
         self._parser = Parser(system_signature=trading_system)
@@ -103,29 +98,15 @@ class DefaultOptimizer(Optimizer):
     def run(self,
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart] | ChartContainer,
-            metric: Metric | type,
-            commission: float = 0.1 * 0.01,
-            min_trades: int | None = None,
-            max_trades: int | None = None,
-            n_jobs: int | None = None,
-            n_trials: int = 100,
-            **kwargs) -> None:
+            n_trials: int = 100,) -> None:
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
         self._charts = charts
-        self._commission = commission
         self._trading_system = trading_system
-        self.__initialize_metric(metric)
-        self.__initialize_max_trades(
-            min=min_trades,
-            max=max_trades
-        )
-
-        if n_jobs is None:
-            n_jobs = n_processes
+        self._initialize_max_trades()
 
         self._opt_params.update(
-            dict(n_jobs=n_jobs,
+            dict(n_jobs=self.n_jobs,
                  n_trials=n_trials)
         )
         direction: str = "maximize" if self._metric.positive else "minimize"

@@ -1,4 +1,5 @@
 from xoney.generic.candlestick import Chart, Candle
+from xoney.generic.routes import ChartContainer
 from xoney.generic import timeframes
 from xoney.generic.routes import TradingSystem, Instrument
 from xoney.generic.symbol import Symbol

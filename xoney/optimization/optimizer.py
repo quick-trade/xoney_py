@@ -23,23 +23,48 @@ from xoney.generic.workers import Worker
 from xoney.generic.candlestick import Chart
 from xoney.backtesting import Backtester
 from xoney.generic.equity import Equity
+from xoney.strategy import IntParameter
 
 
 class Optimizer(Worker, ABC):
     _backtester: Backtester
     _charts: ChartContainer
-    _commission: float
     _metric: Metric
+    _trading_system: TradingSystem
+    __max_trades_param: IntParameter | None
 
     def __init__(self,
-                 backtester: Backtester):
+                 backtester: Backtester,
+                 metric: Metric,
+                 max_trades: IntParameter | None = None):
         self._backtester = backtester
+        self._metric = metric
+        self.__max_trades_param = max_trades
+
+    def _initialize_max_trades(self):
+        # During the optimization process, the parameter of the maximum
+        # number of open trades can change, but if it is not specified,
+        # then the strategy has 1 trade for 1 strategy.
+        n_strategies = self._trading_system.n_strategies
+        if self.__max_trades_param is None:
+            min = max = n_strategies
+            self._max_trades = IntParameter(min=min,
+                                            max=max)
+        else:
+            self._max_trades = self.__max_trades_param
+
+    def __initialize_metric(self, metric: Metric | type) -> None:
+        if isinstance(metric, type):
+            metric = metric()
+        self._metric = metric
+
+    def set_metric(self, metric: Metric) -> None:
+        self.__initialize_metric(metric=metric)
 
     def _backtest(self, trading_system: TradingSystem) -> Equity:
         tester: Backtester = copy.deepcopy(self._backtester)
         tester.run(charts=self._charts,
-                   trading_system=trading_system,
-                   commission=self._commission)
+                   trading_system=trading_system)
         return tester.equity
 
 
@@ -55,9 +80,5 @@ class Optimizer(Worker, ABC):
     def run(self,
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart] | ChartContainer,
-            metric: Metric | type,
-            commission: float = 0.1 * 0.01,
-            min_trades: int | None = None,
-            max_trades: int | None = None,
             **kwargs) -> None:  # pragma: no cover
         ...
