@@ -17,7 +17,6 @@ from __future__ import annotations
 from typing import Any, Type, Iterable
 
 from dataclasses import dataclass
-from re import findall
 
 from xoney.generic.routes import TradingSystem, Instrument
 from xoney.strategy import Parameter, Strategy
@@ -35,17 +34,6 @@ class ParameterPath:
     def as_string(self) -> str:
         return _parameter_path_string(strategy=self.strategy,
                                       parameter=self.parameter)
-
-    @classmethod
-    def from_string(cls, string: str):
-        number: str = r"\d+"
-        path: list = findall(pattern=number, string=string)
-
-        strategy: int = int(path[0])
-        parameter: int = int(path[1])
-
-        return cls(strategy=strategy,
-                   parameter=parameter)
 
 
 class Parser:
