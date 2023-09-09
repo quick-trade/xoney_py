@@ -35,10 +35,10 @@ class Optimizer(Worker, ABC):
 
     def __init__(self,
                  backtester: Backtester,
-                 metric: Metric,
+                 metric: Metric | type,
                  max_trades: IntParameter | None = None):
         self._backtester = backtester
-        self._metric = metric
+        self.set_metric(metric=metric)
         self.__max_trades_param = max_trades
 
     def _initialize_max_trades(self):

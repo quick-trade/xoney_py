@@ -15,32 +15,16 @@
 import copy
 
 import numpy as np
-import pandas as pd
 import pytest
 
-from .data_array import tohlcv
 from xoney.generic.candlestick import Chart, Candle
 from xoney.system.exceptions import (IncorrectChartLength,
                                      InvalidChartParameters)
 
 
 @pytest.fixture
-def dataframe():
-    data = tohlcv
-    columns = ["Timestamp", "Open", "High", "Low", "Close", "Volume"]
-    df = pd.DataFrame(data, columns=columns)
-    df["Timestamp"] = pd.to_datetime(df["Timestamp"])
-    return df
-
-
-@pytest.fixture
 def chart(dataframe):
-    return Chart(open=dataframe["Open"],
-                 high=dataframe["High"],
-                 low=dataframe["Low"],
-                 close=dataframe["Close"],
-                 timestamp=dataframe["Timestamp"],
-                 volume=dataframe["Volume"])
+    return Chart(df=dataframe)
 
 
 class TestOperations:
@@ -98,7 +82,7 @@ class TestGetItem:
             high=dataframe["High"].values[index],
             low=dataframe["Low"].values[index],
             close=dataframe["Close"].values[index],
-            timestamp=dataframe["Timestamp"].values[index],
+            timestamp=dataframe.index.values[index],
             volume=dataframe["Volume"].values[index]
         )
         assert isinstance(result, Candle)
@@ -118,10 +102,10 @@ class TestGetItem:
             high=dataframe["High"].values[index],
             low=dataframe["Low"].values[index],
             close=dataframe["Close"].values[index],
-            timestamp=dataframe["Timestamp"].values[index],
+            timestamp=dataframe.index.values[index],
             volume=dataframe["Volume"].values[index]
         )
-        index = dataframe["Timestamp"].values[index]
+        index = dataframe.index.values[index]
         result = chart[index]
         assert isinstance(result, Candle)
         assert result == expected
@@ -140,7 +124,7 @@ class TestGetItem:
             high=dataframe["High"].values[index],
             low=dataframe["Low"].values[index],
             close=dataframe["Close"].values[index],
-            timestamp=dataframe["Timestamp"].values[index],
+            timestamp=dataframe.index.values[index],
             volume=dataframe["Volume"].values[index]
         )
 
@@ -148,7 +132,7 @@ class TestGetItem:
         stop = index.stop - 1  # current time should be included in the result.
         step = index.step
 
-        index = dataframe["Timestamp"].values
+        index = dataframe.index.values
         index = slice(index[start], index[stop], step)
         result = chart[index]
         assert isinstance(result, Chart)
@@ -198,7 +182,7 @@ def test_iter(chart, dataframe):
                           low=dataframe["Low"][i],
                           close=dataframe["Close"][i],
                           volume=dataframe["Volume"][i],
-                          timestamp=dataframe["Timestamp"][i])
+                          timestamp=dataframe.index[i])
         assert candle == expected
         assert candle.timestamp == expected.timestamp
         assert candle.volume == expected.volume

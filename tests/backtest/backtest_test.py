@@ -30,73 +30,6 @@ from xoney import TradingSystem, Symbol
 from xoney.generic.timeframes import DAY_1
 
 
-class TrendCandleStrategy(Strategy):
-    _signal: str
-    candle: Candle
-
-    def __init__(self, n: int = 3):
-        super().__init__(n=n)
-        self._signal = None
-
-    def run(self, chart: Chart) -> None:
-        diff: np.ndarray = chart.close - chart.open
-        if all(diff > 0):
-            signal = "long"
-        elif all(diff < 0):
-            signal = "short"
-        else:
-            signal = None
-
-        if self._signal != signal:
-            self._signal = signal
-        else:
-            self._signal = None
-
-        self.candle = chart[-1]
-
-    def fetch_events(self) -> Iterable[Event]:
-        if self._signal == "long":
-            return [
-                CloseStrategyTrades(strategy_id=self._id),
-                OpenTrade(
-                    Trade(
-                        side=TradeSide.LONG,
-                        entries=LevelHeap(
-                            [
-                                SimpleEntry(
-                                    trade_part=1,
-                                    price=self.candle.close
-                                )
-                            ]
-                        ),
-                        breakouts=LevelHeap(),
-                        meta_info=TradeMetaInfo(strategy_id=self._id)
-                    )
-                )
-            ]
-
-        if self._signal == "short":
-            return [
-                CloseStrategyTrades(strategy_id=self._id),
-                OpenTrade(
-                    Trade(
-                        side=TradeSide.SHORT,
-                        entries=LevelHeap(
-                            [
-                                SimpleEntry(
-                                    trade_part=1,
-                                    price=self.candle.close
-                                )
-                            ]
-                        ),
-                        breakouts=LevelHeap(),
-                        meta_info=TradeMetaInfo(strategy_id=self._id)
-                    )
-                )
-            ]
-        return []
-
-
 @pytest.fixture
 def dataframe():
     base = np.array(
@@ -116,7 +49,7 @@ def dataframe():
 
 @pytest.mark.parametrize("n",
                          [1, 2, 3, 4, 5])
-def test_return_type_equity(dataframe, n, deposit, commission):
+def test_return_type_equity(dataframe, n, deposit, commission, TrendCandleStrategy):
     some_pair = Instrument(Symbol("SOME/THING"), DAY_1)
     strategy = TrendCandleStrategy(n=n)
 

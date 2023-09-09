@@ -34,12 +34,13 @@ class Validator:
     def test(self,
              system: TradingSystem,
              n_jobs: int | None = None):
-        pool = Pool(n_jobs if n_jobs is not None else cpu_count)
+        pool = Pool(n_jobs if n_jobs is not None else cpu_count())
         def test(pair: SamplePair) -> Equity:
             pair.training.optimize(system=system)
             best = pair.training.best_system()
             return pair.validation.backtest(best)
-        self._equities = pool.map(test, self._pairs)
+        #self._equities = pool.map(test, self._pairs)
+        self._equities = [test(self._pairs[0])]
 
     @property
     def equities(self) -> list[Equity]:
