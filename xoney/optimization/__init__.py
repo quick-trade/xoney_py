@@ -13,4 +13,4 @@
 # limitations under the License.
 # =============================================================================
 from xoney.optimization.optimizer import Optimizer
-from xoney.optimization.optimizers import DefaultOptimizer
+from xoney.optimization.optimizers import DefaultOptimizer, GeneticAlgorithmOptimizer

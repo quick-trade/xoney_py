@@ -87,8 +87,7 @@ class WFSampler(Sampler):
             start_time=charts.start,
             end_time=charts.end,
             OOS_len=self._OOS_len,
-            IS_len=self._IS_len,
-            step=self._OOS_len
+            IS_len=self._IS_len
         )
         IS = [InSample(charts=charts,
                        period=idx,
@@ -106,20 +105,16 @@ def _to_timedelta(value) -> timedelta:
         return value
     if isinstance(value, TimeFrame):
         return value.timedelta
-    raise ValueError(f"{value} is not of type <TimeFrame> or <timedelta>")
+    raise TypeError(f"{value} is not of type <TimeFrame> or <timedelta>")
 
 
 def walk_forward_timestamp(start_time: datetime,
                            end_time: datetime,
                            IS_len: TimeFrame | timedelta,
-                           OOS_len: TimeFrame | timedelta,
-                           step: TimeFrame | timedelta | None = None) -> tuple[list[slice], list[slice]]:
+                           OOS_len: TimeFrame | timedelta) -> tuple[list[slice], list[slice]]:
     IS_len = _to_timedelta(IS_len)
     OOS_len = _to_timedelta(IS_len)
-    if step is None:
-        step = OOS_len
-    else:
-        step = _to_timedelta(step)
+    step = OOS_len
 
     IS_ranges = []
     OOS_ranges = []

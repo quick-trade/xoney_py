@@ -142,6 +142,9 @@ class DefaultOptimizer(Optimizer):
 class GeneticAlgorithmOptimizer(DefaultOptimizer):
     def __init__(self,
                  backtester: Backtester,
+                 metric: Metric,
+                 max_trades: IntParameter | None = None,
+                 n_jobs: int | None = None,
                  population_size: int = 30,
                  mutation_prob: float | None = None,
                  crossover_prob: float = 0.9,
@@ -156,4 +159,7 @@ class GeneticAlgorithmOptimizer(DefaultOptimizer):
                                   seed=seed,
                                   **NSGA2_sampler_kwargs)
         )
-        super().__init__(backtester)
+        super().__init__(backtester=backtester,
+                         metric=metric,
+                         max_trades=max_trades,
+                         n_jobs=n_jobs)

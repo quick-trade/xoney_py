@@ -21,17 +21,10 @@ from re import findall
 
 from xoney.generic.routes import TradingSystem, Instrument
 from xoney.strategy import Parameter, Strategy
-from xoney.system.exceptions import DifferentSystemSignaturesError
 
 
 def _parameter_path_string(strategy: int, parameter: int) -> str:
     return f"s{strategy}p{parameter}"
-
-
-def _system_strategies_types(
-        trading_system: TradingSystem) -> tuple[Type[Strategy], ...]:
-    strategy: Strategy
-    return tuple(type(strategy) for strategy in trading_system.strategies)
 
 
 @dataclass(frozen=True)
@@ -129,31 +122,6 @@ class Parser:
     @property
     def parameters(self) -> dict[str, Parameter]:
         return self.__table
-
-    def _validate_system(self, trading_system: TradingSystem) -> None:
-        self_types: tuple[Type[Strategy], ...] = _system_strategies_types(
-            trading_system=self.__system_signature)
-        ts_types: tuple[Type[Strategy], ...] = _system_strategies_types(
-            trading_system=trading_system)
-        if ts_types != self_types:
-            raise DifferentSystemSignaturesError()
-
-    def flatten(self, trading_system: TradingSystem) -> dict[str, Any]:
-        s: int
-        p: int
-        p_name: str
-        p_value: Any
-        strategy: Strategy
-        table: dict[str, Any] = dict()
-
-        self._validate_system(trading_system=trading_system)
-
-        for s, strategy in enumerate(trading_system.strategies):
-            parameters_settings = strategy.settings.items()
-            for p, (p_name, p_value) in enumerate(zip(parameters_settings)):
-                path = _parameter_path_string(strategy=s, parameter=p)
-                table[path] = p_value
-        return table
 
     def as_system(self, flatten: dict[str, Any]) -> TradingSystem:
         config: dict[Strategy, Iterable[Instrument]] = dict()

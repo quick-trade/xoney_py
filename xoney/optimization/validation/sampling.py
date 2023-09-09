@@ -40,7 +40,7 @@ class ValidationSample(ABC):
     _backtester: Backtester
 
     @abstractmethod
-    def backtest(self, system: TradingSystem) -> Equity:
+    def backtest(self, system: TradingSystem) -> Equity:  # pragma: no cover
         ...
 
 
@@ -52,5 +52,5 @@ class SamplePair:
 
 class Sampler(ABC):
     @abstractmethod
-    def samples(self, charts: ChartContainer) -> list[SamplePair]:
+    def samples(self, charts: ChartContainer) -> list[SamplePair]:  # pragma: no cover
         ...

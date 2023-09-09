@@ -16,11 +16,12 @@ import pytest
 
 from xoney.optimization.validation.walkforward import WFSampler
 from xoney.optimization.validation.validator import Validator
-from xoney.optimization import DefaultOptimizer
+from xoney.optimization import GeneticAlgorithmOptimizer
 from xoney.backtesting import Backtester
 from xoney.analysis.metrics import SharpeRatio
 from xoney import timeframes, ChartContainer, Instrument, Chart
 from xoney import TradingSystem
+from xoney.strategy import IntParameter
 
 
 instrument = Instrument("SOME/THING", timeframes.DAY_1)
@@ -29,9 +30,22 @@ instrument = Instrument("SOME/THING", timeframes.DAY_1)
 def sampler():
     return WFSampler(timeframes.DAY_1*10,
                      timeframes.DAY_1*10,
-                     optimizer=DefaultOptimizer(backtester=Backtester(),
-                                                metric=SharpeRatio),
+                     optimizer=GeneticAlgorithmOptimizer(
+                         backtester=Backtester(),
+                         metric=SharpeRatio),
                      backtester=Backtester())
+
+
+@pytest.fixture
+def trades_sampler():
+    return WFSampler(timeframes.DAY_1*10,
+                     timeframes.DAY_1*10,
+                     optimizer=GeneticAlgorithmOptimizer(
+                         backtester=Backtester(),
+                         metric=SharpeRatio,
+                         max_trades=IntParameter(1, 5)),
+                     backtester=Backtester())
+
 
 
 @pytest.fixture
@@ -43,4 +57,21 @@ def charts(dataframe):
 def test_working(sampler, charts, TrendCandleStrategy):
     validator = Validator(charts=charts,
                           sampler=sampler)
-    validator.test(TradingSystem({TrendCandleStrategy(): [instrument]}))
+    validator.test(TradingSystem({TrendCandleStrategy(): [instrument],
+                                  TrendCandleStrategy(): [instrument]}))
+
+
+def test_error(charts, TrendCandleStrategy):
+    with pytest.raises(TypeError):
+        sampler = WFSampler("not a <TimeFrame> or timedelta",
+                            timeframes.DAY_1*10,
+                            optimizer=GeneticAlgorithmOptimizer(
+                                backtester=Backtester(),
+                                metric=SharpeRatio,
+                                max_trades=IntParameter(1, 5)),
+                            backtester=Backtester())
+
+        validator = Validator(charts=charts,
+                              sampler=sampler)
+        validator.test(TradingSystem({TrendCandleStrategy(): [instrument],
+                                      TrendCandleStrategy(): [instrument]}))
