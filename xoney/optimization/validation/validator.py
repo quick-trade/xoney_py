@@ -14,9 +14,6 @@
 # =============================================================================
 from __future__ import annotations
 
-from multiprocessing import Pool
-from xoney.config import cpu_count
-
 from xoney import ChartContainer, TradingSystem
 from xoney.optimization.validation.sampling import Sampler, SamplePair
 from xoney.generic.equity import Equity
@@ -32,15 +29,15 @@ class Validator:
         self._pairs = sampler.samples(charts=charts)
 
     def test(self,
-             system: TradingSystem,
-             n_jobs: int | None = None):
-        pool = Pool(n_jobs if n_jobs is not None else cpu_count())
-        def test(pair: SamplePair) -> Equity:
-            pair.training.optimize(system=system)
-            best = pair.training.best_system()
-            return pair.validation.backtest(best)
-        #self._equities = pool.map(test, self._pairs)
-        self._equities = [test(self._pairs[0])]
+             system: TradingSystem) -> None:  # TODO: support parallel computing
+        self._equities = [self._validate(pair=pair, system=system)
+                          for pair in self._pairs]
+
+
+    def _validate(self, pair: SamplePair, system: TradingSystem) -> Equity:
+        pair.training.optimize(system=system)
+        best = pair.training.best_system()
+        return pair.validation.backtest(best)
 
     @property
     def equities(self) -> list[Equity]:

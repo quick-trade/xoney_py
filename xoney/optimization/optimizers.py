@@ -62,16 +62,21 @@ class DefaultOptimizer(Optimizer):
     _opt_params: dict[str, Any] = dict()
     _max_trades: IntParameter
     n_jobs: int
+    n_trials: int | None
 
     def __init__(self,
                  backtester: Backtester,
                  metric: Metric,
                  max_trades: IntParameter | None = None,
-                 n_jobs: int | None = None):
+                 n_jobs: int | None = None,
+                 n_trials: int | None = None):
         if n_jobs is None:
             n_jobs = n_processes
         self.n_jobs = n_jobs
-        super().__init__(backtester, metric, max_trades)
+        self.n_trials = n_trials
+        super().__init__(backtester=backtester,
+                         metric=metric,
+                         max_trades=max_trades)
 
     def __initialize_parser(self, trading_system: TradingSystem) -> None:
         self._parser = Parser(system_signature=trading_system)
@@ -98,7 +103,11 @@ class DefaultOptimizer(Optimizer):
     def run(self,
             trading_system: TradingSystem,
             charts: dict[Instrument, Chart] | ChartContainer,
-            n_trials: int = 100,) -> None:
+            n_trials: int | None = None) -> None:
+        if n_trials is None:
+            n_trials = self.n_trials
+        if n_trials is None:
+            return ValueError("n_trials must be specified in constructor or .run() method")
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
         self._charts = charts
@@ -145,6 +154,7 @@ class GeneticAlgorithmOptimizer(DefaultOptimizer):
                  metric: Metric,
                  max_trades: IntParameter | None = None,
                  n_jobs: int | None = None,
+                 n_trials: int | None = None,
                  population_size: int = 30,
                  mutation_prob: float | None = None,
                  crossover_prob: float = 0.9,
@@ -162,4 +172,5 @@ class GeneticAlgorithmOptimizer(DefaultOptimizer):
         super().__init__(backtester=backtester,
                          metric=metric,
                          max_trades=max_trades,
-                         n_jobs=n_jobs)
+                         n_jobs=n_jobs,
+                         n_trials=n_trials)

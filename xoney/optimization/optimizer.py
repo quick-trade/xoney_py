@@ -31,7 +31,7 @@ class Optimizer(Worker, ABC):
     _charts: ChartContainer
     _metric: Metric
     _trading_system: TradingSystem
-    __max_trades_param: IntParameter | None
+    _max_trades_param: IntParameter | None
 
     def __init__(self,
                  backtester: Backtester,
@@ -39,19 +39,19 @@ class Optimizer(Worker, ABC):
                  max_trades: IntParameter | None = None):
         self._backtester = backtester
         self.set_metric(metric=metric)
-        self.__max_trades_param = max_trades
+        self._max_trades_param = max_trades
 
     def _initialize_max_trades(self):
         # During the optimization process, the parameter of the maximum
         # number of open trades can change, but if it is not specified,
         # then the strategy has 1 trade for 1 strategy.
         n_strategies = self._trading_system.n_strategies
-        if self.__max_trades_param is None:
+        if self._max_trades_param is None:
             min = max = n_strategies
             self._max_trades = IntParameter(min=min,
                                             max=max)
         else:
-            self._max_trades = self.__max_trades_param
+            self._max_trades = self._max_trades_param
 
     def __initialize_metric(self, metric: Metric | type) -> None:
         if isinstance(metric, type):

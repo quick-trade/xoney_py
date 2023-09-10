@@ -61,7 +61,8 @@ class OutOfSample(ValidationSample):
             self._period.stop
         )
         self._charts = self._source_charts[idx]
-        return self._backtester.run(trading_system=system, charts=self._charts)
+        self._backtester.run(trading_system=system, charts=self._charts)
+        return self._backtester.equity
 
 
 class WFSampler(Sampler):

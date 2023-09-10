@@ -27,7 +27,7 @@ from xoney.generic.events import Event, OpenTrade, CloseStrategyTrades
 from xoney.generic.enums import TradeSide
 from xoney.generic.trades import Trade, TradeMetaInfo
 from xoney.generic.trades.levels import LevelHeap, SimpleEntry
-from xoney.strategy import IntParameter, CategoricalParameter, Parameter
+from xoney.strategy import IntParameter, CategoricalParameter, Parameter, FloatParameter
 
 from .data_array import tohlcv
 
@@ -36,17 +36,19 @@ class _Strategy(Strategy):
     _signal: str
     candle: Candle
     flip: bool
+    threshold: float
 
-    def __init__(self, n: int = 3, flip=False):
+    def __init__(self, n: int = 3, flip=False, threshold=0):
         super().__init__(n=n)
         self._signal = None
         self.flip = flip
+        self.threshold = threshold
 
     def run(self, chart: Chart) -> None:
-        diff: np.ndarray = chart.close - chart.open
-        if all(diff > 0):
+        diff: np.ndarray = chart.close / chart.open
+        if all(diff > self.threshold):
             signal = "long"
-        elif all(diff < 0):
+        elif all(diff < self.threshold):
             signal = "short"
         else:
             signal = None
@@ -109,7 +111,8 @@ class _Strategy(Strategy):
     @property
     def parameters(self) -> dict[str, Parameter]:
         return {"n": IntParameter(1, 6),
-                "flip": CategoricalParameter([False, True])}
+                "flip": CategoricalParameter([False, True]),
+                "threshold": FloatParameter(0.9, 1.1)}
 
 @pytest.fixture(scope="session", autouse=True)
 def TrendCandleStrategy():

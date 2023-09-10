@@ -16,15 +16,23 @@ import pytest
 
 from xoney.optimization.validation.walkforward import WFSampler
 from xoney.optimization.validation.validator import Validator
-from xoney.optimization import GeneticAlgorithmOptimizer
+from xoney.optimization import GeneticAlgorithmOptimizer, DefaultOptimizer
 from xoney.backtesting import Backtester
 from xoney.analysis.metrics import SharpeRatio
 from xoney import timeframes, ChartContainer, Instrument, Chart
 from xoney import TradingSystem
-from xoney.strategy import IntParameter
+from xoney.strategy import IntParameter, Parameter
+from xoney.system.exceptions import UnexpectedParameter
+from xoney.generic import Equity
 
 
 instrument = Instrument("SOME/THING", timeframes.DAY_1)
+
+
+@pytest.fixture
+def system(TrendCandleStrategy):
+    return TradingSystem({TrendCandleStrategy(): [instrument],
+                          TrendCandleStrategy(): [instrument]})
 
 @pytest.fixture
 def sampler():
@@ -54,18 +62,18 @@ def charts(dataframe):
         {instrument: Chart(df=dataframe)}
     )
 
-def test_working(sampler, charts, TrendCandleStrategy):
+
+def test_working(sampler, charts, system):
     validator = Validator(charts=charts,
                           sampler=sampler)
-    validator.test(TradingSystem({TrendCandleStrategy(): [instrument],
-                                  TrendCandleStrategy(): [instrument]}))
+    validator.test(TradingSystem(system))
 
 
-def test_error(charts, TrendCandleStrategy):
+def test_error(charts, system):
     with pytest.raises(TypeError):
         sampler = WFSampler("not a <TimeFrame> or timedelta",
                             timeframes.DAY_1*10,
-                            optimizer=GeneticAlgorithmOptimizer(
+                            optimizer=DefaultOptimizer(
                                 backtester=Backtester(),
                                 metric=SharpeRatio,
                                 max_trades=IntParameter(1, 5)),
@@ -73,5 +81,26 @@ def test_error(charts, TrendCandleStrategy):
 
         validator = Validator(charts=charts,
                               sampler=sampler)
-        validator.test(TradingSystem({TrendCandleStrategy(): [instrument],
-                                      TrendCandleStrategy(): [instrument]}))
+        validator.test(TradingSystem(system))
+
+
+def test_parameter(charts, system):
+    sampler = WFSampler(timeframes.DAY_1*10,
+                        timeframes.DAY_1*10,
+                        optimizer=GeneticAlgorithmOptimizer(
+                            backtester=Backtester(),
+                            metric=SharpeRatio,
+                            max_trades=Parameter()),
+                        backtester=Backtester())
+    validator = Validator(charts=charts,
+                          sampler=sampler)
+    with pytest.raises(UnexpectedParameter):
+        validator.test(system)
+
+
+def test_equity(charts, system, sampler):
+    validator = Validator(charts=charts, sampler=sampler)
+    validator.test(system)
+    equities = validator.equities
+    for e in equities:
+        assert isinstance(e, Equity)
