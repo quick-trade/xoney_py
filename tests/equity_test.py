@@ -64,6 +64,10 @@ def test_eq_tf(equity_1d):
                    timestamp=equity_1d._timestamp)
     assert other != equity_1d
 
+def test_eq_error(equity_1d):
+    with pytest.raises(TypeError):
+        equity_1d == "string"
+
 
 def test_iter(equity_1d):
     for i, val in enumerate(equity_1d):

@@ -23,7 +23,7 @@ class TestSymbolCorrectInitialization:
     def assert_base_quote_symbol(self):
         assert self.pair.base == "BTC"
         assert self.pair.quote == "USD"
-        assert self.pair.symbol == "BTC/USD"
+        assert self.pair.pair == "BTC/USD"
 
     def test_base_quote_arg(self):
         self.pair = Symbol("BTC/USD")
@@ -31,6 +31,11 @@ class TestSymbolCorrectInitialization:
 
     def test_base_quote_kwarg(self):
         self.pair = Symbol(symbol="BTC/USD")
+        self.assert_base_quote_symbol()
+
+    def test_exchange(self):
+        self.pair = Symbol("BINANCE:BTC/USD")
+        assert self.pair.exchange == "BINANCE"
         self.assert_base_quote_symbol()
 
 

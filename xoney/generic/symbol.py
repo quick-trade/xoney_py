@@ -14,7 +14,7 @@
 # =============================================================================
 from __future__ import annotations
 
-from re import match
+from re import match, search
 
 from xoney.config import SYMBOL, EXCHANGE_REGEX, EXCHANGE_SPLIT, SYMBOL_SPLIT
 from xoney.system.exceptions import InvalidSymbolError
@@ -61,11 +61,11 @@ class Symbol:
         self.__parse_pair()
 
     def __parse_exchange(self):
-        match_ = match(EXCHANGE_REGEX, self.__symbol)
+        match_ = search(EXCHANGE_REGEX, self.__symbol)
         self.__exchange = match_.group()
 
     def __parse_pair(self):
-        match_ = match(SYMBOL, self.__symbol)
+        match_ = search(SYMBOL, self.__symbol)
         self.__pair = match_.group()
         self.__base, self.__quote = self.__pair.split(SYMBOL_SPLIT)
 
