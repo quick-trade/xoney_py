@@ -13,8 +13,10 @@
 # limitations under the License.
 # =============================================================================
 import copy
+from datetime import datetime
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from xoney.generic.candlestick import Chart, Candle
@@ -191,3 +193,20 @@ def test_iter(chart, dataframe):
 def test_df(chart, dataframe):
     chart_by_df = Chart(df=dataframe)
     assert chart_by_df == chart
+
+
+def test_init_volume(chart, dataframe):
+    volume = chart.volume
+    dataframe.loc[:, dataframe.columns != "Volume"]
+    assert chart == Chart(volume=volume, df=dataframe)
+
+
+def test_not_eq_timestamp(chart, dataframe):
+    df = dataframe.reset_index()
+    df = df.loc[:, df.columns != "Timestamp"]
+    assert chart != Chart(df=df,
+                          timestamp=pd.timedelta_range(
+                              start=0,
+                              end=10_000_000,
+                              periods=len(df))
+                          )
