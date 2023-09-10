@@ -16,10 +16,10 @@
 import pytest
 
 from xoney.generic.timeframes import TimeFrameFactory
-from xoney.generic.timeframes.defaults import HOUR_1, DAY_1, WEEK_1, MINUTE_5
+from xoney.generic.timeframes.defaults import *
 
 
-class TestEqual:
+class TestComparison:
     def test_d1_24h(self):
         D1 = TimeFrameFactory.from_days(1)
         H24 = TimeFrameFactory.from_hours(24)
@@ -47,6 +47,28 @@ class TestEqual:
 
     def test_5m_300s(self):
         assert MINUTE_5 == TimeFrameFactory.from_seconds(300)
+
+    def test_eq(self):
+        assert MINUTE_5 == MINUTE_1*5
+        assert MINUTE_5 != MINUTE_15
+
+    def test_eq_error(self):
+        assert MINUTE_5 != MINUTE_5.seconds
+
+    def test_gt(self):
+        assert MINUTE_5 > MINUTE_1
+
+    def test_gt_error(self):
+        with pytest.raises(TypeError):
+            MINUTE_15 > "string"
+
+    def test_lt(self):
+        assert MINUTE_5 < MINUTE_15
+
+    def test_lt_error(self):
+        with pytest.raises(TypeError):
+            MINUTE_15 < 12345
+
 
 
 class TestMultiply:

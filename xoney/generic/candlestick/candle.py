@@ -64,8 +64,6 @@ class Candle:
         return self._array
 
     def __array_to_candle(self, array: np.ndarray):
-        if len(array) != self.__len:
-            raise ValueError(f"To create a candle, length of array must be equal to {self.__len}")
         return self.__class__(*array,
                               timestamp=self.timestamp,
                               volume=self.volume)

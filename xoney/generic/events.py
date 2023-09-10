@@ -37,7 +37,7 @@ class Event(ABC):
 
 class BalanceBaseEvent(Event, ABC):
     @abstractmethod
-    def _handle_free_balance(self, *args, **kwargs) -> None:
+    def _handle_free_balance(self, *args, **kwargs) -> None:  # pragma: no cover
         ...  # TODO: support real-time trading
 
 
