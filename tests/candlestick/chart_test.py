@@ -197,7 +197,7 @@ def test_df(chart, dataframe):
 
 def test_init_volume(chart, dataframe):
     volume = chart.volume
-    dataframe.loc[:, dataframe.columns != "Volume"]
+    dataframe = dataframe.loc[:, dataframe.columns != "Volume"]
     assert chart == Chart(volume=volume, df=dataframe)
 
 
