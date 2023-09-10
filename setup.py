@@ -18,7 +18,7 @@ from setuptools import find_packages, setup
 with open('README.md') as file:
     long_desc = file.read()
 
-__version__ = "0.2.7"
+__version__ = "0.2.8"
 
 packages = find_packages()
 for package in packages:

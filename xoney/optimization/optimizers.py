@@ -52,7 +52,7 @@ def _parameter_to_value(parameter: Parameter,
     if isinstance(parameter, CategoricalParameter):
         return trial.suggest_categorical(name=path,
                                          choices=parameter.categories)
-    else:
+    else:  # pragma: no cover
         raise UnexpectedParameter(parameter)
 
 
@@ -107,7 +107,7 @@ class DefaultOptimizer(Optimizer):
         if n_trials is None:
             n_trials = self.n_trials
         if n_trials is None:
-            return ValueError("n_trials must be specified in constructor or .run() method")
+            raise ValueError("n_trials must be specified in constructor or .run() method")
         if not isinstance(charts, ChartContainer):
             charts = ChartContainer(charts=charts)
         self._charts = charts

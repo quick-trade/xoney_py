@@ -23,9 +23,14 @@ from xoney.system.exceptions import UnexpectedParameter
 
 @pytest.fixture
 def optimizer():
-    return DefaultOptimizer(Backtester(), SharpeRatio, n_trials=3, max_trades=Parameter())
+    return DefaultOptimizer(Backtester(), SharpeRatio, max_trades=Parameter())
 
 
 def test_parameter(optimizer, system, charts):
     with pytest.raises(UnexpectedParameter):
-        optimizer.run(system, charts)
+        optimizer.run(system, charts, n_trials=3)
+
+
+def test_no_trials(optimizer, system, charts):
+    with pytest.raises(ValueError):
+        optimizer.run(system, charts, n_trials=None)
