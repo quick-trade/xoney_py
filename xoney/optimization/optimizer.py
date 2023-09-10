@@ -25,6 +25,8 @@ from xoney.backtesting import Backtester
 from xoney.generic.equity import Equity
 from xoney.strategy import IntParameter
 
+from xoney.system.exceptions import UnexpectedParameter
+
 
 class Optimizer(Worker, ABC):
     _backtester: Backtester
@@ -52,6 +54,8 @@ class Optimizer(Worker, ABC):
                                             max=max)
         else:
             self._max_trades = self._max_trades_param
+        if not isinstance(self._max_trades, IntParameter):
+            raise UnexpectedParameter(self._max_trades)
 
     def __initialize_metric(self, metric: Metric | type) -> None:
         if isinstance(metric, type):

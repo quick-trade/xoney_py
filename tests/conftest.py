@@ -27,7 +27,14 @@ from xoney.generic.events import Event, OpenTrade, CloseStrategyTrades
 from xoney.generic.enums import TradeSide
 from xoney.generic.trades import Trade, TradeMetaInfo
 from xoney.generic.trades.levels import LevelHeap, SimpleEntry
-from xoney.strategy import IntParameter, CategoricalParameter, Parameter, FloatParameter
+from xoney.strategy import (IntParameter,
+                            CategoricalParameter,
+                            Parameter,
+                            FloatParameter)
+from xoney import (Instrument,
+                   timeframes,
+                   TradingSystem,
+                   ChartContainer)
 
 from .data_array import tohlcv
 
@@ -126,3 +133,21 @@ def dataframe():
     df = pd.DataFrame(data, columns=columns)
     df["Timestamp"] = pd.to_datetime(df["Timestamp"])
     return df
+
+
+@pytest.fixture(scope="session", autouse=True)
+def instrument():
+    return Instrument("SOME/THING", timeframes.DAY_1)
+
+
+@pytest.fixture
+def system(TrendCandleStrategy):
+    return TradingSystem({TrendCandleStrategy(): [instrument],
+                          TrendCandleStrategy(): [instrument]})
+
+
+@pytest.fixture
+def charts(dataframe):
+    return ChartContainer(
+        {instrument: Chart(df=dataframe)}
+    )

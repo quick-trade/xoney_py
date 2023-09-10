@@ -45,9 +45,7 @@ class InvalidChartParameters(ChartError):
 
 class UnexpectedParameter(XoneyException):
     def __init__(self, parameter):
-        super().__init__(f"Unexpected parameter type: {type(parameter)}. "
-                         "Parameter will be <IntParameter>, <FloatParameter> "
-                         "or <CategoricalParameter>")
+        super().__init__(f"Unexpected parameter type: {type(parameter)}.")
 
 
 class TradingSystemException(XoneyException):

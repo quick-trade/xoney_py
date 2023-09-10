@@ -21,8 +21,7 @@ from xoney.backtesting import Backtester
 from xoney.analysis.metrics import SharpeRatio
 from xoney import timeframes, ChartContainer, Instrument, Chart
 from xoney import TradingSystem
-from xoney.strategy import IntParameter, Parameter
-from xoney.system.exceptions import UnexpectedParameter
+from xoney.strategy import IntParameter
 from xoney.generic import Equity
 
 
@@ -34,13 +33,22 @@ def system(TrendCandleStrategy):
     return TradingSystem({TrendCandleStrategy(): [instrument],
                           TrendCandleStrategy(): [instrument]})
 
+
+@pytest.fixture
+def charts(dataframe):
+    return ChartContainer(
+        {instrument: Chart(df=dataframe)}
+    )
+
+
 @pytest.fixture
 def sampler():
     return WFSampler(timeframes.DAY_1*10,
                      timeframes.DAY_1*10,
                      optimizer=GeneticAlgorithmOptimizer(
                          backtester=Backtester(),
-                         metric=SharpeRatio),
+                         metric=SharpeRatio,
+                         n_trials=2),
                      backtester=Backtester())
 
 
@@ -51,22 +59,15 @@ def trades_sampler():
                      optimizer=GeneticAlgorithmOptimizer(
                          backtester=Backtester(),
                          metric=SharpeRatio,
-                         max_trades=IntParameter(1, 5)),
+                         max_trades=IntParameter(1, 5),
+                         n_trials=2),
                      backtester=Backtester())
-
-
-
-@pytest.fixture
-def charts(dataframe):
-    return ChartContainer(
-        {instrument: Chart(df=dataframe)}
-    )
 
 
 def test_working(sampler, charts, system):
     validator = Validator(charts=charts,
                           sampler=sampler)
-    validator.test(TradingSystem(system))
+    validator.test(system)
 
 
 def test_error(charts, system):
@@ -76,25 +77,12 @@ def test_error(charts, system):
                             optimizer=DefaultOptimizer(
                                 backtester=Backtester(),
                                 metric=SharpeRatio,
-                                max_trades=IntParameter(1, 5)),
+                                max_trades=IntParameter(1, 5),
+                                n_trials=2),
                             backtester=Backtester())
 
         validator = Validator(charts=charts,
                               sampler=sampler)
-        validator.test(TradingSystem(system))
-
-
-def test_parameter(charts, system):
-    sampler = WFSampler(timeframes.DAY_1*10,
-                        timeframes.DAY_1*10,
-                        optimizer=GeneticAlgorithmOptimizer(
-                            backtester=Backtester(),
-                            metric=SharpeRatio,
-                            max_trades=Parameter()),
-                        backtester=Backtester())
-    validator = Validator(charts=charts,
-                          sampler=sampler)
-    with pytest.raises(UnexpectedParameter):
         validator.test(system)
 
 
