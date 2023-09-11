@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from xoney.generic.timeframes import defaults
+import pytest
+
+from xoney.generic.timeframes import defaults, TimeFrame
 from datetime import timedelta
 
 
@@ -95,3 +97,9 @@ class TestDefaults:
 
     def test_week_1(self):
         assert_week_timeframe(defaults.WEEK_1, 1)
+
+
+@pytest.mark.parametrize("name", ["1 day", "2 days", "3 days", "4 days"])
+def test_name(name):
+    tf = TimeFrame(name, 3600)
+    assert tf.name == name
