@@ -200,14 +200,15 @@ class Chart(TimeSeries):
 
     def append(self, candle: Candle) -> None:
         if isinstance(candle, Candle):
-            self.df = self.df.append(
-                {"Open": candle.open,
-                 "High": candle.high,
-                 "Low": candle.low,
-                 "Close": candle.close,
-                 "Volume": candle.volume,
-                 "Timestamp": candle.timestamp},
-                ignore_index=False)
+            df = pd.DataFrame(
+                    {"Open": [candle.open],
+                     "High": [candle.high],
+                     "Low": [candle.low],
+                     "Close": [candle.close],
+                     "Volume": [candle.volume],
+                     "Timestamp": [candle.timestamp]},
+                    ).set_index("Timestamp")
+            self._df = pd.concat([self._df, df])
         else:
             raise TypeError(f"Object is not candle: {candle}")
 

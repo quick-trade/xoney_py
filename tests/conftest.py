@@ -121,6 +121,7 @@ class _Strategy(Strategy):
                 "flip": CategoricalParameter([False, True]),
                 "threshold": FloatParameter(0.9, 1.1)}
 
+
 @pytest.fixture(scope="session", autouse=True)
 def TrendCandleStrategy():
     return _Strategy

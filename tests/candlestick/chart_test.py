@@ -210,3 +210,14 @@ def test_not_eq_timestamp(chart, dataframe):
                               end=10_000_000,
                               periods=len(df))
                           )
+
+
+def test_append_error(chart):
+    with pytest.raises(TypeError):
+        chart.append(123)
+
+
+def test_append(chart):
+    len_1 = len(chart)
+    chart.append(Candle(1, 1, 1, 1, datetime(1970, 1, 2), 1))
+    assert len_1 + 1 == len(chart)

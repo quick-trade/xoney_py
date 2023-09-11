@@ -33,7 +33,6 @@ class Candle:
     volume: float | None
     timestamp: Any
 
-    __len: int = 4
 
     @property
     def _array(self):
