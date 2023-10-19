@@ -44,7 +44,7 @@ setup(
     },
     install_requires=[
         "optuna==3.4.0",
-        "scipy==1.10.1"
+        "scipy==1.11.3"
     ],
     download_url=f"{repository_url}/archive/{__version__}.tar.gz",
     keywords=[
