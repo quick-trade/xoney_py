@@ -118,7 +118,7 @@ class ChartContainer:
 
         if isinstance(item, Instrument):
             return self._charts[item]
-        return {i: c[item] for i, c in self._charts.items()}
+        return ChartContainer({i: c[item] for i, c in self._charts.items()})
 
     def __len__(self) -> int:
         return len(self._charts)
