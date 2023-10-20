@@ -15,7 +15,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import Any, Iterable
+from typing import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -23,6 +23,7 @@ from xoney.generic.timeframes import TimeFrame
 from xoney.strategy import Strategy
 from xoney.generic.symbol import Symbol
 from xoney.generic.candlestick import Chart
+from xoney.generic.events import Event
 
 
 
@@ -30,6 +31,9 @@ from xoney.generic.candlestick import Chart
 class Instrument:
     symbol: Symbol
     timeframe: TimeFrame
+
+    def process_event(self, event) -> tuple[Event]:
+        return (event,)
 
 
 class TradingSystem:

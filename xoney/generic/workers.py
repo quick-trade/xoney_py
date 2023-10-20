@@ -50,5 +50,5 @@ class EquityWorker(Worker, ABC):
     def filled_balance(self):
         return self._trades.filled_volume + self._trades.profit
 
-    def _set_symbol(self, symbol):
-        self._current_symbol = symbol
+    def _set_instrument(self, instrument):
+        self._current_instrument = instrument

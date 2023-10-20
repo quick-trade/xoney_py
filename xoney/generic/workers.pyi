@@ -16,8 +16,7 @@ from __future__ import annotations
 
 from abc import abstractproperty, abstractmethod, ABC
 
-from xoney.generic.routes import TradingSystem
-from xoney.generic.symbol import Symbol
+from xoney.generic.routes import TradingSystem, Instrument
 from xoney.generic.trades import TradeHeap
 from xoney.generic.equity import Equity
 
@@ -37,7 +36,7 @@ class EquityWorker(Worker, ABC):
     max_trades: int
     commission: float
     _free_balance: float
-    _current_symbol: Symbol
+    _current_instrument: Instrument
 
     @abstractproperty
     def equity(self) -> Equity:
@@ -63,5 +62,5 @@ class EquityWorker(Worker, ABC):
     def filled_balance(self) -> float:
         ...
 
-    def _set_symbol(self, symbol: Symbol) -> None:
+    def _set_instrument(self, instrument: Instrument) -> None:
         ...

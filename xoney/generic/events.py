@@ -56,7 +56,7 @@ class OpenTrade(BalanceBaseEvent):
 
     def set_worker(self, worker: EquityWorker) -> None:
         super().set_worker(worker=worker)
-        self._trade._set_symbol(symbol=worker._current_symbol)
+        self._trade._set_symbol(symbol=worker._current_instrument.symbol)
         self._volume_distributor.set_worker(worker)
         self.__set_trade_commission()
 

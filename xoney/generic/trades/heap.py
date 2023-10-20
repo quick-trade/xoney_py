@@ -19,6 +19,7 @@ from xoney.generic.trades import Trade
 from xoney.generic.heap import Heap
 from xoney.generic.candlestick import Candle
 from xoney.generic.enums import TradeStatus
+from xoney.generic.routes import Symbol
 
 
 class TradeHeap(Heap):
@@ -26,6 +27,11 @@ class TradeHeap(Heap):
         trade: Trade
         for trade in self._members:
             trade.update(candle=candle)
+
+    def update_symbol_trades(self, candle: Candle, symbol: Symbol) -> None:
+        for trade in self._members:
+            if trade._symbol == symbol:
+                trade.update(candle=candle)
 
     def cleanup_closed(self) -> None:
         trade: Trade

@@ -55,7 +55,7 @@ class Executor(EquityWorker, ABC):
 
     @property
     def free_balance(self) -> float:
-        quote: str = self._current_symbol.quote
+        quote: str = self._current_instrument.symbol.quote
         return self.__exchange.fetch_free_balance(currency=quote)
 
     def stop_trading(self) -> None:

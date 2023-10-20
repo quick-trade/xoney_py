@@ -13,18 +13,20 @@
 # limitations under the License.
 # =============================================================================
 from __future__ import annotations
+from typing import Iterable
+
 from datetime import timedelta
+from itertools import chain
+
 
 from xoney.generic.candlestick import Chart, Candle
 from xoney.generic.routes import Instrument, TradingSystem, ChartContainer
-from xoney.generic.symbol import Symbol
 from xoney.generic.timeframes.template import TimeFrame
 from xoney.generic.workers import EquityWorker
 from xoney.generic.trades import TradeHeap, Trade
 from xoney.generic.events import Event
 from xoney.generic.equity import Equity
 
-from typing import Iterable
 
 from xoney.strategy import Strategy
 from xoney.backtesting import _utils
@@ -99,7 +101,7 @@ class Backtester(EquityWorker):  # TODO: stats support
                       chart: Chart,
                       candle: Candle,
                       instrument: Instrument):
-        self._set_symbol(instrument.symbol)
+        self._set_instrument(instrument)
         self._handle_chart(strategy=strategy,
                            candle=candle,
                            chart=chart)
@@ -117,15 +119,6 @@ class Backtester(EquityWorker):  # TODO: stats support
         for event in events:
             self._handle_event(event=event)
 
-    def _update_symbol_trades(self, symbol: Symbol, candle: Candle) -> None:
-        # Here we update trades by symbol (but not by instrument),
-        # because we want to account for price changes
-
-        trade: Trade
-        for trade in self._trades:
-            if trade._symbol == symbol:
-                trade.update(candle=candle)
-
     def _handle_chart(self,
                       strategy: Strategy,
                       candle: Candle,
@@ -134,6 +127,13 @@ class Backtester(EquityWorker):  # TODO: stats support
 
         strategy.run(chart)
         events = strategy.fetch_events()
+        events = [self._current_instrument.process_event(event)
+                  for event in events]
+
+        # `events` is a nested list
+        events = chain.from_iterable(events)
         self._handle_events(events=events)
-        self._update_symbol_trades(candle=candle,
-                                   symbol=self._current_symbol)
+        self._trades.update_symbol_trades(
+            candle=candle,
+            symbol=self._current_instrument.symbol
+        )
