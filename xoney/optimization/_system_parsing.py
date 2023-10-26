@@ -124,7 +124,7 @@ class Parser:
         strategy_class: Type[Strategy]
         max_trades: int
 
-        instruments = self.__system_signature.instruments
+        instruments = self.__system_signature._strategy_instruments
 
         for s, strategy in enumerate(self.__strategies):
             s_settings = dict()

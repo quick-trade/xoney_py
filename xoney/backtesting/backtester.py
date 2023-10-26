@@ -80,6 +80,10 @@ class Backtester(EquityWorker):  # TODO: stats support
                               timestamp=timestamp)
 
         candle: Candle
+        prev_candles = {
+            instrument: Candle(0, 0, 0, 0)
+            for instrument in self._trading_system.instruments
+        }
         instrument: Instrument
         strategy: Strategy
         chart: Chart
@@ -90,10 +94,12 @@ class Backtester(EquityWorker):  # TODO: stats support
                 chart = charts[instrument]
                 chart = chart[:curr_time]
                 candle = chart.latest_before(curr_time)
-                self._run_strategy(chart=chart,
-                                   candle=candle,
-                                   strategy=strategy,
-                                   instrument=instrument)
+                if candle.timestamp == prev_candles[instrument].timestamp:
+                    self._run_strategy(chart=chart,
+                                    candle=candle,
+                                    strategy=strategy,
+                                    instrument=instrument)
+                prev_candles[instrument] = candle
             self._equity.append(self.total_balance)
 
     def _run_strategy(self,
